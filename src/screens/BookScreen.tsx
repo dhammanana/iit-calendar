@@ -221,6 +221,36 @@ export function BookScreen({ settings }: { settings: Settings }) {
     }
   }, [parsedBook, selectedBookId, selectedH1Title]);
 
+  const scrollToContainerTop = () => {
+    const container = document.getElementById('tab-book');
+    if (container) {
+      container.scrollTo({ top: 0, behavior: 'instant' });
+      container.scrollTop = 0;
+    }
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  // Auto-scroll to top whenever book, H1 volume, or section navigation state changes
+  useEffect(() => {
+    scrollToContainerTop();
+  }, [selectedBookId, selectedH1Title, selectedSectionId]);
+
+  const scrollToId = (id: string) => {
+    setShowToc(false);
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      const container = document.getElementById('tab-book');
+      if (el) {
+        if (container) {
+          const topPos = el.getBoundingClientRect().top + container.scrollTop - container.getBoundingClientRect().top - 20;
+          container.scrollTo({ top: topPos, behavior: 'smooth' });
+        } else {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }, 150);
+  };
+
   const selectedH1Group = useMemo(() => {
     if (selectedH1Title === null) return null;
     return parsedBook.h1Groups.find(g => g.h1Title === selectedH1Title) || parsedBook.h1Groups[0] || null;
@@ -323,16 +353,6 @@ export function BookScreen({ settings }: { settings: Settings }) {
     }
   };
 
-  const scrollToId = (id: string) => {
-    setShowToc(false);
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 150);
-  };
-
   const getBookTitle = (book: BookItem) => {
     if (book.titleKey) {
       const localized = t(book.titleKey as any);
@@ -355,7 +375,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
       setSelectedH1Title(prevSec.h1Title);
       setSelectedSectionId(prevSec.id);
       setSearchTerm('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToContainerTop();
     }
   };
 
@@ -365,7 +385,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
       setSelectedH1Title(nextSec.h1Title);
       setSelectedSectionId(nextSec.id);
       setSearchTerm('');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToContainerTop();
     }
   };
 
@@ -382,7 +402,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 pb-44 selection:bg-amber-500/20">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 pb-6 selection:bg-amber-500/20">
 
       {/* Top Header Background Illustration */}
       <div className="w-full relative overflow-hidden bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-6 pb-12 px-4 flex flex-col items-center justify-center">
@@ -448,9 +468,57 @@ export function BookScreen({ settings }: { settings: Settings }) {
           <h1 className="font-serif text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none mb-1.5">
             {t('common.books') || t('common.book') || 'Books'}
           </h1>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
-            {selectedBook ? getBookTitle(selectedBook) : 'Dhamma texts and chanting books'}
-          </p>
+          {!selectedBook ? (
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
+              Dhamma texts and chanting books
+            </p>
+          ) : (
+            /* Universal Interactive Breadcrumbs (Shown at all levels when a book is open) */
+            <nav className="flex items-center justify-center flex-wrap gap-1.5 text-xs text-[var(--text-muted)] font-medium max-w-3xl mx-auto px-2 text-center mt-1">
+              <button
+                onClick={() => {
+                  setSelectedH1Title(null);
+                  setSelectedSectionId(null);
+                }}
+                className={cn(
+                  "transition-colors",
+                  selectedH1Title === null && selectedSectionId === null
+                    ? "text-[var(--accent)] font-bold cursor-default"
+                    : "hover:text-[var(--accent)]"
+                )}
+              >
+                {getBookTitle(selectedBook)}
+              </button>
+
+              {selectedH1Title && selectedH1Title !== 'General' && parsedBook.h1Groups.length > 1 && (
+                <>
+                  <ChevronRight size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+                  <button
+                    onClick={() => {
+                      setSelectedSectionId(null);
+                    }}
+                    className={cn(
+                      "transition-colors",
+                      selectedSectionId === null
+                        ? "text-[var(--accent)] font-bold cursor-default"
+                        : "hover:text-[var(--accent)]"
+                    )}
+                  >
+                    {convertScriptText(selectedH1Title, scriptKey)}
+                  </button>
+                </>
+              )}
+
+              {selectedSection && (
+                <>
+                  <ChevronRight size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+                  <span className="text-[var(--accent)] font-bold line-clamp-1">
+                    {convertScriptText(selectedSection.h2Title, scriptKey)}
+                  </span>
+                </>
+              )}
+            </nav>
+          )}
         </div>
 
         {/* ── PERMANENT BOTTOM CONTROL BAR (Fixed flush above bottom navbar when book is open) ── */}
@@ -468,6 +536,20 @@ export function BookScreen({ settings }: { settings: Settings }) {
               className="btn-icon flex-shrink-0"
             >
               <ArrowLeft size={18} />
+            </button>
+
+            {/* Book Catalog Button */}
+            <button
+              onClick={() => {
+                setSelectedBookId(null);
+                setSelectedH1Title(null);
+                setSelectedSectionId(null);
+                setSearchTerm('');
+              }}
+              title="Book Catalog"
+              className="btn-icon flex-shrink-0"
+            >
+              <BookOpen size={18} />
             </button>
 
             {/* Search Input Bar (Spans full remaining width) */}
@@ -781,22 +863,22 @@ export function BookScreen({ settings }: { settings: Settings }) {
             </div>
 
             {/* Bottom Section Pagination Control Bar */}
-            <div className="mt-12 pt-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-8">
+            <div className="mt-8 pt-4 border-t border-[var(--border-subtle)] flex flex-row items-center justify-between gap-2 px-2 sm:px-6">
               <button
                 onClick={goToPrevSection}
                 disabled={currentSectionIndex <= 0}
                 className={cn(
-                  "w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl transition-all text-sm font-bold active:scale-95",
+                  "flex items-center justify-center gap-1 px-3.5 sm:px-5 py-2 rounded-xl transition-all text-xs sm:text-sm font-bold active:scale-95 flex-shrink-0",
                   currentSectionIndex > 0
                     ? "btn-pill-ghost shadow-sm"
                     : "opacity-40 cursor-not-allowed border border-[var(--border-subtle)] text-[var(--text-muted)]"
                 )}
               >
-                <ChevronLeft size={18} />
-                <span>Previous Section</span>
+                <ChevronLeft size={16} />
+                <span>Previous</span>
               </button>
 
-              <span className="text-xs font-semibold text-[var(--text-muted)]">
+              <span className="text-xs font-semibold text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap px-1">
                 {currentSectionIndex + 1} of {parsedBook.allSections.length}
               </span>
 
@@ -804,14 +886,14 @@ export function BookScreen({ settings }: { settings: Settings }) {
                 onClick={goToNextSection}
                 disabled={currentSectionIndex < 0 || currentSectionIndex >= parsedBook.allSections.length - 1}
                 className={cn(
-                  "w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl transition-all text-sm font-bold active:scale-95",
+                  "flex items-center justify-center gap-1 px-3.5 sm:px-5 py-2 rounded-xl transition-all text-xs sm:text-sm font-bold active:scale-95 flex-shrink-0",
                   currentSectionIndex >= 0 && currentSectionIndex < parsedBook.allSections.length - 1
                     ? "btn-pill-solid shadow-sm"
                     : "opacity-40 cursor-not-allowed border border-[var(--border-subtle)] text-[var(--text-muted)]"
                 )}
               >
-                <span>Next Section</span>
-                <ChevronRight size={18} />
+                <span>Next</span>
+                <ChevronRight size={16} />
               </button>
             </div>
           </>
