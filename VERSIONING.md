@@ -36,8 +36,8 @@ However, **Capgo has a strict minor-version matching constraint**:
 ### 1. Releasing a Patch Version (OTA Live Update)
 *Use this for bug fixes or minor UI tweaks that do not add new Capacitor/Tauri native plugins or change native configurations.*
 
-1. Run `npm version <patch|minor|major>` (e.g. `npm version patch` or `npm version 1.2.0`).
-   - This automatically updates `package.json`, runs `capacitor-set-version` to update iOS (`Info.plist`) and Android (`build.gradle`), stages all files, and creates a Git commit and tag (`v1.2.0`).
+1. Run `pnpm version <patch|minor|major>` or `npm version <patch|minor|major>` (e.g. `pnpm version patch` or `pnpm version 1.2.0`).
+   - This automatically updates `package.json`, triggers the `"version"` script to run `capacitor-set-version` for iOS (`Info.plist`) and Android (`build.gradle`), stages all files, and creates a Git commit and tag (`v1.2.0`).
 2. Push commit & tag to GitHub:
    ```bash
    git push --follow-tags
