@@ -40,6 +40,7 @@ export interface BookItem {
 interface H3Item {
   id: string;
   title: string;
+  i18nKey?: string;
 }
 
 interface BookSection {
@@ -107,12 +108,19 @@ function convertScriptText(text: string, scriptKey: string): string {
 
 function parseH3sFromHtml(htmlSnippet: string): H3Item[] {
   const items: H3Item[] = [];
-  const regex = /<h3([^>]*?id="([^"]*?)")?[^>]*?>([\s\S]*?)<\/h3>/gi;
+  const regex = /<h3([^>]*?id="([^"]*?)")?[^>]*?>/gi;
   let match;
   while ((match = regex.exec(htmlSnippet)) !== null) {
+    const attrs = match[0];
     const id = match[2] || '';
-    const title = match[3].replace(/<[^>]+>/g, '').trim();
-    items.push({ id, title });
+    const i18nKeyMatch = attrs.match(/data-i18n-key="([^"]+)"/);
+    const i18nKey = i18nKeyMatch ? i18nKeyMatch[1] : undefined;
+    // Extract text content of the h3 element
+    const rest = htmlSnippet.slice(match.index + match[0].length);
+    const closeIdx = rest.indexOf('</h3>');
+    const inner = closeIdx >= 0 ? rest.slice(0, closeIdx) : '';
+    const title = inner.replace(/<[^>]+>/g, '').trim();
+    items.push({ id, title, i18nKey });
   }
   return items;
 }
@@ -1543,7 +1551,11 @@ export function BookScreen({ settings }: { settings: Settings }) {
                                       className="w-full text-left py-1.5 px-2 rounded-lg text-xs text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card-alt)] transition-colors flex items-center gap-1.5"
                                     >
                                       <ChevronRight size={13} className="text-[var(--text-muted)] flex-shrink-0" />
-                                      <span className="line-clamp-1">{convertScriptText(h3.title, scriptKey)}</span>
+                                      <span className="line-clamp-1">
+                                        {h3.i18nKey
+                                          ? tFor(SCRIPT_TO_LANG[scriptKey] || language, h3.i18nKey)
+                                          : convertScriptText(h3.title, scriptKey)}
+                                      </span>
                                     </button>
                                   ))}
                                 </div>
