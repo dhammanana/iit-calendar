@@ -1151,9 +1151,12 @@ export function BookScreen({ settings }: { settings: Settings }) {
               }
               .book-container h3 {
                 font-size: 1.3rem !important;
-                font-style: italic;
-                margin-top: 2rem !important;
+                font-weight: 700 !important;
+                font-style: normal !important;
+                color: var(--accent);
+                margin-top: 1.75rem !important;
                 margin-bottom: 0.75rem !important;
+                line-height: 1.35;
               }
               .book-container p {
                 margin-bottom: 0.6rem !important;
