@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
+
 interface UIContextType {
   showSettings: boolean;
   setShowSettings: (show: boolean) => void;
