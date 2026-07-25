@@ -31,7 +31,7 @@ export class ThaiCalendar extends BuddhistCalendar {
     const isUposathaDay = nextUpo && new Date(nextUpo.date.getFullYear(), nextUpo.date.getMonth(), nextUpo.date.getDate()).getTime() === todayNormalized;
 
     const daysSinceLast = Math.round((todayNormalized - lastUpo.date.getTime()) / 86400000);
-    const tithi = isUposathaDay ? nextUpo.uDays : daysSinceLast + 1;
+    const tithi = isUposathaDay ? nextUpo.uDays : daysSinceLast; // not sure why do it added 1.
     
     let paksha = lastUpo.phase === "new" ? "Sukka pakkhe" : "Kanha pakkhe";
     if (isUposathaDay) paksha = nextUpo.phase === "full" ? "Sukka pakkhe" : "Kanha pakkhe";
