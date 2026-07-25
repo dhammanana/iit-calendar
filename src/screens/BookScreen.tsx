@@ -12,7 +12,9 @@ import {
   ArrowLeft,
   Sparkles,
   Layers,
-  FileText
+  FileText,
+  Hash,
+  Quote
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
@@ -58,6 +60,21 @@ interface ParsedBook {
   allSections: BookSection[];
 }
 
+export interface SearchResultItem {
+  id: string;
+  bookId: string;
+  bookTitle: string;
+  h1Title: string;
+  h2Title?: string;
+  h3Title?: string;
+  type: 'h1' | 'h2' | 'h3' | 'text';
+  title: string;
+  sectionId?: string;
+  targetId?: string;
+  textToMatch: string;
+}
+
+// Force Vite HMR re-evaluation for raw HTML glob imports
 const htmlModules = import.meta.glob<string>('../data/books/*.html', {
   query: '?raw',
   import: 'default',
@@ -183,6 +200,246 @@ function parseBookSections(rawHtml: string): ParsedBook {
   return { h1Groups, allSections };
 }
 
+/**
+ * Extracts a structured index of all headings and terminal page text blocks from a book's raw HTML.
+ */
+function parseBookSearchIndex(book: BookItem, rawHtml: string): SearchResultItem[] {
+  if (!rawHtml) return [];
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(rawHtml, 'text/html');
+  const results: SearchResultItem[] = [];
+
+  let currentH1 = '';
+  let currentH1Id = '';
+  let currentH2 = '';
+  let currentH2Id = '';
+  let currentH3 = '';
+  let currentH3Id = '';
+
+  const traverse = (node: Node) => {
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node as HTMLElement;
+      const tagName = el.tagName.toLowerCase();
+
+      if (tagName === 'h1') {
+        const title = el.textContent?.replace(/<[^>]+>/g, '').trim() || '';
+        if (title) {
+          const id = el.id || `h1-${results.length}`;
+          currentH1 = title;
+          currentH1Id = id;
+          currentH2 = '';
+          currentH2Id = '';
+          currentH3 = '';
+          currentH3Id = '';
+          results.push({
+            id: `sr-${book.id}-h1-${results.length}`,
+            bookId: book.id,
+            bookTitle: book.title,
+            h1Title: title,
+            type: 'h1',
+            title,
+            targetId: id,
+            textToMatch: title,
+          });
+        }
+        return;
+      }
+
+      if (tagName === 'h2') {
+        const title = el.textContent?.replace(/<[^>]+>/g, '').trim() || '';
+        if (title) {
+          const id = el.id || `h2-${results.length}`;
+          currentH2 = title;
+          currentH2Id = id;
+          currentH3 = '';
+          currentH3Id = '';
+          results.push({
+            id: `sr-${book.id}-h2-${results.length}`,
+            bookId: book.id,
+            bookTitle: book.title,
+            h1Title: currentH1,
+            h2Title: title,
+            type: 'h2',
+            title,
+            sectionId: id,
+            targetId: id,
+            textToMatch: title,
+          });
+        }
+        return;
+      }
+
+      if (tagName === 'h3') {
+        const title = el.textContent?.replace(/<[^>]+>/g, '').trim() || '';
+        if (title) {
+          const id = el.id || `h3-${results.length}`;
+          currentH3 = title;
+          currentH3Id = id;
+          results.push({
+            id: `sr-${book.id}-h3-${results.length}`,
+            bookId: book.id,
+            bookTitle: book.title,
+            h1Title: currentH1,
+            h2Title: currentH2,
+            h3Title: title,
+            type: 'h3',
+            title,
+            sectionId: currentH2Id || currentH1Id,
+            targetId: id,
+            textToMatch: title,
+          });
+        }
+        return;
+      }
+
+      if (['p', 'li', 'td', 'blockquote'].includes(tagName)) {
+        const text = el.textContent?.trim() || '';
+        if (text.length >= 3) {
+          const id = el.id || `txt-${results.length}`;
+          results.push({
+            id: `sr-${book.id}-txt-${results.length}`,
+            bookId: book.id,
+            bookTitle: book.title,
+            h1Title: currentH1,
+            h2Title: currentH2,
+            h3Title: currentH3,
+            type: 'text',
+            title: text,
+            sectionId: currentH2Id || currentH1Id,
+            targetId: id,
+            textToMatch: text,
+          });
+        }
+        return;
+      }
+
+      for (let i = 0; i < el.childNodes.length; i++) {
+        traverse(el.childNodes[i]);
+      }
+    }
+  };
+
+  for (let i = 0; i < doc.body.childNodes.length; i++) {
+    traverse(doc.body.childNodes[i]);
+  }
+
+  return results;
+}
+
+/**
+ * Searches across the indexed book items for matching query terms, supporting script conversions.
+ */
+function getSearchResults(
+  query: string,
+  searchIndex: SearchResultItem[],
+  scriptKey: string
+): { item: SearchResultItem; matchSnippet?: string }[] {
+  const trimmed = query.trim();
+  if (trimmed.length < 2) return [];
+
+  const lowerQuery = trimmed.toLowerCase();
+
+  let convertedQuery = lowerQuery;
+  if (scriptKey !== Script.RO) {
+    try {
+      const sinhala = TextProcessor.convertFrom(trimmed, Script.RO);
+      convertedQuery = TextProcessor.convert(sinhala, scriptKey).toLowerCase();
+    } catch (e) {
+      convertedQuery = lowerQuery;
+    }
+  }
+
+  const results: { item: SearchResultItem; matchSnippet?: string }[] = [];
+
+  for (const item of searchIndex) {
+    const textLower = item.textToMatch.toLowerCase();
+    let convertedTextLower = textLower;
+
+    if (scriptKey !== Script.RO) {
+      try {
+        const sinhala = TextProcessor.convertFrom(item.textToMatch, Script.RO);
+        convertedTextLower = TextProcessor.convert(sinhala, scriptKey).toLowerCase();
+      } catch (e) {
+        convertedTextLower = textLower;
+      }
+    }
+
+    let matchIdx = textLower.indexOf(lowerQuery);
+    let matchedInConverted = false;
+    let actualQuery = lowerQuery;
+
+    if (matchIdx === -1 && convertedQuery !== lowerQuery) {
+      matchIdx = convertedTextLower.indexOf(convertedQuery);
+      if (matchIdx !== -1) {
+        matchedInConverted = true;
+        actualQuery = convertedQuery;
+      }
+    }
+
+    if (matchIdx === -1 && convertedTextLower.indexOf(lowerQuery) !== -1) {
+      matchIdx = convertedTextLower.indexOf(lowerQuery);
+      matchedInConverted = true;
+      actualQuery = lowerQuery;
+    }
+
+    if (matchIdx !== -1) {
+      let snippet: string | undefined = undefined;
+      if (item.type === 'text') {
+        const targetStr = matchedInConverted ? convertedTextLower : item.textToMatch;
+        const start = Math.max(0, matchIdx - 40);
+        const end = Math.min(targetStr.length, matchIdx + actualQuery.length + 50);
+        let rawSnippet = (start > 0 ? '...' : '') + targetStr.substring(start, end) + (end < targetStr.length ? '...' : '');
+        snippet = rawSnippet;
+      }
+
+      results.push({
+        item,
+        matchSnippet: snippet
+      });
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Highlights matching search terms inside preview text snippets.
+ */
+function renderSnippetWithHighlight(snippet: string, query: string, scriptKey: string) {
+  if (!query || !snippet) return snippet;
+
+  let searchPattern = query.trim();
+  if (scriptKey !== Script.RO && /^[a-zA-Zāīūṃṅñṭḍṇḷḥ\s,.'"-]+$/i.test(query)) {
+    try {
+      const sinhala = TextProcessor.convertFrom(query, Script.RO);
+      searchPattern = TextProcessor.convert(sinhala, scriptKey);
+    } catch (e) {
+      // fallback
+    }
+  }
+
+  const escaped = searchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escaped})`, 'gi');
+  const parts = snippet.split(regex);
+
+  return (
+    <span>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark
+            key={i}
+            className="bg-amber-200 dark:bg-amber-500/40 text-amber-900 dark:text-white rounded px-1 font-semibold not-italic"
+          >
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+}
+
 export function BookScreen({ settings }: { settings: Settings }) {
   const { t } = useI18n();
 
@@ -196,6 +453,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null);
 
   const [showToc, setShowToc] = useState(false);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentMatchIndex, setCurrentMatchIndex] = useState(-1);
   const [totalMatches, setTotalMatches] = useState(0);
@@ -213,6 +471,27 @@ export function BookScreen({ settings }: { settings: Settings }) {
     if (!rawHtml) return { h1Groups: [], allSections: [] };
     return parseBookSections(rawHtml);
   }, [rawHtml]);
+
+  // Build comprehensive search index across selected book (or all books if in catalog view)
+  const searchIndex = useMemo(() => {
+    if (selectedBook) {
+      return parseBookSearchIndex(selectedBook, rawHtml);
+    } else {
+      let combined: SearchResultItem[] = [];
+      for (const book of booksList) {
+        const html = getBookHtml(book.file);
+        combined = combined.concat(parseBookSearchIndex(book, html));
+      }
+      return combined;
+    }
+  }, [selectedBook, rawHtml]);
+
+  const scriptKey = getScriptKey(settings.paliScript);
+
+  // Compute live search results
+  const searchResults = useMemo(() => {
+    return getSearchResults(searchTerm, searchIndex, scriptKey);
+  }, [searchTerm, searchIndex, scriptKey]);
 
   // If book has only 1 H1 group (or 1 group overall), auto-select it if not selected
   useEffect(() => {
@@ -235,20 +514,32 @@ export function BookScreen({ settings }: { settings: Settings }) {
     scrollToContainerTop();
   }, [selectedBookId, selectedH1Title, selectedSectionId]);
 
-  const scrollToId = (id: string) => {
+  const scrollToId = (id?: string) => {
     setShowToc(false);
     setTimeout(() => {
-      const el = document.getElementById(id);
-      const container = document.getElementById('tab-book');
-      if (el) {
-        if (container) {
-          const topPos = el.getBoundingClientRect().top + container.scrollTop - container.getBoundingClientRect().top - 20;
-          container.scrollTo({ top: topPos, behavior: 'smooth' });
-        } else {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (id) {
+        const el = document.getElementById(id);
+        const container = document.getElementById('tab-book');
+        if (el) {
+          if (container) {
+            const topPos = el.getBoundingClientRect().top + container.scrollTop - container.getBoundingClientRect().top - 80;
+            container.scrollTo({ top: topPos, behavior: 'smooth' });
+          } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          return;
         }
       }
-    }, 150);
+
+      // Fallback scroll to active highlighted match inside container
+      const container = document.getElementById('tab-book');
+      const mark = document.querySelector('mark');
+      if (mark) {
+        mark.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else if (container) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 200);
   };
 
   const selectedH1Group = useMemo(() => {
@@ -267,8 +558,6 @@ export function BookScreen({ settings }: { settings: Settings }) {
   }, [selectedSection, parsedBook]);
 
   const contentRef = useRef<HTMLDivElement>(null);
-
-  const scriptKey = getScriptKey(settings.paliScript);
 
   const processedSectionHtml = useMemo(() => {
     if (!selectedSection) return '';
@@ -369,6 +658,33 @@ export function BookScreen({ settings }: { settings: Settings }) {
     return book.subtitle || '';
   };
 
+  const handleSelectSearchResult = (item: SearchResultItem) => {
+    setSelectedBookId(item.bookId);
+
+    if (item.h1Title) {
+      setSelectedH1Title(item.h1Title);
+    }
+
+    if (item.type === 'h1') {
+      setSelectedSectionId(null);
+    } else if (item.sectionId) {
+      setSelectedSectionId(item.sectionId);
+    }
+
+    if (item.type === 'text') {
+      setSearchTerm(searchTerm);
+    } else {
+      setSearchTerm(item.title);
+    }
+
+    setIsSearchFocused(false);
+
+    // Scroll to target heading or element
+    setTimeout(() => {
+      scrollToId(item.targetId);
+    }, 200);
+  };
+
   const goToPrevSection = () => {
     if (currentSectionIndex > 0) {
       const prevSec = parsedBook.allSections[currentSectionIndex - 1];
@@ -402,7 +718,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 pb-6 selection:bg-amber-500/20">
+    <div className="min-h-screen bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 pb-[calc(7rem+env(safe-area-inset-bottom,24px))] selection:bg-amber-500/20">
 
       {/* Top Header Background Illustration */}
       <div className="w-full relative overflow-hidden bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-6 pb-12 px-4 flex flex-col items-center justify-center">
@@ -469,7 +785,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
             {t('common.books') || t('common.book') || 'Books'}
           </h1>
           {!selectedBook ? (
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mb-1">
               Dhamma texts and chanting books
             </p>
           ) : (
@@ -521,76 +837,88 @@ export function BookScreen({ settings }: { settings: Settings }) {
           )}
         </div>
 
-        {/* ── PERMANENT BOTTOM CONTROL BAR (Fixed flush above bottom navbar when book is open) ── */}
-        {selectedBook && (
-          <div
-            className="fixed left-0 right-0 z-40 bg-[var(--bg-main)]/95 backdrop-blur-xl border-t border-[var(--border-subtle)] px-4 sm:px-6 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.25)] flex items-center justify-between gap-3"
-            style={{
-              bottom: 'calc(4.55rem + env(safe-area-inset-bottom, 0px))',
-            }}
-          >
-            {/* Back Icon Button */}
-            <button
-              onClick={handleBackNavigation}
-              title="Back"
-              className="btn-icon flex-shrink-0"
-            >
-              <ArrowLeft size={18} />
-            </button>
+        {/* ── PERMANENT BOTTOM CONTROL BAR (Fixed flush above bottom navbar always) ── */}
+        <div
+          className="fixed left-0 right-0 z-40 bg-[var(--bg-main)]/95 backdrop-blur-xl border-t border-[var(--border-subtle)] px-4 sm:px-6 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.25)] flex items-center justify-between gap-3"
+          style={{
+            bottom: 'calc(4.55rem + env(safe-area-inset-bottom, 0px))',
+          }}
+        >
+          {selectedBook && (
+            <>
+              {/* Back Icon Button */}
+              <button
+                onClick={handleBackNavigation}
+                title="Back"
+                className="btn-icon flex-shrink-0"
+              >
+                <ArrowLeft size={18} />
+              </button>
 
-            {/* Book Catalog Button */}
-            <button
-              onClick={() => {
-                setSelectedBookId(null);
-                setSelectedH1Title(null);
-                setSelectedSectionId(null);
-                setSearchTerm('');
+              {/* Book Catalog Button */}
+              <button
+                onClick={() => {
+                  setSelectedBookId(null);
+                  setSelectedH1Title(null);
+                  setSelectedSectionId(null);
+                  setSearchTerm('');
+                }}
+                title="Book Catalog"
+                className="btn-icon flex-shrink-0"
+              >
+                <BookOpen size={18} />
+              </button>
+            </>
+          )}
+
+          {/* Search Input Bar (Spans full remaining width) */}
+          <div className="relative flex-1 min-w-0">
+            <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
+            <input
+              type="text"
+              placeholder={
+                selectedBook
+                  ? `${t('common.search')}...`
+                  : `${t('common.search') || 'Search'} across all books...`
+              }
+              value={searchTerm}
+              onFocus={() => setIsSearchFocused(true)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setIsSearchFocused(true);
               }}
-              title="Book Catalog"
-              className="btn-icon flex-shrink-0"
-            >
-              <BookOpen size={18} />
-            </button>
+              className="w-full pl-10 pr-16 py-2 bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 transition-all"
+            />
+            {searchTerm && (
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+                {selectedSectionId && (
+                  <>
+                    <button
+                      onClick={() => navigateMatch('prev')}
+                      className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
+                    >
+                      <ChevronUp size={14} />
+                    </button>
+                    <button
+                      onClick={() => navigateMatch('next')}
+                      className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
+                    >
+                      <ChevronDown size={14} />
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="p-1 text-[var(--text-muted)] hover:text-rose-500 transition-colors ml-1"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+          </div>
 
-            {/* Search Input Bar (Spans full remaining width) */}
-            <div className="relative flex-1 min-w-0">
-              <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
-              <input
-                type="text"
-                placeholder={`${t('common.search')}...`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-16 py-2 bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 transition-all"
-              />
-              {searchTerm && (
-                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
-                  {selectedSectionId && (
-                    <>
-                      <button
-                        onClick={() => navigateMatch('prev')}
-                        className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
-                      >
-                        <ChevronUp size={14} />
-                      </button>
-                      <button
-                        onClick={() => navigateMatch('next')}
-                        className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
-                      >
-                        <ChevronDown size={14} />
-                      </button>
-                    </>
-                  )}
-                  <button
-                    onClick={() => setSearchTerm('')}
-                    className="p-1 text-[var(--text-muted)] hover:text-rose-500 transition-colors ml-1"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Table of Contents Button */}
+          {/* Table of Contents Button (only if a book is open) */}
+          {selectedBook && (
             <button
               onClick={() => setShowToc(true)}
               title="Table of Contents"
@@ -598,8 +926,8 @@ export function BookScreen({ settings }: { settings: Settings }) {
             >
               <List size={18} />
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* ── LEVEL 0: BOOKSHELF GRID (When no book selected) ── */}
         {!selectedBook ? (
@@ -704,16 +1032,6 @@ export function BookScreen({ settings }: { settings: Settings }) {
                 const displayH1 = convertScriptText(group.h1Title, scriptKey);
                 const sectionCount = group.sections.length;
 
-                // Search filtering for H1 list
-                if (searchTerm.trim()) {
-                  const searchLower = searchTerm.toLowerCase();
-                  const h1Match = group.h1Title.toLowerCase().includes(searchLower);
-                  const hasMatchingSec = group.sections.some(s =>
-                    s.h2Title.toLowerCase().includes(searchLower) || s.html.toLowerCase().includes(searchLower)
-                  );
-                  if (!h1Match && !hasMatchingSec) return null;
-                }
-
                 return (
                   <motion.button
                     key={gIdx}
@@ -769,15 +1087,6 @@ export function BookScreen({ settings }: { settings: Settings }) {
               {(selectedH1Group ? selectedH1Group.sections : parsedBook.allSections).map((sec) => {
                 const displayH2 = convertScriptText(sec.h2Title, scriptKey);
                 const h3Count = sec.h3Items.length;
-
-                // Search filtering for H2 sections
-                if (searchTerm.trim()) {
-                  const searchLower = searchTerm.toLowerCase();
-                  const titleMatch = sec.h2Title.toLowerCase().includes(searchLower);
-                  const h3Match = sec.h3Items.some(h3 => h3.title.toLowerCase().includes(searchLower));
-                  const contentMatch = sec.html.toLowerCase().includes(searchLower);
-                  if (!titleMatch && !h3Match && !contentMatch) return null;
-                }
 
                 return (
                   <motion.button
@@ -847,8 +1156,31 @@ export function BookScreen({ settings }: { settings: Settings }) {
                 margin-bottom: 0.75rem !important;
               }
               .book-container p {
-                margin-bottom: 1rem !important;
+                margin-bottom: 0.6rem !important;
                 font-size: 1.1rem;
+              }
+              .book-container li p {
+                margin-bottom: 0.35rem !important;
+              }
+              .book-container ol {
+                list-style-type: decimal !important;
+                padding-left: 2rem !important;
+                margin-top: 0.75rem !important;
+                margin-bottom: 1rem !important;
+              }
+              .book-container ul {
+                list-style-type: disc !important;
+                padding-left: 2rem !important;
+                margin-top: 0.75rem !important;
+                margin-bottom: 1rem !important;
+              }
+              .book-container li {
+                display: list-item !important;
+                margin-bottom: 0.75rem !important;
+              }
+              .book-container li::marker {
+                font-weight: bold;
+                color: var(--accent);
               }
               mark {
                 scroll-margin-top: 100px;
@@ -899,6 +1231,171 @@ export function BookScreen({ settings }: { settings: Settings }) {
           </>
         )}
 
+        {/* ── SEARCH RESULTS SLIDE-UP BOTTOM SHEET MODAL ── */}
+        <AnimatePresence>
+          {isSearchFocused && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsSearchFocused(false)}
+                className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm"
+              />
+              {/* Slide-Up Bottom Sheet */}
+              <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+                className="fixed bottom-0 left-0 right-0 max-h-[85vh] h-[75vh] bg-[var(--bg-main)] backdrop-blur-2xl z-[60] shadow-2xl border-t border-[var(--border-subtle)] flex flex-col rounded-t-[2.5rem] overflow-hidden"
+              >
+                {/* Grab Handle */}
+                <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={() => setIsSearchFocused(false)}>
+                  <div className="w-12 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700 opacity-80" />
+                </div>
+
+                {/* Sticky Header inside Sheet */}
+                <div className="px-4 sm:px-6 pb-3 pt-1 border-b border-[var(--border-subtle)] flex flex-col gap-2.5">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-serif text-lg sm:text-xl font-bold text-[var(--text-primary)]">
+                        Search Results
+                      </h3>
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5">
+                        {selectedBook
+                          ? `Searching in ${getBookTitle(selectedBook)}`
+                          : 'Searching across all books'}
+                        {searchTerm.trim().length >= 2 && ` • ${searchResults.length} ${searchResults.length === 1 ? 'result' : 'results'} found`}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setIsSearchFocused(false)}
+                      className="btn-icon"
+                      title="Close search"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  {/* Embedded Input inside Sheet Header */}
+                  <div className="relative w-full">
+                    <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <input
+                      type="text"
+                      autoFocus
+                      placeholder="Search across headings and text..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-10 py-2.5 bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/40 transition-all"
+                    />
+                    {searchTerm && (
+                      <button
+                        onClick={() => setSearchTerm('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[var(--text-muted)] hover:text-rose-500 transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Results Card List */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 pb-[calc(7rem+env(safe-area-inset-bottom,24px))] scrollbar-hide">
+                  {searchTerm.trim().length < 2 ? (
+                    <div className="py-12 text-center text-[var(--text-muted)] space-y-2">
+                      <Search size={32} className="mx-auto opacity-40 mb-2" />
+                      <p className="text-sm font-medium">Type at least 2 characters to search</p>
+                      <p className="text-xs opacity-75">Searches across all volumes, chapters, topics, and text</p>
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="py-12 text-center text-[var(--text-muted)] space-y-2">
+                      <p className="text-sm font-semibold text-[var(--text-primary)]">No matching results found</p>
+                      <p className="text-xs">Try searching for a different keyword or Pali phrase</p>
+                    </div>
+                  ) : (
+                    searchResults.map(({ item, matchSnippet }) => {
+                      const displayBookTitle = getBookTitle(
+                        booksList.find(b => b.id === item.bookId) || selectedBook!
+                      );
+
+                      return (
+                        <motion.div
+                          key={item.id}
+                          whileHover={{ scale: 1.005, x: 2 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleSelectSearchResult(item)}
+                          className="glass-card p-3.5 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--accent)] cursor-pointer transition-all flex flex-col gap-2 group"
+                        >
+                          {/* Hierarchy Path */}
+                          <div className="flex items-center flex-wrap gap-1 text-xs text-[var(--text-muted)] font-medium">
+                            {!selectedBook && (
+                              <>
+                                <span className="font-bold text-[var(--accent)]">{displayBookTitle}</span>
+                                <ChevronRight size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+                              </>
+                            )}
+
+                            {item.h1Title && (
+                              <span className={cn(
+                                "font-semibold",
+                                item.type === 'h1' ? "text-[var(--accent)] font-bold" : "text-[var(--text-primary)]"
+                              )}>
+                                {convertScriptText(item.h1Title, scriptKey)}
+                              </span>
+                            )}
+
+                            {item.h2Title && (
+                              <>
+                                <ChevronRight size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+                                <span className={cn(
+                                  "font-semibold",
+                                  item.type === 'h2' ? "text-[var(--accent)] font-bold" : "text-[var(--text-primary)]"
+                                )}>
+                                  {convertScriptText(item.h2Title, scriptKey)}
+                                </span>
+                              </>
+                            )}
+
+                            {item.h3Title && (
+                              <>
+                                <ChevronRight size={12} className="text-[var(--text-muted)] flex-shrink-0" />
+                                <span className={cn(
+                                  "font-semibold",
+                                  item.type === 'h3' ? "text-[var(--accent)] font-bold" : "text-[var(--text-primary)]"
+                                )}>
+                                  {convertScriptText(item.h3Title, scriptKey)}
+                                </span>
+                              </>
+                            )}
+
+                            {/* Type Tag Badge */}
+                            <span className="ml-auto text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-md bg-[var(--accent-soft)] text-[var(--accent)] flex-shrink-0">
+                              {item.type}
+                            </span>
+                          </div>
+
+                          {/* Content / Match Preview */}
+                          {item.type !== 'text' ? (
+                            <h4 className="font-serif text-base font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors leading-snug">
+                              {convertScriptText(item.title, scriptKey)}
+                            </h4>
+                          ) : (
+                            <div className="text-xs sm:text-sm text-[var(--text-primary)] font-sans leading-relaxed pl-2 border-l-2 border-[var(--accent)]/40 italic">
+                              {renderSnippetWithHighlight(matchSnippet || item.title, searchTerm, scriptKey)}
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+
         {/* ── TABLE OF CONTENTS NATIVE BOTTOM SHEET MODAL ── */}
         <AnimatePresence>
           {showToc && selectedBook && (
@@ -930,7 +1427,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
                   <button onClick={() => setShowToc(false)} className="btn-icon"><X size={18} /></button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-5 pb-12 scrollbar-hide">
+                <div className="flex-1 overflow-y-auto p-4 space-y-5 pb-[calc(7rem+env(safe-area-inset-bottom,24px))] scrollbar-hide">
                   {parsedBook.h1Groups.map((group, gIdx) => {
                     const displayH1 = convertScriptText(group.h1Title, scriptKey);
 
