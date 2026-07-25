@@ -14,5 +14,9 @@ pnpm-debug.log*
 # Environment variables
 .env*.local
 
+# TypeScript build info
+*.tsbuildinfo
+
 # OS files
 .DS_Store
+
