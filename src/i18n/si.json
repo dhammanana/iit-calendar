@@ -217,5 +217,19 @@
     "novice": "ආධුනික",
     "devotee": "භක්තිමත්",
     "master": "ප්‍රවීණ"
+  },
+  "chantNotes": {
+    "threeTimes": "(තෙවරක්)",
+    "mondayTesattati": "සෝමවාරය: තෙසත්තති ඤාණවන්දනාව",
+    "wednesdaySattasattati": "බුධවාරය: සත්තසත්තති ඤාණාවන්දනාව",
+    "toPastRelatives": "අතීත ඥාතීන්ට",
+    "toLateTeachers": "අපවත්වූ ආචාර්යයන් වහන්සේලාට",
+    "toRespectedElders": "ගුරු-උපාධ්‍යායයන් වහන්සේලාට",
+    "wholesomeWishes": "ප්‍රාර්ථනාව",
+    "askingForForgiveness": "ඛමාපනය (ක්ෂමා කරවා ගැනීම)",
+    "fourteenAuspiciousKnowledge": "තුද්දස බුද්ධ ඥාන",
+    "firstHalf": "පළමු භාගය",
+    "secondHalf": "දෙවන භාගය",
+    "lastHalf": "අවසන් භාගය"
   }
 }

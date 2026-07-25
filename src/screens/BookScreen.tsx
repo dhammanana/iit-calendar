@@ -563,10 +563,30 @@ export function BookScreen({ settings }: { settings: Settings }) {
     if (!selectedSection) return '';
     let html = selectedSection.html;
 
+    // Process data-i18n-key attribute translations
+    html = html.replace(/<([a-z0-9]+)([^>]*?)data-i18n-key="([^"]+)"([^>]*?)>([\s\S]*?)<\/\1>/gi, (match, tag, beforeAttrs, key, afterAttrs, content) => {
+      const translated = t(key) || content;
+      return `<${tag}${beforeAttrs}data-i18n-key="${key}" data-no-transliterate="true"${afterAttrs}>${translated}</${tag}>`;
+    });
+
     if (scriptKey !== Script.RO) {
-      const parts = html.split(/(<[^>]+>)/g);
+      const tagRegex = /(<[^>]+>)/g;
+      const parts = html.split(tagRegex);
+      let skipTransliteration = false;
+
       html = parts.map((part, index) => {
-        if (index % 2 === 0 && part.trim()) {
+        if (index % 2 === 1) {
+          if (/data-no-transliterate="true"/i.test(part) || /class="[^"]*chant-note[^"]*"/i.test(part)) {
+            if (!part.startsWith('</')) {
+              skipTransliteration = true;
+            }
+          }
+          if (part.startsWith('</') && skipTransliteration) {
+            skipTransliteration = false;
+          }
+          return part;
+        } else {
+          if (skipTransliteration || !part.trim()) return part;
           if (part.length === 1 && /[\s,.;:!?]/.test(part)) return part;
 
           try {
@@ -576,7 +596,6 @@ export function BookScreen({ settings }: { settings: Settings }) {
             return part;
           }
         }
-        return part;
       }).join('');
     }
 
@@ -1157,6 +1176,26 @@ export function BookScreen({ settings }: { settings: Settings }) {
                 margin-top: 1.75rem !important;
                 margin-bottom: 0.75rem !important;
                 line-height: 1.35;
+              }
+              .book-container .chant-note {
+                display: inline-block;
+                font-style: italic;
+                font-weight: 600;
+                color: var(--accent);
+                margin: 0 0.25rem;
+              }
+              .book-container div.chant-note,
+              .book-container p.chant-note,
+              .book-container blockquote.chant-note {
+                display: block;
+                border-left: 3px solid var(--accent);
+                background: var(--accent-soft);
+                padding: 0.5rem 0.85rem;
+                margin: 0.75rem 0;
+                border-radius: 0.5rem;
+                font-style: normal;
+                font-weight: 600;
+                color: var(--text-primary);
               }
               .book-container p {
                 margin-bottom: 0.6rem !important;
