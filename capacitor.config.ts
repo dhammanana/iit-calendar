@@ -10,7 +10,7 @@ const config: CapacitorConfig = {
   "webDir": "dist",
   "plugins": {
     "CapacitorUpdater": {
-      "autoUpdate": true,
+      "autoUpdate": "onLaunch",
       "updateUrl": (process.env.APP_URL || 'https://iit.damsak.org').replace(/\/$/, '') + '/api/update',
       "statsUrl": ""
     }

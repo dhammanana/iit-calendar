@@ -35,6 +35,15 @@ jobs:
           node-version: 22
       - name: Install Dependencies
         run: npm ci
+      - name: Set Release Version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            RAW_VER="${{ github.event.inputs.version }}"
+          else
+            RAW_VER="${{ github.ref_name }}"
+          fi
+          VERSION="${RAW_VER#v}"
+          npm version "$VERSION" --no-git-tag-version || true
       - name: Build Web
         run: npm run build
       - name: Zip Web Build
@@ -61,6 +70,15 @@ jobs:
           java-version: '21'
       - name: Install Dependencies
         run: npm ci
+      - name: Sync Native Version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            RAW_VER="${{ github.event.inputs.version }}"
+          else
+            RAW_VER="${{ github.ref_name }}"
+          fi
+          VERSION="${RAW_VER#v}"
+          npx capacitor-set-version set -v "$VERSION" -b ${{ github.run_number }}
       - name: Build Web
         run: npm run build
       - name: Generate Icons

@@ -36,24 +36,11 @@ However, **Capgo has a strict minor-version matching constraint**:
 ### 1. Releasing a Patch Version (OTA Live Update)
 *Use this for bug fixes or minor UI tweaks that do not add new Capacitor/Tauri native plugins or change native configurations.*
 
-1. Update the version in the root `package.json` to the next patch (e.g., `1.0.15` -> `1.0.16`).
-2. Push the version tag to GitHub:
+1. Run `npm version <patch|minor|major>` (e.g. `npm version patch` or `npm version 1.2.0`).
+   - This automatically updates `package.json`, runs `capacitor-set-version` to update iOS (`Info.plist`) and Android (`build.gradle`), stages all files, and creates a Git commit and tag (`v1.2.0`).
+2. Push commit & tag to GitHub:
    ```bash
-   git tag v1.0.16
-   git push origin v1.0.16
+   git push --follow-tags
    ```
-3. **Automated Build & Upload**: The repository's existing GitHub Action workflow will automatically compile the web app, package it into `web-build.zip`, and publish it to the release.
-4. **Automated Checksum**: The Next.js OTA server will automatically download the zip, calculate its SHA256 checksum, and cache it on the first request from a client.
-5. Devices on native version `1.0.x` will automatically detect and apply the update on start.
-
-### 2. Releasing a Minor or Major Version (App Store Update)
-*Use this when introducing new Capacitor/Tauri plugins, modifying native configurations (`capacitor.config.ts`), or adding features.*
-
-1. Update the version in the root `package.json` to the next minor or major (e.g. `1.0.16` -> `1.1.0`).
-2. Update the version inside native configuration files:
-   - **Capacitor Config**: Update `plugins.CapacitorUpdater.version` or project versions in `capacitor.config.ts`.
-   - **Android**: Update `versionName` and `versionCode` in `android/app/build.gradle`.
-   - **iOS**: Update `CFBundleShortVersionString` and `CFBundleVersion` in Xcode.
-   - **Tauri**: Update version in `src-tauri/tauri.conf.json`.
-3. Compile, package, and upload the new native binaries to the **Google Play Console** and **App Store Connect**.
-4. Once approved, users will download the new binary version (e.g. `1.1.0`) from the App Store. Future patch fixes for this version will track the `1.1.x` branch on GitHub.
+3. **Automated CI Build & Release**: GitHub Actions detects the tag, re-verifies native versions with `github.run_number`, compiles `web-build.zip` and the Android APK, and creates a GitHub Release.
+4. **Tauri (Desktop)**: Remember to update `src-tauri/tauri.conf.json` when bumping minor/major versions.

@@ -504,7 +504,7 @@ export function MeditationScreen() {
         </div>
 
         {/* ── Original Meditation Content wrapper ── */}
-        <div className="max-w-2xl w-full mx-auto space-y-8 animate-in fade-in duration-700">
+        <div className="max-w-2xl w-full mx-auto space-y-6 animate-in fade-in duration-700">
 
           {/* Mode Switcher */}
           <div className="h-14 flex items-center justify-center">
@@ -540,7 +540,7 @@ export function MeditationScreen() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="flex flex-col items-center pt-8 pb-4 relative"
+                className="flex flex-col items-center pb-4 relative"
               >
                 <div className="relative w-[300px] h-[300px] flex items-center justify-center mb-8">
                   <svg className="absolute inset-0 w-full h-full transform -rotate-90">

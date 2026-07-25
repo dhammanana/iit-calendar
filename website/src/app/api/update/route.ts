@@ -17,14 +17,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing version_build parameter' }, { status: 400 });
     }
 
-    const parsedNative = parseSemVer(version_build);
-    // If version_name is not provided or is 'builtin', fallback to version_build as the active baseline
-    const currentVersion = !version_name || version_name === 'builtin' ? version_build : version_name;
+    // Use version_name if available and not 'builtin'; otherwise fallback to version_build
+    const currentVersion = (!version_name || version_name === 'builtin') ? version_build : version_name;
+    const parsedClient = parseSemVer(currentVersion);
 
     // Fetch releases from GitHub
     const releases = await fetchReleases();
 
-    // Filter releases where major and minor match the native binary
+    // Filter releases where major and minor match the client's version
     // and check that it has the required asset (web-build.zip)
     const matchingReleases = releases
       .map(release => {
@@ -39,14 +39,19 @@ export async function POST(request: NextRequest) {
       .filter(({ parsedRel, asset }) => {
         return (
           !!asset &&
-          parsedRel.major === parsedNative.major &&
-          parsedRel.minor === parsedNative.minor
+          parsedRel.major === parsedClient.major &&
+          parsedRel.minor === parsedClient.minor
         );
       });
 
     if (matchingReleases.length === 0) {
       // No updates for this native baseline
-      return NextResponse.json({});
+      console.log('👈 Capgo Update Response: No matching releases for native baseline');
+      return NextResponse.json({
+        kind: 'up_to_date',
+        version: currentVersion,
+        message: 'No matching releases found'
+      });
     }
 
     // Sort matching releases descending by version code
@@ -87,8 +92,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Already on the latest version or no newer matching version
-    console.log('👈 Capgo Update Response: {} (Up to date)');
-    return NextResponse.json({});
+    console.log('👈 Capgo Update Response: Already up to date');
+    return NextResponse.json({
+      kind: 'up_to_date',
+      version: currentVersion,
+      message: 'Already up to date'
+    });
   } catch (error: any) {
     console.error('Update API error:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });

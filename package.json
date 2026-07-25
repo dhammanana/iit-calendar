@@ -12,6 +12,8 @@
     "lint": "tsc --noEmit",
     "static-copy": "mkdir -p dist && cp public/* dist/ 2>/dev/null || true",
     "cap:sync": "npm run build && node generate-icons.cjs && npx cap sync",
+    "cap:set-version": "capacitor-set-version set",
+    "version": "capacitor-set-version set -v $npm_package_version -b $(git rev-list --count HEAD 2>/dev/null || echo 1) && git add android/app/build.gradle ios/App/App/Info.plist package.json package-lock.json 2>/dev/null || true",
     "cap:open:android": "npx cap open android",
     "cap:open:ios": "npx cap open ios"
   },
@@ -60,6 +62,7 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
     "autoprefixer": "^10.4.21",
+    "capacitor-set-version": "^2.2.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~5.8.2",
