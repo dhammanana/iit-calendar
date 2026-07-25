@@ -441,7 +441,7 @@ function renderSnippetWithHighlight(snippet: string, query: string, scriptKey: s
 }
 
 export function BookScreen({ settings }: { settings: Settings }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
 
   // Multi-level navigation state:
   // Level 0: selectedBookId == null => Bookshelf Grid
@@ -616,7 +616,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
     }
 
     return html;
-  }, [selectedSection, scriptKey, searchTerm]);
+  }, [selectedSection, scriptKey, searchTerm, language]);
 
   useEffect(() => {
     if (!searchTerm || searchTerm.length < 2 || !selectedSection) {

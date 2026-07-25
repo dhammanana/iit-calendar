@@ -211,5 +211,19 @@
     "novice": "Sơ học",
     "devotee": "Tín thành",
     "master": "Thành thục"
+  },
+  "chantNotes": {
+    "threeTimes": "(Three times)",
+    "mondayTesattati": "Monday: Tesattati-ñāṇavandanā",
+    "wednesdaySattasattati": "Wednesday: Sattasattati-ñāṇāvandanā",
+    "toPastRelatives": "To Past Relatives",
+    "toLateTeachers": "To Late Teachers",
+    "toRespectedElders": "To Respected Elders/Teachers",
+    "wholesomeWishes": "Wholesome Wishes",
+    "askingForForgiveness": "Asking For Forgiveness",
+    "fourteenAuspiciousKnowledge": "Fourteen Auspicious Knowledge",
+    "firstHalf": "first half",
+    "secondHalf": "second half",
+    "lastHalf": "last half"
   }
 }
