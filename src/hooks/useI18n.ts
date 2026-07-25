@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import en from '../i18n/en.json';
 import vi from '../i18n/vi.json';
 import th from '../i18n/th.json';
@@ -38,7 +38,7 @@ export const useI18n = () => {
     };
   }, [lang]);
 
-  const t = (path: string, params?: Record<string, any>) => {
+  const t = useCallback((path: string, params?: Record<string, any>) => {
     const dict = translations[lang] || en;
     let result = path.split('.').reduce((obj, key) => obj?.[key], dict) || path.split('.').reduce((obj, key) => obj?.[key], en) || path;
     
@@ -49,7 +49,7 @@ export const useI18n = () => {
     }
     
     return result;
-  };
+  }, [lang]);
 
   return { t, language: lang };
 };

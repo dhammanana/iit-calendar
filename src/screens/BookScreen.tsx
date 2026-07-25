@@ -616,7 +616,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
     }
 
     return html;
-  }, [selectedSection, scriptKey, searchTerm, language]);
+  }, [selectedSection, scriptKey, searchTerm, language, t]);
 
   useEffect(() => {
     if (!searchTerm || searchTerm.length < 2 || !selectedSection) {
