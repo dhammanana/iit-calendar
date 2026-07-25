@@ -29,12 +29,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Set Release Version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -43,9 +47,9 @@ jobs:
             RAW_VER="${{ github.ref_name }}"
           fi
           VERSION="${RAW_VER#v}"
-          npm version "$VERSION" --no-git-tag-version || true
+          pnpm version "$VERSION" --no-git-tag-version || true
       - name: Build Web
-        run: npm run build
+        run: pnpm build
       - name: Zip Web Build
         run: cd dist && zip -r ../web-build.zip .
       - name: Upload Web Artifact
@@ -59,17 +63,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '21'
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Sync Native Version
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
@@ -78,13 +86,13 @@ jobs:
             RAW_VER="${{ github.ref_name }}"
           fi
           VERSION="${RAW_VER#v}"
-          npx capacitor-set-version set -v "$VERSION" -b ${{ github.run_number }}
+          pnpm exec capacitor-set-version set -v "$VERSION" -b ${{ github.run_number }}
       - name: Build Web
-        run: npm run build
+        run: pnpm build
       - name: Generate Icons
         run: node generate-icons.cjs
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: pnpm exec cap sync android
       - name: Build APK
         working-directory: android
         run: |
@@ -105,27 +113,31 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'pnpm'
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-apple-darwin,aarch64-apple-darwin
       - name: Install Dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
       - name: Build Frontend
-        run: npm run build
+        run: pnpm build
       - name: Fix Tauri Icons
         run: node generate-icons.cjs
         shell: bash
       - name: Build Tauri
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            npx @tauri-apps/cli build --target universal-apple-darwin
+            pnpm exec @tauri-apps/cli build --target universal-apple-darwin
           else
-            npx @tauri-apps/cli build
+            pnpm exec @tauri-apps/cli build
           fi
         shell: bash
       - name: Upload Mac Artifact
