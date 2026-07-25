@@ -1,4 +1,4 @@
-# Versioning & Update Guide
+# Versioning Policy
 
 This project supports multiple targets: Web, Android/iOS (Capacitor), and Desktop (Tauri). To ensure seamless delivery of features and bug fixes without breaking compatibility, we follow a strict versioning policy.
 
@@ -28,19 +28,3 @@ However, **Capgo has a strict minor-version matching constraint**:
   - A device with native build `1.0.5` **can** automatically update to web bundle versions `1.0.6`, `1.0.7`, etc., via OTA.
   - A device with native build `1.0.5` **cannot** update to `1.1.0` or `2.0.0` via OTA.
 - **Why this exists**: Web updates modify JS/CSS/HTML but cannot update native Java/Kotlin/Swift files (Capacitor Plugins). If a web update relies on a new Capacitor plugin that isn't present in the native binary, the app will crash. Enforcing minor-version matching prevents incompatible code from breaking the app on users' devices.
-
----
-
-## How to Release and Update Versions
-
-### 1. Releasing a Patch Version (OTA Live Update)
-*Use this for bug fixes or minor UI tweaks that do not add new Capacitor/Tauri native plugins or change native configurations.*
-
-1. Run `pnpm version <patch|minor|major>` or `npm version <patch|minor|major>` (e.g. `pnpm version patch` or `pnpm version 1.2.0`).
-   - This automatically updates `package.json`, triggers the `"version"` script to run `capacitor-set-version` for iOS (`Info.plist`) and Android (`build.gradle`), stages all files, and creates a Git commit and tag (`v1.2.0`).
-2. Push commit & tag to GitHub:
-   ```bash
-   git push --follow-tags
-   ```
-3. **Automated CI Build & Release**: GitHub Actions detects the tag, re-verifies native versions with `github.run_number`, compiles `web-build.zip` and the Android APK, and creates a GitHub Release.
-4. **Tauri (Desktop)**: Remember to update `src-tauri/tauri.conf.json` when bumping minor/major versions.

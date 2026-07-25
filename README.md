@@ -24,6 +24,7 @@ IIT Calendar is designed with a **local-first** philosophy. Your data—includin
 ## Tech Stack
 
 - **Framework**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Package Manager**: [pnpm](https://pnpm.io/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Animation**: [Framer Motion](https://www.framer.com/motion/)
 - **Mobile Support**: [Capacitor](https://capacitorjs.com/)
@@ -36,7 +37,7 @@ IIT Calendar is designed with a **local-first** philosophy. Your data—includin
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or higher)
-- npm
+- [pnpm](https://pnpm.io/)
 
 ### Setup
 
@@ -46,20 +47,20 @@ git clone <repository-url>
 cd iit-calendar
 
 # Install dependencies
-npm install
+pnpm install
 
 # Run development server
-npm run dev
+pnpm dev
 ```
 
 ### Build
 
 ```bash
 # Build for web
-npm run build
+pnpm build
 
 # Preview build
-npm run preview
+pnpm preview
 ```
 
 ### Mobile (Capacitor)
@@ -68,24 +69,36 @@ To sync and build for mobile platforms:
 
 ```bash
 # Sync with mobile platforms
-npm run cap:sync
+pnpm run cap:sync
 
 # Open Android Studio
-npm run cap:open:android
+pnpm run cap:open:android
 
 # Open Xcode (macOS only)
-npm run cap:open:ios
+pnpm run cap:open:ios
 ```
 
-## Live Updates & Versioning
+## Releasing & Versioning
 
-This project uses **Capgo OTA (Over-The-Air) live updates** for the mobile applications to instantly deploy UI changes and bug fixes to users without going through App Store review. 
+This project uses **Capgo OTA (Over-The-Air) live updates** for mobile applications to deploy UI changes instantly without waiting for App Store reviews.
 
-Because of this, we follow a strict versioning architecture:
-- **Patch versions** (`1.0.x`) are deployed instantly via OTA.
-- **Minor/Major versions** (`1.x.0`) require a new binary update via the App Store.
+To cut a new version release:
 
-For detailed guidelines on how to bump versions and release updates, read the [Versioning & Update Guide](file:///Users/chathura/code/iit-calendar/VERSIONING.md).
+```bash
+# 1. Bump version (patch, minor, major, or exact version)
+pnpm version patch
+
+# 2. Push commit and tags to GitHub
+git push --follow-tags
+```
+
+Running `pnpm version` automatically:
+- Bumps the version in `package.json`.
+- Runs `capacitor-set-version` to sync `Info.plist` (iOS) and `build.gradle` (Android).
+- Stages all files and creates a Git commit and tag (e.g., `v1.1.2`).
+- Triggers GitHub Actions to automatically package and release the update.
+
+For details on when to use Patch vs. Minor vs. Major versions, see the [Versioning Policy](VERSIONING.md).
 
 ## License
 
