@@ -440,8 +440,17 @@ function renderSnippetWithHighlight(snippet: string, query: string, scriptKey: s
   );
 }
 
+/** Maps a Pāḷi script key to the i18n language code used for chant notes. */
+const SCRIPT_TO_LANG: Record<string, string> = {
+  [Script.SI]: 'si',
+  [Script.MY]: 'my',
+  [Script.THAI]: 'th',
+  [Script.KM]: 'km',
+  [Script.LAOS]: 'lo',
+};
+
 export function BookScreen({ settings }: { settings: Settings }) {
-  const { t, language } = useI18n();
+  const { t, tFor, language } = useI18n();
 
   // Multi-level navigation state:
   // Level 0: selectedBookId == null => Bookshelf Grid
@@ -563,9 +572,13 @@ export function BookScreen({ settings }: { settings: Settings }) {
     if (!selectedSection) return '';
     let html = selectedSection.html;
 
+    // Chant notes should follow the active Pāḷi script, not the UI language.
+    // e.g. Sinhala script → show notes in Sinhala even if UI is English.
+    const chantNoteLang = SCRIPT_TO_LANG[scriptKey] || language;
+
     // Process data-i18n-key attribute translations
     html = html.replace(/<([a-z0-9]+)([^>]*?)data-i18n-key="([^"]+)"([^>]*?)>([\s\S]*?)<\/\1>/gi, (match, tag, beforeAttrs, key, afterAttrs, content) => {
-      const translated = t(key) || content;
+      const translated = tFor(chantNoteLang, key) || content;
       return `<${tag}${beforeAttrs}data-i18n-key="${key}" data-no-transliterate="true"${afterAttrs}>${translated}</${tag}>`;
     });
 
@@ -616,7 +629,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
     }
 
     return html;
-  }, [selectedSection, scriptKey, searchTerm, language, t]);
+  }, [selectedSection, scriptKey, searchTerm, language, t, tFor]);
 
   useEffect(() => {
     if (!searchTerm || searchTerm.length < 2 || !selectedSection) {

@@ -51,5 +51,13 @@ export const useI18n = () => {
     return result;
   }, [lang]);
 
-  return { t, language: lang };
+  /** Resolve a translation key for an explicit language (ignores active UI lang). Falls back to English. */
+  const tFor = useCallback((targetLang: string, path: string): string => {
+    const dict = translations[targetLang] || en;
+    return path.split('.').reduce((obj: any, key) => obj?.[key], dict)
+      || path.split('.').reduce((obj: any, key) => obj?.[key], en)
+      || path;
+  }, []); // stable — translations is a module-level constant
+
+  return { t, tFor, language: lang };
 };
