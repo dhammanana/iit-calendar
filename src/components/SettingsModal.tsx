@@ -10,6 +10,7 @@ import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { LegalModal } from './LegalModal';
 import { Toggle } from './Toggle';
+import { LabeledSelect } from './LabeledSelect';
 import SunCalc from 'suncalc';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 
@@ -196,26 +197,26 @@ export function SettingsModal({
                 <section className="space-y-4">
                   <SectionLabel>{t('common.language')} & {t('common.script')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-4">
-                    <FieldGroup label={t('settings.language')}>
-                      <StyledSelect
-                        value={settings.language}
-                        onChange={e => onUpdate({ ...settings, language: e.target.value })}
-                      >
-                        {(['en', 'vi', 'th', 'si', 'my', 'km', 'lo'] as const).map(lang => (
-                          <option key={`lang-opt-${lang}`} value={lang}>{t(`settings.languages.${lang}`)}</option>
-                        ))}
-                      </StyledSelect>
-                    </FieldGroup>
-                    <FieldGroup label={t('settings.paliScript')}>
-                      <StyledSelect
-                        value={settings.paliScript}
-                        onChange={e => onUpdate({ ...settings, paliScript: e.target.value as any })}
-                      >
-                        {(['roman', 'sinhala', 'burmese', 'thai', 'devanagari', 'lao', 'khmer', 'bengali', 'gurmukhi', 'gujarati', 'telugu', 'kannada', 'malayalam', 'taitham', 'brahmi', 'tibetan', 'cyrillic', 'assamese'] as const).map(s => (
-                          <option key={`script-opt-${s}`} value={s}>{t(`settings.scripts.${s}`)}</option>
-                        ))}
-                      </StyledSelect>
-                    </FieldGroup>
+                    <LabeledSelect
+                      label={t('settings.language')}
+                      value={settings.language}
+                      onChange={(val) => onUpdate({ ...settings, language: val })}
+                      options={(['en', 'vi', 'th', 'si', 'my', 'km', 'lo'] as const).map(lang => ({
+                        value: lang,
+                        label: t(`settings.languages.${lang}`)
+                      }))}
+                      selectClassName="text-sm px-4 py-3 font-sans"
+                    />
+                    <LabeledSelect
+                      label={t('settings.paliScript')}
+                      value={settings.paliScript}
+                      onChange={(val) => onUpdate({ ...settings, paliScript: val as any })}
+                      options={(['roman', 'sinhala', 'burmese', 'thai', 'devanagari', 'lao', 'khmer', 'bengali', 'gurmukhi', 'gujarati', 'telugu', 'kannada', 'malayalam', 'taitham', 'brahmi', 'tibetan', 'cyrillic', 'assamese'] as const).map(s => ({
+                        value: s,
+                        label: t(`settings.scripts.${s}`)
+                      }))}
+                      selectClassName="text-sm px-4 py-3 font-sans"
+                    />
                   </div>
                 </section>
 
@@ -603,40 +604,5 @@ function SectionLabel({ children, inline, centered }: { children: React.ReactNod
     >
       {children}
     </h3>
-  );
-}
-
-function FieldGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <label
-        className="text-sm font-bold uppercase ml-1 block"
-        style={{ color: 'var(--accent)' }}
-      >
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
-
-function StyledSelect({ value, onChange, children }: {
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <select
-      value={value}
-      onChange={onChange}
-      className="w-full px-4 py-3 rounded-2xl text-sm focus:outline-none appearance-none"
-      style={{
-        backgroundColor: 'var(--bg-input)',
-        border: '1px solid var(--border-base)',
-        color: 'var(--text-primary)',
-      }}
-    >
-      {children}
-    </select>
   );
 }

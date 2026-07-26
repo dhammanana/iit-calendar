@@ -15,6 +15,7 @@ import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { Toggle } from '../components/Toggle';
+import { LabeledSelect } from '../components/LabeledSelect';
 
 function ConvertedText({ text, script, className }: { text: string; script: string; className?: string }) {
   const [display, setDisplay] = useState(text);
@@ -324,42 +325,28 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                             Chant Duration
                           </label>
                           <div className="flex items-center gap-4">
-                            <div className="flex-1 flex flex-col items-center gap-2">
-                              <div className="relative w-full">
-                                <select
-                                  value={timerSettings.hours}
-                                  onChange={(e) => setTimerSettings({ ...timerSettings, hours: parseInt(e.target.value) || 0 })}
-                                  className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer bg-white/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-saffron"
-                                >
-                                  {Array.from({ length: 24 }).map((_, i) => (
-                                    <option key={`hour-${i}`} value={i} className="bg-white dark:bg-slate-900 text-stone-900 dark:text-stone-100">
-                                      {i.toString().padStart(2, '0')}
-                                    </option>
-                                  ))}
-                                </select>
-                                <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none bg-white dark:bg-slate-900 text-stone-400">
-                                  Hours
-                                </span>
-                              </div>
+                            <div className="flex-1">
+                              <LabeledSelect
+                                value={timerSettings.hours}
+                                onChange={(val) => setTimerSettings({ ...timerSettings, hours: parseInt(val) || 0 })}
+                                options={Array.from({ length: 24 }).map((_, i) => ({
+                                  value: i,
+                                  label: i.toString().padStart(2, '0')
+                                }))}
+                                badgeLabel="Hours"
+                              />
                             </div>
                             <span className="text-2xl font-serif text-slate-300 dark:text-slate-700">:</span>
-                            <div className="flex-1 flex flex-col items-center gap-2">
-                              <div className="relative w-full">
-                                <select
-                                  value={timerSettings.minutes}
-                                  onChange={(e) => setTimerSettings({ ...timerSettings, minutes: parseInt(e.target.value) || 0 })}
-                                  className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer bg-white/60 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-saffron"
-                                >
-                                  {[0, 1, 5, 10, 15, 20, 25, 30, 45].map(m => (
-                                    <option key={`min-${m}`} value={m} className="bg-white dark:bg-slate-900 text-stone-900 dark:text-stone-100">
-                                      {m.toString().padStart(2, '0')}
-                                    </option>
-                                  ))}
-                                </select>
-                                <span className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none bg-white dark:bg-slate-900 text-stone-400">
-                                  Minutes
-                                </span>
-                              </div>
+                            <div className="flex-1">
+                              <LabeledSelect
+                                value={timerSettings.minutes}
+                                onChange={(val) => setTimerSettings({ ...timerSettings, minutes: parseInt(val) || 0 })}
+                                options={[0, 1, 5, 10, 15, 20, 25, 30, 45].map(m => ({
+                                  value: m,
+                                  label: m.toString().padStart(2, '0')
+                                }))}
+                                badgeLabel="Minutes"
+                              />
                             </div>
                           </div>
                         </motion.div>

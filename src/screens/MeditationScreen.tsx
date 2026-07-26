@@ -8,6 +8,7 @@ import { meditationService } from '../services/MeditationService';
 import { useI18n } from '../hooks/useI18n';
 import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
+import { LabeledSelect } from '../components/LabeledSelect';
 
 interface MeditationSession {
   id: string;
@@ -845,64 +846,28 @@ export function MeditationScreen() {
                         {t('meditation.durationLabel')}
                       </label>
                       <div className="flex items-center gap-4">
-                        <div className="flex-1 flex flex-col items-center gap-2">
-                          <div className="relative w-full">
-                            <select
-                              value={settings.durationHours}
-                              onChange={(e) => setSettings({ ...settings, durationHours: parseInt(e.target.value) })}
-                              className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                              style={{
-                                backgroundColor: 'var(--sm-surface)',
-                                borderColor: 'var(--sm-border)',
-                                color: 'var(--sm-accent)'
-                              }}
-                            >
-                              {Array.from({ length: 24 }).map((_, i) => (
-                                <option key={`hour-${i}`} value={i} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                                  {i.toString().padStart(2, '0')}
-                                </option>
-                              ))}
-                            </select>
-                            <span
-                              className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                              style={{
-                                backgroundColor: 'var(--sm-card-bg)',
-                                color: 'var(--sm-text-muted)'
-                              }}
-                            >
-                              Hours
-                            </span>
-                          </div>
+                        <div className="flex-1">
+                          <LabeledSelect
+                            value={settings.durationHours}
+                            onChange={(val) => setSettings({ ...settings, durationHours: parseInt(val) })}
+                            options={Array.from({ length: 24 }).map((_, i) => ({
+                              value: i,
+                              label: i.toString().padStart(2, '0')
+                            }))}
+                            badgeLabel="Hours"
+                          />
                         </div>
                         <span className="text-2xl font-serif" style={{ color: 'var(--sm-border)' }}>:</span>
-                        <div className="flex-1 flex flex-col items-center gap-2">
-                          <div className="relative w-full">
-                            <select
-                              value={settings.durationMinutes}
-                              onChange={(e) => setSettings({ ...settings, durationMinutes: parseInt(e.target.value) })}
-                              className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                              style={{
-                                backgroundColor: 'var(--sm-surface)',
-                                borderColor: 'var(--sm-border)',
-                                color: 'var(--sm-accent)'
-                              }}
-                            >
-                              {[0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(m => (
-                                <option key={`min-${m}`} value={m} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                                  {m.toString().padStart(2, '0')}
-                                </option>
-                              ))}
-                            </select>
-                            <span
-                              className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                              style={{
-                                backgroundColor: 'var(--sm-card-bg)',
-                                color: 'var(--sm-text-muted)'
-                              }}
-                            >
-                              Minutes
-                            </span>
-                          </div>
+                        <div className="flex-1">
+                          <LabeledSelect
+                            value={settings.durationMinutes}
+                            onChange={(val) => setSettings({ ...settings, durationMinutes: parseInt(val) })}
+                            options={[0, 1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55].map(m => ({
+                              value: m,
+                              label: m.toString().padStart(2, '0')
+                            }))}
+                            badgeLabel="Minutes"
+                          />
                         </div>
                       </div>
                     </div>
@@ -913,90 +878,46 @@ export function MeditationScreen() {
                         {t('meditation.intervalBell')}
                       </label>
                       <div className="flex items-center gap-4">
-                        <div className="flex-1 flex flex-col items-center gap-2">
-                          <div className="relative w-full">
-                            <select
-                              value={settings.intervalMinutes}
-                              onChange={(e) => setSettings({ ...settings, intervalMinutes: parseInt(e.target.value) })}
-                              className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                              style={{
-                                backgroundColor: 'var(--sm-surface)',
-                                borderColor: 'var(--sm-border)',
-                                color: 'var(--sm-accent)'
-                              }}
-                            >
-                              {Array.from({ length: 60 }).map((_, i) => (
-                                <option key={`int-min-${i}`} value={i} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                                  {i.toString().padStart(2, '0')}
-                                </option>
-                              ))}
-                            </select>
-                            <span
-                              className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                              style={{
-                                backgroundColor: 'var(--sm-card-bg)',
-                                color: 'var(--sm-text-muted)'
-                              }}
-                            >
-                              Minutes
-                            </span>
-                          </div>
+                        <div className="flex-1">
+                          <LabeledSelect
+                            value={settings.intervalMinutes}
+                            onChange={(val) => setSettings({ ...settings, intervalMinutes: parseInt(val) })}
+                            options={Array.from({ length: 60 }).map((_, i) => ({
+                              value: i,
+                              label: i.toString().padStart(2, '0')
+                            }))}
+                            badgeLabel="Minutes"
+                          />
                         </div>
                         <span className="text-2xl font-serif" style={{ color: 'var(--sm-border)' }}>:</span>
-                        <div className="flex-1 flex flex-col items-center gap-2">
-                          <div className="relative w-full">
-                            <select
-                              value={settings.intervalSeconds}
-                              onChange={(e) => setSettings({ ...settings, intervalSeconds: parseInt(e.target.value) })}
-                              className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                              style={{
-                                backgroundColor: 'var(--sm-surface)',
-                                borderColor: 'var(--sm-border)',
-                                color: 'var(--sm-accent)'
-                              }}
-                            >
-                              {[0, 15, 30, 45].map(s => (
-                                <option key={`int-sec-${s}`} value={s} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                                  {s.toString().padStart(2, '0')}
-                                </option>
-                              ))}
-                            </select>
-                            <span
-                              className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                              style={{
-                                backgroundColor: 'var(--sm-card-bg)',
-                                color: 'var(--sm-text-muted)'
-                              }}
-                            >
-                              Seconds
-                            </span>
-                          </div>
+                        <div className="flex-1">
+                          <LabeledSelect
+                            value={settings.intervalSeconds}
+                            onChange={(val) => setSettings({ ...settings, intervalSeconds: parseInt(val) })}
+                            options={[0, 15, 30, 45].map(s => ({
+                              value: s,
+                              label: s.toString().padStart(2, '0')
+                            }))}
+                            badgeLabel="Seconds"
+                          />
                         </div>
                       </div>
                     </div>
 
                     {/* Preparation Check Section */}
-                    <div>
-                      <label className="block text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'var(--sm-text-muted)' }}>
-                        {t('meditation.preparationCheck')}
-                      </label>
-                      <select
-                        value={settings.delaySeconds}
-                        onChange={(e) => setSettings({ ...settings, delaySeconds: parseInt(e.target.value) })}
-                        className="w-full px-5 py-4 rounded-2xl outline-none font-serif text-base border focus:ring-2 transition-all cursor-pointer"
-                        style={{
-                          backgroundColor: 'var(--sm-surface)',
-                          borderColor: 'var(--sm-border)',
-                          color: 'var(--sm-text-primary)'
-                        }}
-                      >
-                        <option value={0} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>{t('meditation.noDelay')}</option>
-                        <option value={5} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>5 {t('meditation.seconds')}</option>
-                        <option value={10} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>10 {t('meditation.seconds')}</option>
-                        <option value={30} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>30 {t('meditation.seconds')}</option>
-                        <option value={60} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>1 {t('meditation.minutes')}</option>
-                      </select>
-                    </div>
+                    <LabeledSelect
+                      label={t('meditation.preparationCheck')}
+                      value={settings.delaySeconds}
+                      onChange={(val) => setSettings({ ...settings, delaySeconds: parseInt(val) })}
+                      options={[
+                        { value: 0, label: t('meditation.noDelay') },
+                        { value: 5, label: `5 ${t('meditation.seconds')}` },
+                        { value: 10, label: `10 ${t('meditation.seconds')}` },
+                        { value: 30, label: `30 ${t('meditation.seconds')}` },
+                        { value: 60, label: `1 ${t('meditation.minutes')}` },
+                      ]}
+                      selectClassName="text-base font-serif px-5 py-4 text-left"
+                    />
 
                     {/* Bell Type Section */}
                     <div>

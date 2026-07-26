@@ -3,6 +3,7 @@ import { Clock, CheckSquare } from 'lucide-react';
 import { useI18n } from '../../hooks/useI18n';
 import { Toggle } from '../Toggle';
 import { Modal } from '../Modal';
+import { LabeledSelect } from '../LabeledSelect';
 
 export interface StudySettingsData {
   pomodoro: number;
@@ -57,73 +58,30 @@ export function StudySettings({ show, onClose, settings, onUpdate, inline }: Pro
             { key: 'shortBreak', label: t('study.shortBreak') || 'Short Break' },
             { key: 'longBreak', label: t('study.longBreak') || 'Long Break' },
           ] as { key: 'pomodoro' | 'shortBreak' | 'longBreak'; label: string }[]).map(({ key, label }) => (
-            <div key={key}>
-              <label
-                className="block text-[10px] font-black uppercase tracking-widest mb-3"
-                style={{ color: 'var(--sm-text-muted)' }}
-              >
-                {label}
-              </label>
-              <div className="relative w-full">
-                <select
-                  value={Math.floor(settings[key] / 60)}
-                  onChange={(e) => handleTimeChange(key, e.target.value)}
-                  className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                  style={{
-                    backgroundColor: 'var(--sm-surface)',
-                    borderColor: 'var(--sm-border)',
-                    color: 'var(--sm-accent)',
-                  }}
-                >
-                  {Array.from({ length: 60 }, (_, i) => i + 1).map(m => (
-                    <option key={m} value={m} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                      {m.toString().padStart(2, '0')}
-                    </option>
-                  ))}
-                </select>
-                <span
-                  className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                  style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-muted)' }}
-                >
-                  minutes
-                </span>
-              </div>
-            </div>
+            <LabeledSelect
+              key={key}
+              label={label}
+              value={Math.floor(settings[key] / 60)}
+              onChange={(val) => handleTimeChange(key, val)}
+              options={Array.from({ length: 60 }, (_, i) => i + 1).map(m => ({
+                value: m,
+                label: m.toString().padStart(2, '0')
+              }))}
+              badgeLabel="minutes"
+            />
           ))}
 
           {/* Long break interval */}
-          <div>
-            <label
-              className="block text-[10px] font-black uppercase tracking-widest mb-3"
-              style={{ color: 'var(--sm-text-muted)' }}
-            >
-              {t('study.longBreakInterval') || 'Long Break Every'}
-            </label>
-            <div className="relative w-full">
-              <select
-                value={settings.longBreakInterval}
-                onChange={(e) => handleChange('longBreakInterval', Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full px-4 py-4 rounded-2xl border outline-none font-serif text-2xl text-center focus:ring-2 transition-all appearance-none cursor-pointer"
-                style={{
-                  backgroundColor: 'var(--sm-surface)',
-                  borderColor: 'var(--sm-border)',
-                  color: 'var(--sm-accent)',
-                }}
-              >
-                {[2, 3, 4, 5, 6, 7, 8].map(n => (
-                  <option key={n} value={n} style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-primary)' }}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              <span
-                className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 text-[9px] font-black uppercase tracking-tighter pointer-events-none"
-                style={{ backgroundColor: 'var(--sm-card-bg)', color: 'var(--sm-text-muted)' }}
-              >
-                pomodoros
-              </span>
-            </div>
-          </div>
+          <LabeledSelect
+            label={t('study.longBreakInterval') || 'Long Break Every'}
+            value={settings.longBreakInterval}
+            onChange={(val) => handleChange('longBreakInterval', Math.max(1, parseInt(val) || 1))}
+            options={[2, 3, 4, 5, 6, 7, 8].map(n => ({
+              value: n,
+              label: n
+            }))}
+            badgeLabel="pomodoros"
+          />
 
           {/* Auto-start toggles */}
           {([
