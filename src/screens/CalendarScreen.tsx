@@ -38,29 +38,9 @@ import { COLOR_TOKENS } from '../theme/index'
 import { CardOrderModal, DEFAULT_CARD_ORDER } from '../components/CardOrderModal';
 import { Edit2, Settings as SettingsIcon } from 'lucide-react';
 import { useUI } from '../UIContext';
+import { PaliText } from '../components/PaliText';
 
 const DAYS_OF_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-function PaliText({ text, script, className, style }: { text: string; script: string; className?: string; style?: React.CSSProperties }) {
-  const [displayText, setDisplayText] = React.useState(text);
-
-  React.useEffect(() => {
-    let active = true;
-    convertPali(text, script).then(res => {
-      if (active) setDisplayText(res);
-    });
-    return () => { active = false; };
-  }, [text, script]);
-
-  return (
-    <span
-      className={cn("PT", className)}
-      script={convertPaliShort(script)}
-      style={{ ...style, whiteSpace: 'pre-wrap' } as React.CSSProperties}
-      dangerouslySetInnerHTML={{ __html: displayText }}
-    />
-  );
-}
 
 function convertPaliShort(scriptKey: string): string {
   return SCRIPTS[scriptKey] || Script.RO;

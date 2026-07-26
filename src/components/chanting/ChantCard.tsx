@@ -4,20 +4,7 @@ import { Check, Trash2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { UserChant } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
-import { convertPali, SCRIPTS } from '../../services/conversionService';
-import { Script } from '../../lib/pali-script';
-
-function ConvertedTitle({ text, script }: { text: string; script: string }) {
-  const [display, setDisplay] = React.useState(text);
-  React.useEffect(() => {
-    convertPali(text, script).then(setDisplay);
-  }, [text, script]);
-  return (
-    <span className="PT" script={SCRIPTS[script] || Script.RO}>
-      {display}
-    </span>
-  );
-}
+import { PaliText } from '../PaliText';
 
 interface ChantCardProps {
   chant: UserChant;
@@ -72,7 +59,7 @@ export function ChantCard({ chant, selected, onClick, onDelete, paliScript }: Ch
               "text-sm font-bold leading-tight truncate",
               selected ? "text-[var(--accent)]" : "text-[var(--text-primary)]"
             )}>
-              <ConvertedTitle text={chant.title} script={paliScript} />
+              <PaliText text={chant.title} script={paliScript} />
             </h4>
             <div className="flex items-center gap-1.5 mt-0.5">
               {selected && <Check size={10} className="text-[var(--accent)]" />}
