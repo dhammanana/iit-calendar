@@ -1,5 +1,5 @@
 import { PaliScript } from '../types';
-import { TextProcessor, Script } from './pali-script';
+import { TextProcessor, Script, normalizeDiacritics, buildDiacriticRegexPattern, buildDiacriticRegex } from './pali-script';
 import { SCRIPTS } from '../services/conversionService';
 import rawBooksMetadata from '../data/books/books.json';
 import { BookItem, BookSection, ParsedBook, SearchResultItem, H3Item } from '../types/book';
@@ -263,7 +263,7 @@ export function parseBookSearchIndex(book: BookItem, rawHtml: string): SearchRes
 }
 
 /**
- * Searches across indexed book items for matching query terms, supporting script conversions.
+ * Searches across indexed book items for matching query terms, supporting script conversions and diacritic-insensitive matching.
  */
 export function getSearchResults(
   query: string,
@@ -286,6 +286,12 @@ export function getSearchResults(
   }
 
   const results: { item: SearchResultItem; matchSnippet?: string }[] = [];
+  let diacriticRegex: RegExp | null = null;
+  try {
+    diacriticRegex = buildDiacriticRegex(trimmed, 'gi');
+  } catch {
+    diacriticRegex = null;
+  }
 
   for (const item of searchIndex) {
     const textLower = item.textToMatch.toLowerCase();
@@ -302,20 +308,42 @@ export function getSearchResults(
 
     let matchIdx = textLower.indexOf(lowerQuery);
     let matchedInConverted = false;
-    let actualQuery = lowerQuery;
+    let actualQueryLength = lowerQuery.length;
 
     if (matchIdx === -1 && convertedQuery !== lowerQuery) {
       matchIdx = convertedTextLower.indexOf(convertedQuery);
       if (matchIdx !== -1) {
         matchedInConverted = true;
-        actualQuery = convertedQuery;
+        actualQueryLength = convertedQuery.length;
       }
     }
 
     if (matchIdx === -1 && convertedTextLower.indexOf(lowerQuery) !== -1) {
       matchIdx = convertedTextLower.indexOf(lowerQuery);
       matchedInConverted = true;
-      actualQuery = lowerQuery;
+      actualQueryLength = lowerQuery.length;
+    }
+
+    // Try diacritic-insensitive regex match in item.textToMatch
+    if (matchIdx === -1 && diacriticRegex) {
+      diacriticRegex.lastIndex = 0;
+      const match = diacriticRegex.exec(item.textToMatch);
+      if (match && match.index !== undefined) {
+        matchIdx = match.index;
+        matchedInConverted = false;
+        actualQueryLength = match[0].length;
+      }
+    }
+
+    // Try diacritic-insensitive regex match in converted text
+    if (matchIdx === -1 && diacriticRegex && convertedTextLower !== textLower) {
+      diacriticRegex.lastIndex = 0;
+      const match = diacriticRegex.exec(convertedTextLower);
+      if (match && match.index !== undefined) {
+        matchIdx = match.index;
+        matchedInConverted = true;
+        actualQueryLength = match[0].length;
+      }
     }
 
     if (matchIdx !== -1) {
@@ -323,7 +351,7 @@ export function getSearchResults(
       if (item.type === 'text') {
         const targetStr = matchedInConverted ? convertedTextLower : item.textToMatch;
         const start = Math.max(0, matchIdx - 40);
-        const end = Math.min(targetStr.length, matchIdx + actualQuery.length + 50);
+        const end = Math.min(targetStr.length, matchIdx + actualQueryLength + 50);
         snippet = (start > 0 ? '...' : '') + targetStr.substring(start, end) + (end < targetStr.length ? '...' : '');
       }
 
@@ -336,6 +364,8 @@ export function getSearchResults(
 
   return results;
 }
+
+export { normalizeDiacritics, buildDiacriticRegexPattern, buildDiacriticRegex };
 
 /** Maps a Pāḷi script key to the i18n language code used for chant notes. */
 export const SCRIPT_TO_LANG: Record<string, string> = {

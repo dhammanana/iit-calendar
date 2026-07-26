@@ -5,6 +5,7 @@ import { UserChant } from '../../types';
 import { cn } from '../../lib/utils';
 import { chantService } from '../../services/ChantService';
 import { useI18n } from '../../hooks/useI18n';
+import { buildDiacriticRegex } from '../../lib/pali-script';
 
 interface ChantListProps {
   chants: UserChant[];
@@ -19,7 +20,17 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, paliS
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredChants = chants
-    .filter(c => c.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(c => {
+      const term = searchTerm.trim();
+      if (!term) return true;
+      if (c.title.toLowerCase().includes(term.toLowerCase())) return true;
+      try {
+        const regex = buildDiacriticRegex(term);
+        return regex.test(c.title);
+      } catch {
+        return false;
+      }
+    })
     .filter((chant, index, self) => index === self.findIndex((t) => t.id === chant.id)) // Deduplicate by ID
     .sort((a, b) => {
       // Sort by recent use, then count

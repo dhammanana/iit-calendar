@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { BookSection } from '../../types/book';
-import { TextProcessor, Script } from '../../lib/pali-script';
+import { TextProcessor, Script, buildDiacriticRegexPattern } from '../../lib/pali-script';
 import { SCRIPT_TO_LANG } from '../../lib/bookUtils';
 
 interface BookSectionReaderProps {
@@ -75,9 +75,15 @@ export function BookSectionReader({
         }
       }
 
-      const escapedSearch = searchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp(`(?![^<]*>)${escapedSearch}`, 'gi');
-      html = html.replace(regex, (match) => `<mark class="bg-amber-200 dark:bg-amber-500/40 text-slate-900 dark:text-white rounded px-0.5 ring-1 ring-amber-400/50 transition-all duration-300">${match}</mark>`);
+      try {
+        const diacriticPattern = buildDiacriticRegexPattern(searchPattern);
+        const regex = new RegExp(`(?![^<]*>)(${diacriticPattern})`, 'gi');
+        html = html.replace(regex, (match) => `<mark class="bg-amber-200 dark:bg-amber-500/40 text-slate-900 dark:text-white rounded px-0.5 ring-1 ring-amber-400/50 transition-all duration-300">${match}</mark>`);
+      } catch {
+        const escapedSearch = searchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(?![^<]*>)(${escapedSearch})`, 'gi');
+        html = html.replace(regex, (match) => `<mark class="bg-amber-200 dark:bg-amber-500/40 text-slate-900 dark:text-white rounded px-0.5 ring-1 ring-amber-400/50 transition-all duration-300">${match}</mark>`);
+      }
     }
 
     return html;

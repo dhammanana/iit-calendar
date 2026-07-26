@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { BookItem, SearchResultItem } from '../../types/book';
-import { TextProcessor, Script } from '../../lib/pali-script';
+import { TextProcessor, Script, buildDiacriticRegex } from '../../lib/pali-script';
 import { convertScriptText, getBookTitle } from '../../lib/bookUtils';
 
 interface BookSearchSheetProps {
@@ -32,6 +32,32 @@ function renderSnippetWithHighlight(snippet: string, query: string, scriptKey: s
     }
   }
 
+  try {
+    const regex = buildDiacriticRegex(searchPattern, 'gi', true);
+    const parts = snippet.split(regex);
+
+    if (parts.length > 1) {
+      return (
+        <span>
+          {parts.map((part, i) =>
+            i % 2 === 1 ? (
+              <mark
+                key={i}
+                className="bg-amber-200 dark:bg-amber-500/40 text-amber-900 dark:text-white rounded px-1 font-semibold not-italic"
+              >
+                {part}
+              </mark>
+            ) : (
+              part
+            )
+          )}
+        </span>
+      );
+    }
+  } catch {
+    // fallback
+  }
+
   const escaped = searchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const regex = new RegExp(`(${escaped})`, 'gi');
   const parts = snippet.split(regex);
@@ -39,7 +65,7 @@ function renderSnippetWithHighlight(snippet: string, query: string, scriptKey: s
   return (
     <span>
       {parts.map((part, i) =>
-        regex.test(part) ? (
+        i % 2 === 1 ? (
           <mark
             key={i}
             className="bg-amber-200 dark:bg-amber-500/40 text-amber-900 dark:text-white rounded px-1 font-semibold not-italic"

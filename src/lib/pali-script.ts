@@ -493,5 +493,56 @@ class TextProcessor {
     }
 }
 
+/**
+ * Normalizes text by removing combining diacritical marks and converting special characters.
+ */
+function normalizeDiacritics(str: string): string {
+    if (!str) return '';
+    return str
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/ŋ/g, 'n');
+}
+
+/**
+ * Constructs a diacritic-insensitive regular expression pattern string for a given search query.
+ */
+function buildDiacriticRegexPattern(query: string): string {
+    const normalized = normalizeDiacritics(query.trim());
+    const charMap: Record<string, string> = {
+        'a': '[aāAĀ]',
+        'i': '[iīIĪ]',
+        'u': '[uūUŪ]',
+        'm': '[mṃṁMṂṀnṅñṇ]',
+        'n': '[nṅñṇNṄÑṆmṃṁ]',
+        't': '[tṭTṬ]',
+        'd': '[dḍDḌ]',
+        'l': '[lḷLḶ]',
+        'h': '[hḥHḤ]',
+        's': '[sśṣşSŚṢ]',
+        'r': '[rṛṝRṚṜ]',
+    };
+
+    return normalized
+        .split('')
+        .map(ch => {
+            const lower = ch.toLowerCase();
+            if (charMap[lower]) {
+                return charMap[lower];
+            }
+            return ch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        })
+        .join('');
+}
+
+/**
+ * Creates a RegExp object that matches the query string regardless of Pāḷi letter decorators/diacritics.
+ */
+function buildDiacriticRegex(query: string, flags: string = 'gi', wrapCapture: boolean = false): RegExp {
+    const pattern = buildDiacriticRegexPattern(query);
+    return new RegExp(wrapCapture ? `(${pattern})` : pattern, flags);
+}
+
 // for es6 - browser
-export {TextProcessor, Script, paliScriptInfo, getScriptForCode};
+export { TextProcessor, Script, paliScriptInfo, getScriptForCode, normalizeDiacritics, buildDiacriticRegexPattern, buildDiacriticRegex };
+
