@@ -135,9 +135,9 @@ jobs:
       - name: Build Tauri
         run: |
           if [ "${{ matrix.os }}" == "macos-latest" ]; then
-            pnpm exec @tauri-apps/cli build --target universal-apple-darwin
+            pnpm exec tauri build --target universal-apple-darwin
           else
-            pnpm exec @tauri-apps/cli build
+            pnpm exec tauri build
           fi
         shell: bash
       - name: Upload Mac Artifact
