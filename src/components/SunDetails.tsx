@@ -7,7 +7,7 @@ import {
   ChevronDown, 
   Sunrise, 
   Sun, 
-  Sunset 
+  Sunset
 } from 'lucide-react';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { Settings } from '../types';
@@ -50,7 +50,7 @@ function Marker({ label, time, align }: { label: string, time: string, align: 's
       align === 'end' && "items-end text-right"
     )}>
       <span className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{label}</span>
-      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 font-mono">{time}</span>
+      <span className="text-sm font-bold text-slate-800 dark:text-slate-200 tracking-tight">{time}</span>
     </div>
   );
 }
@@ -204,9 +204,26 @@ export function SunDetails({
     return (val / (24 * 3600000)) * 100;
   };
 
-  const dayPercent = getPercent(currentTime);
-  const tCoord = dayPercent / 100;
-  const sunY = isNaN(dayPercent) ? 40 : Math.pow(1-tCoord, 2) * 40 + 2*(1-tCoord)*tCoord * (-15) + Math.pow(tCoord, 2) * 40;
+  const getSunPosition = () => {
+    const now = new Date();
+    const target = new Date(date);
+    target.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+
+    const val = target.getHours() * 3600000 + target.getMinutes() * 60000 + target.getSeconds() * 1000;
+    const dayPercent = (val / (24 * 3600000)) * 100;
+    const t = Math.max(0, Math.min(1, dayPercent / 100));
+
+    const xVal = t * 100;
+    // Parabolic arc: y(t) = 38 - 95 * t * (1 - t)
+    const yVal = 38 - 95 * t * (1 - t);
+
+    return {
+      xPercent: Math.max(1, Math.min(99, xVal)),
+      yPercent: (yVal / 40) * 100,
+    };
+  };
+
+  const sunPos = getSunPosition();
 
   const startOfDay = new Date(date).setHours(0,0,0,0);
 
@@ -269,26 +286,60 @@ export function SunDetails({
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
-          className="mt-8 pt-6 border-t border-slate-200/50 overflow-hidden space-y-10"
+          className="mt-8 pt-6 border-t border-slate-200/50 overflow-hidden space-y-8"
         >
-          {/* Mountain Arc Graph */}
-          <div className="relative h-28 w-full flex items-end justify-center px-4">
-            <div className="absolute inset-x-4 bottom-0 h-[2px] bg-slate-200 rounded-full" />
-            <svg className="w-full h-24 overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="arcGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#e8ac41" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#e8ac41" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              <path d="M 0 40 Q 50 -15 100 40" fill="url(#arcGrad)" stroke="#e2e8f0" strokeWidth="0.5" strokeDasharray="2 2" />
-              <motion.g animate={{ cx: dayPercent, cy: sunY }}>
-                <circle cx={dayPercent} cy={sunY} r="3" fill="#7f5700" className="drop-shadow-[0_0_8px_rgba(127,87,0,0.5)]" />
-                <circle cx={dayPercent} cy={sunY} r="6" stroke="#7f5700" strokeWidth="0.5" fill="none" opacity="0.3" />
-              </motion.g>
-            </svg>
-            
-            <div className="absolute inset-x-0 -bottom-8 flex justify-between px-2">
+          {/* Solar Arc Graphic */}
+          <div className="w-full max-w-xl mx-auto px-2 pt-2">
+            <div className="relative w-full h-20 sm:h-24 overflow-visible">
+              <svg className="w-full h-full overflow-visible" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="sunArcGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#e8ac41" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#e8ac41" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+
+                {/* Day Arc Gradient Fill */}
+                <path d="M 0 38 Q 50 -10 100 38 L 100 38 L 0 38 Z" fill="url(#sunArcGrad)" />
+
+                {/* Day Arc Dashed Line */}
+                <path 
+                  d="M 0 38 Q 50 -10 100 38" 
+                  fill="none" 
+                  stroke="#e8ac41" 
+                  strokeWidth="1.5" 
+                  strokeDasharray="3 3"
+                  vectorEffect="non-scaling-stroke"
+                />
+
+                {/* Baseline (Horizon) */}
+                <line 
+                  x1="0" y1="38" x2="100" y2="38" 
+                  stroke="var(--border, #cbd5e1)" 
+                  strokeWidth="1.5" 
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+
+              {/* Sun Position Dot */}
+              <motion.div
+                initial={false}
+                animate={{
+                  left: `${sunPos.xPercent}%`,
+                  top: `${sunPos.yPercent}%`,
+                }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
+              >
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-5 h-5 rounded-full bg-amber-500/25 animate-pulse" />
+                  <div className="w-3 h-3 rounded-full bg-[#7f5700] dark:bg-amber-400 border-2 border-white dark:border-slate-800 shadow-[0_0_6px_rgba(127,87,0,0.5)]" />
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Baseline Labels (RISE, MERIDIAN, SET) directly below horizon line */}
+            <div className="flex justify-between items-start pt-1 px-1">
               <Marker label={t('sun.rise')} time={safeFormat(times.sunrise, 'HH:mm')} align="start" />
               <Marker label={t('sun.meridian')} time={safeFormat(times.solarNoon, 'HH:mm')} align="center" />
               <Marker label={t('sun.set')} time={safeFormat(times.sunset, 'HH:mm')} align="end" />
