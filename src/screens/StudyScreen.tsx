@@ -344,7 +344,7 @@ export function StudyScreen() {
 
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center">
-          <h1 className="font-serif text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none mb-1.5">
+          <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             Focus
           </h1>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">

@@ -189,7 +189,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center">
-          <h1 className="font-serif text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none mb-1.5">
+          <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             {t('chant.chantCounter')}
           </h1>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
@@ -289,7 +289,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                     {/* Stopwatch Mode Toggle */}
                     <div className="flex justify-between items-center pb-2">
                       <div>
-                        <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-tight">Stopwatch Mode</h4>
+                        <h4 className="font-serif text-sm font-bold text-[var(--text-primary)] leading-tight">Stopwatch Mode</h4>
                         <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">Chant without duration limit</p>
                       </div>
                       <Toggle value={isStopwatch} onToggle={() => setIsStopwatch(!isStopwatch)} />

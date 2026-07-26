@@ -480,7 +480,7 @@ m6663 23 l112 -38 185 3 c102 2 279 7 393 12 194 8 212 10 260 34 28 14 53 24
 
         {/* Header & Interactive Breadcrumbs */}
         <div className="px-2 text-center relative flex flex-col items-center">
-          <h1 className="font-serif text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none mb-1.5">
+          <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             {t('common.books') || t('common.book') || 'Books'}
           </h1>
           {!selectedBook ? (

@@ -126,9 +126,9 @@ const CSS_VARS = `
   @font-face { src: url('/fonts/thai/THSarabunNew.ttf') format('truetype'); font-weight: normal; font-family: 'thai'; }
   @font-face { src: url('/fonts/thai/THSarabunNew-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'thai'; }
 
-  @font-face { src: url('/fonts/lao/LaoPaliAlpha-Light.woff') format('woff'); font-weight: normal; font-family: 'lao'; }
-  @font-face { src: url('/fonts/lao/LaoPaliAlpha-Regular.woff') format('woff'); font-weight: bold; font-family: 'lao'; }
-  @font-face { src: url('/fonts/lao/Lanexang%20Mon2.woff') format('woff'); font-weight: normal; font-family: 'lao-ui'; }
+  @font-face { src: url('/fonts/lao/LaoPaliAlpha-Light.woff') format('woff'); font-weight: 300; font-family: 'lao'; }
+  @font-face { src: url('/fonts/lao/LaoPaliAlpha-Regular.woff') format('woff'); font-weight: normal; font-family: 'lao'; }
+  @font-face { src: url('/fonts/lao/Lanexang Mon2.woff') format('woff'); font-weight: normal; font-family: 'lao-ui'; }
 
   @font-face { src: url('/fonts/myanmar/mm3-multi-os(16-08-2011).ttf') format('truetype'); font-weight: normal; font-family: 'myanmar'; }
   @font-face { src: url('/fonts/myanmar/mm3-multi-os(16-08-2011).ttf') format('truetype'); font-weight: bold; font-family: 'myanmar'; }
@@ -142,8 +142,8 @@ const CSS_VARS = `
   @font-face { src: url('/fonts/gurmukhi/NotoSansGurmukhi-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'gurmukhi'; }
   @font-face { src: url('/fonts/gurmukhi/NotoSansGurmukhi-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'gurmukhi'; }
 
-  @font-face { src: url('/fonts/lanna/Hariphunchai.otf') format('truetype'); font-weight: normal; font-family: 'tai tham'; }
-  @font-face { src: url('/fonts/lanna/Hariphunchai.otf') format('truetype'); font-weight: bold; font-family: 'tai tham'; }
+  @font-face { src: url('/fonts/lanna/Hariphunchai.otf') format('opentype'); font-weight: normal; font-family: 'tai tham'; }
+  @font-face { src: url('/fonts/lanna/Hariphunchai.otf') format('opentype'); font-weight: bold; font-family: 'tai tham'; }
 
   @font-face { src: url('/fonts/gujarati/NotoSerifGujarati-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'gujarati'; }
   @font-face { src: url('/fonts/gujarati/NotoSerifGujarati-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'gujarati'; }
@@ -167,6 +167,8 @@ const CSS_VARS = `
 
   .UT[lang=en] { font-family: 'roman'; }
   .UT[lang=si] { font-family: 'sinhala'; line-height: 1.5rem; }
+  .UT[lang=km] { font-family: 'khmer'; }
+  .UT[lang=vi] { font-family: 'roman'; }
   .UT[lang=ch] { font-family: 'roman';}
   .UT[lang=hi] { font-family: 'devanagari';}
   .UT[lang=th] { font-family: 'thai'; font-size: 1.5rem; line-height: 1.7rem; }
