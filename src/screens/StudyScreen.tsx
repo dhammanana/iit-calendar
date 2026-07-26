@@ -7,6 +7,7 @@ import { useI18n } from '../hooks/useI18n';
 import { StudySettings, StudySettingsData } from '../components/study/StudySettings';
 import { StudyInsights, StudySession } from '../components/study/StudyInsights';
 import { alarmService } from '../services/alarm/AlarmService';
+import { SegmentedControl } from '../components/SegmentedControl';
 
 type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
@@ -356,27 +357,15 @@ export function StudyScreen() {
 
         {/* Tab Strip — Timer / Insights / Configs */}
         <div className="h-14 flex items-center justify-center">
-          <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border" style={{ borderColor: 'var(--border-subtle)' }}>
-            {[
+          <SegmentedControl
+            options={[
               { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
               { id: 'insights', icon: BarChart2, label: t('study.insights') || 'Insights' },
               { id: 'configs', icon: Settings2, label: t('study.configs') || 'Configs' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setView(tab.id as any)}
-                className={cn(
-                  "flex items-center gap-2 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all cursor-pointer",
-                  view === tab.id
-                    ? "bg-saffron text-white shadow-md shadow-saffron/20 px-5"
-                    : "text-primary-300 dark:text-primary-700 hover:text-primary-600 dark:hover:text-primary-300 px-3.5"
-                )}
-              >
-                <tab.icon size={14} />
-                {view === tab.id && <span>{tab.label}</span>}
-              </button>
-            ))}
-          </div>
+            ]}
+            value={view}
+            onChange={(val) => setView(val as any)}
+          />
         </div>
 
         {/* ── Study Content by Tab ── */}

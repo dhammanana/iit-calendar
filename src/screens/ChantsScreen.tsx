@@ -13,6 +13,7 @@ import { convertPali, SCRIPTS } from '../services/conversionService';
 import { Script } from '../lib/pali-script';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
+import { SegmentedControl } from '../components/SegmentedControl';
 import { Toggle } from '../components/Toggle';
 
 function ConvertedText({ text, script, className }: { text: string; script: string; className?: string }) {
@@ -217,27 +218,15 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
           {/* Mode Switcher */}
           <div className="h-14 flex items-center justify-center">
-            <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border" style={{ borderColor: 'var(--border-subtle)' }}>
-              {[
+            <SegmentedControl
+              options={[
                 { id: 'counter', icon: List, label: t('chant.chant') || 'Chant' },
                 { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
-                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' }
-              ].map(m => (
-                <button
-                  key={m.id}
-                  onClick={() => setView(m.id as any)}
-                  className={cn(
-                    "flex items-center gap-2 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all cursor-pointer",
-                    view === m.id
-                      ? "bg-saffron text-white shadow-md shadow-saffron/20 px-5"
-                      : "text-primary-300 dark:text-primary-700 hover:text-primary-600 dark:hover:text-primary-300 px-3.5"
-                  )}
-                >
-                  <m.icon size={14} />
-                  {view === m.id && <span>{m.label}</span>}
-                </button>
-              ))}
-            </div>
+                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' },
+              ]}
+              value={view}
+              onChange={(val) => setView(val as any)}
+            />
           </div>
 
           <AnimatePresence mode="wait">

@@ -7,6 +7,7 @@ import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
 import { meditationService } from '../services/MeditationService';
 import { useI18n } from '../hooks/useI18n';
 import { useUI } from '../UIContext';
+import { SegmentedControl } from '../components/SegmentedControl';
 
 interface MeditationSession {
   id: string;
@@ -509,27 +510,15 @@ export function MeditationScreen() {
           {/* Mode Switcher */}
           <div className="h-14 flex items-center justify-center">
             {!isDistractionFree && (
-              <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border" style={{ borderColor: 'var(--border-subtle)' }}>
-                {[
+              <SegmentedControl
+                options={[
                   { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
                   { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
-                  { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' }
-                ].map(m => (
-                  <button
-                    key={m.id}
-                    onClick={() => setView(m.id as any)}
-                    className={cn(
-                      "flex items-center gap-2 py-2.5 rounded-full text-[0.65rem] font-black uppercase tracking-widest transition-all cursor-pointer",
-                      view === m.id
-                        ? "bg-saffron text-white shadow-md shadow-saffron/20 px-5"
-                        : "text-primary-300 dark:text-primary-700 hover:text-primary-600 dark:hover:text-primary-300 px-3.5"
-                    )}
-                  >
-                    <m.icon size={14} />
-                    {view === m.id && <span>{m.label}</span>}
-                  </button>
-                ))}
-              </div>
+                  { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' },
+                ]}
+                value={view}
+                onChange={(val) => setView(val as any)}
+              />
             )}
           </div>
 
