@@ -1,8 +1,8 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, Clock, CheckSquare, Settings2 } from 'lucide-react';
+import { Clock, CheckSquare } from 'lucide-react';
 import { useI18n } from '../../hooks/useI18n';
 import { Toggle } from '../Toggle';
+import { Modal } from '../Modal';
 
 export interface StudySettingsData {
   pomodoro: number;
@@ -165,35 +165,16 @@ export function StudySettings({ show, onClose, settings, onUpdate, inline }: Pro
     </div>
   );
 
-  if (inline) {
-    return <div className="w-full pb-6">{content}</div>;
-  }
-
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm bg-black/40"
-        >
-          <motion.div
-            initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
-            className="w-full max-w-sm rounded-[2rem] p-6 shadow-2xl relative overflow-y-auto max-h-[85vh]"
-            style={{ backgroundColor: 'var(--sm-card-bg)', border: '1px solid var(--sm-border)' }}
-          >
-            <div className="flex justify-between items-center mb-6 pb-4" style={{ borderBottom: '1px solid var(--sm-border)' }}>
-              <h2 className="font-black text-sm uppercase tracking-widest" style={{ color: 'var(--sm-text-muted)' }}>
-                {t('study.settings') || 'Settings'}
-              </h2>
-              <button onClick={onClose} className="p-1 rounded-full transition-colors" style={{ color: 'var(--sm-text-muted)' }}>
-                <X size={20} />
-              </button>
-            </div>
-            {content}
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <Modal
+      show={show}
+      onClose={onClose}
+      title={t('study.settings') || 'Settings'}
+      maxWidth="sm"
+      inline={inline}
+    >
+      {content}
+    </Modal>
   );
 }
 

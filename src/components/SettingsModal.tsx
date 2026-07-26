@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, MapPin, Search, Loader2, Download, Upload, Info } from 'lucide-react';
+import { motion } from 'motion/react';
+import { MapPin, Search, Loader2, Download, Upload, Info } from 'lucide-react';
+import { Modal } from './Modal';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
 import { cn } from '../lib/utils';
@@ -42,17 +43,6 @@ export function SettingsModal({
     const angle = Math.abs(pos.altitude * 180 / Math.PI);
     onUpdate({ ...settings, dawnAngle: angle });
   };
-
-  React.useEffect(() => {
-    if (show) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [show]);
 
   const handleExportData = async () => {
     const backup = {
@@ -149,43 +139,13 @@ export function SettingsModal({
 
   return (
     <>
-      <AnimatePresence>
-        {show && (
-          <motion.div
-            key="settings-overlay"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
-            style={{ background: 'rgba(0,0,0,0.45)' }}
-          >
-            <motion.div
-              initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
-              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
-              className="w-full max-w-lg rounded-[2.5rem] px-2 py-4 shadow-2xl relative border will-change-transform transform-gpu"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                borderColor: 'var(--border-subtle)',
-              }}
-            >
-              {/* Close button */}
-              <button
-                onClick={onClose}
-                className="absolute top-6 right-6 p-2 rounded-full transition-colors"
-                style={{ color: 'var(--accent)' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--accent)')}
-              >
-                <X size="1.5em"/>
-              </button>
-
-              <h2
-                className="font-serif text-3xl font-bold mb-6 ml-4"
-                style={{ color: 'var(--accent)' }}
-              >
-                {t('common.settings')}
-              </h2>
-
-              <div className="space-y-8 max-h-[70vh] overflow-y-auto pr-2 scrollbar-hide overscroll-contain">
+      <Modal
+        show={show}
+        onClose={onClose}
+        title={t('common.settings')}
+        maxWidth="lg"
+      >
+        <div className="space-y-8 pr-1">
 
                 {/* Backup & Restore Section */}
                 <section className="space-y-4">
@@ -612,7 +572,6 @@ export function SettingsModal({
                   </button>
                 </section>
 
-                {/* Confirm */}
                 <button
                   onClick={onClose}
                   className="w-full py-4 rounded-3xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl active:scale-[0.98] transition-all"
@@ -623,11 +582,8 @@ export function SettingsModal({
                 >
                   {t('common.confirm')}
                 </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      </Modal>
       <LegalModal show={showLegal} onClose={() => setShowLegal(false)} />
     </>
   );

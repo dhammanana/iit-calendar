@@ -1,9 +1,8 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronUp, ChevronDown, GripVertical, Check } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Check } from 'lucide-react';
 import { useI18n } from '../hooks/useI18n';
 import { cn } from '../lib/utils';
+import { Modal } from './Modal';
 
 export const DEFAULT_CARD_ORDER = [
   'uposatha',
@@ -27,17 +26,6 @@ export function CardOrderModal({
   onUpdate: (newOrder: string[]) => void;
 }) {
   const { t } = useI18n();
-
-  React.useEffect(() => {
-    if (show) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [show]);
   
   // Ensure all possible cards are present in the list
   const currentOrder = React.useMemo(() => {
@@ -75,110 +63,80 @@ export function CardOrderModal({
     onUpdate(newOrder);
   };
 
-  return createPortal(
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.45)' }}
-        >
-          <motion.div
-            initial={{ y: 100 }}
-            animate={{ y: 0 }}
-            exit={{ y: 100 }}
-            transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
-            className="w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl relative border flex flex-col max-h-[90vh] will-change-transform transform-gpu"
-            style={{
-              backgroundColor: 'var(--bg-card)',
-              borderColor: 'var(--border-subtle)',
-            }}
-          >
-            <button
-              onClick={onClose}
-              className="absolute top-6 right-6 p-2 rounded-full transition-colors z-10"
-              style={{ color: 'var(--accent)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--accent)')}
-            >
-              <X size="1.5em" />
-            </button>
+  return (
+    <Modal
+      show={show}
+      onClose={onClose}
+      title={t('calendar.reorderCards') || 'Reorder Cards'}
+      maxWidth="lg"
+    >
+      <div className="flex flex-col h-full">
+        <div className="space-y-3 mb-6 pr-1 flex-grow">
+          {currentOrder.map((item, index) => {
+            const isDisabled = item.startsWith('!');
+            const cardId = isDisabled ? item.substring(1) : item;
+            
+            return (
+              <div
+                key={cardId}
+                className={cn(
+                  "flex items-center gap-3 p-3 rounded-2xl border transition-opacity",
+                  isDisabled && "opacity-50"
+                )}
+                style={{
+                  backgroundColor: 'var(--bg-card-alt)',
+                  borderColor: 'var(--border-subtle)',
+                }}
+              >
+                <button
+                  onClick={() => toggleCard(index)}
+                  className={cn(
+                    "w-8 h-8 rounded-xl flex items-center justify-center border-2 transition-all",
+                    isDisabled 
+                      ? "border-[var(--border-subtle)]" 
+                      : "border-[var(--accent)] bg-[var(--accent)] text-[var(--bg-main)]"
+                  )}
+                >
+                  {!isDisabled && <Check size={18} strokeWidth={3} />}
+                </button>
 
-            <h2 className="font-serif text-3xl font-bold mb-6 ml-2" style={{ color: 'var(--accent)' }}>
-              {t('calendar.reorderCards') || 'Reorder Cards'}
-            </h2>
+                <div className="flex-grow flex items-center gap-3">
+                  <GripVertical size={20} className="opacity-20 shrink-0" />
+                  <span className="font-bold text-sm line-clamp-1" style={{ color: 'var(--text-primary)' }}>
+                    {t(`calendar.cards.${cardId}`) || cardId}
+                  </span>
+                </div>
 
-            <div className="space-y-3 mb-6 overflow-y-auto pr-2 flex-grow scrollbar-hide">
-              {currentOrder.map((item, index) => {
-                const isDisabled = item.startsWith('!');
-                const cardId = isDisabled ? item.substring(1) : item;
-                
-                return (
-                  <div
-                    key={cardId}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-2xl border transition-opacity",
-                      isDisabled && "opacity-50"
-                    )}
-                    style={{
-                      backgroundColor: 'var(--bg-card-alt)',
-                      borderColor: 'var(--border-subtle)',
-                    }}
+                <div className="flex gap-1 shrink-0">
+                  <button
+                    disabled={index === 0}
+                    onClick={() => moveCard(index, 'up')}
+                    className="p-2 rounded-xl transition-all active:scale-90 disabled:opacity-10"
+                    style={{ color: 'var(--accent)', backgroundColor: 'var(--bg-card)' }}
                   >
-                    <button
-                      onClick={() => toggleCard(index)}
-                      className={cn(
-                        "w-8 h-8 rounded-xl flex items-center justify-center border-2 transition-all",
-                        isDisabled 
-                          ? "border-[var(--border-subtle)]" 
-                          : "border-[var(--accent)] bg-[var(--accent)] text-[var(--bg-main)]"
-                      )}
-                    >
-                      {!isDisabled && <Check size={18} strokeWidth={3} />}
-                    </button>
+                    <ChevronUp size={20} />
+                  </button>
+                  <button
+                    disabled={index === currentOrder.length - 1}
+                    onClick={() => moveCard(index, 'down')}
+                    className="p-2 rounded-xl transition-all active:scale-90 disabled:opacity-10"
+                    style={{ color: 'var(--accent)', backgroundColor: 'var(--bg-card)' }}
+                  >
+                    <ChevronDown size={20} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
 
-                    <div className="flex-grow flex items-center gap-3">
-                      <GripVertical size={20} className="opacity-20 shrink-0" />
-                      <span className="font-bold text-sm line-clamp-1" style={{ color: 'var(--text-primary)' }}>
-                        {t(`calendar.cards.${cardId}`) || cardId}
-                      </span>
-                    </div>
-
-                    <div className="flex gap-1 shrink-0">
-                      <button
-                        disabled={index === 0}
-                        onClick={() => moveCard(index, 'up')}
-                        className="p-2 rounded-xl transition-all active:scale-90 disabled:opacity-10"
-                        style={{ color: 'var(--accent)', backgroundColor: 'var(--bg-card)' }}
-                      >
-                        <ChevronUp size={20} />
-                      </button>
-                      <button
-                        disabled={index === currentOrder.length - 1}
-                        onClick={() => moveCard(index, 'down')}
-                        className="p-2 rounded-xl transition-all active:scale-90 disabled:opacity-10"
-                        style={{ color: 'var(--accent)', backgroundColor: 'var(--bg-card)' }}
-                      >
-                        <ChevronDown size={20} />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={onClose}
-              className="btn-primary mt-2"
-            >
-              {t('common.confirm')}
-            </button>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
-    document.body
+        <button
+          onClick={onClose}
+          className="btn-primary mt-2"
+        >
+          {t('common.confirm')}
+        </button>
+      </div>
+    </Modal>
   );
 }

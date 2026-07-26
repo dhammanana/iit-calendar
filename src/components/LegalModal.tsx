@@ -1,8 +1,8 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, ExternalLink, Shield, FileText, Info } from 'lucide-react';
+import { ExternalLink, Shield, FileText, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useI18n } from '../hooks/useI18n';
+import { Modal } from './Modal';
 
 export function LegalModal({ show, onClose }: { show: boolean; onClose: () => void }) {
   const { t } = useI18n();
@@ -15,35 +15,12 @@ export function LegalModal({ show, onClose }: { show: boolean; onClose: () => vo
   ] as const;
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          key="legal-modal-overlay"
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.6)' }}
-        >
-          <motion.div
-            initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
-            className="w-full max-w-2xl rounded-[2.5rem] p-6 shadow-2xl relative border flex flex-col max-h-[90vh]"
-            style={{
-              backgroundColor: 'var(--bg-card)',
-              borderColor: 'var(--border-subtle)',
-            }}
-          >
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="font-serif text-2xl font-bold" style={{ color: 'var(--accent)' }}>
-                {t('settings.legal.title')}
-              </h2>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full transition-colors"
-                style={{ color: 'var(--accent)' }}
-              >
-                <X size="1.5em" />
-              </button>
-            </div>
+    <Modal
+      show={show}
+      onClose={onClose}
+      title={t('settings.legal.title')}
+      maxWidth="xl"
+    >
 
             {/* Tabs */}
             <div className="flex gap-2 mb-6 bg-black/5 dark:bg-white/5 p-1 rounded-2xl">
@@ -174,9 +151,6 @@ export function LegalModal({ show, onClose }: { show: boolean; onClose: () => vo
             >
               Close
             </button>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </Modal>
   );
 }
