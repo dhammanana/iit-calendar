@@ -81,7 +81,7 @@
       "sinhala": "สิงหล",
       "burmese": "พม่า",
       "thai": "ไทย",
-      "devanagari": "देवนาगरी",
+      "devanagari": "देवनागरी",
       "lao": "ລາວ",
       "khmer": "ភាសាខ្មែរ",
       "bengali": "বাংলা",
@@ -102,7 +102,7 @@
       "th": "ไทย",
       "si": "සිංහල",
       "my": "မြန်မာ",
-      "km": "ខ្มែរ",
+      "km": "ខ្មែរ",
       "lo": "ລາວ"
     }
   },
@@ -213,5 +213,29 @@
     "novice": "ผู้เริ่มต้น",
     "devotee": "ผู้ศรัทธา",
     "master": "ผู้เชี่ยวชาญ"
+  },
+  "chantNotes": {
+    "threeTimes": "(สามครั้ง)",
+    "mondayTesattati": "วันจันทร์: เตสตฺตติ-ญาณวนฺทนา",
+    "wednesdaySattasattati": "วันพุธ: สตฺตสตฺตติ-ญาณาวนฺทนา",
+    "toPastRelatives": "ถึงญาติผู้ล่วงลับ",
+    "toLateTeachers": "ถึงครูอาจารย์ผู้ล่วงลับ",
+    "toRespectedElders": "ถึงพระเถรานุเถระ/ครูอาจารย์ผู้น่าเคารพ",
+    "wholesomeWishes": "ความปรารถนาดี",
+    "askingForForgiveness": "การขอขมาลาโทษ",
+    "fourteenAuspiciousKnowledge": "ญาณะอันประเสริฐสิบสี่",
+    "firstHalf": "ครึ่งแรก",
+    "secondHalf": "ครึ่งที่สอง",
+    "lastHalf": "ครึ่งสุดท้าย",
+    "toCelestialBeings": "ถึงเทวดา",
+    "toCelestialAndAllBeings": "ถึงเทวดาและสรรพสัตว์ทั้งหลาย",
+    "suttas": "พระสูตร",
+    "inRowForEachDay": "ตามลำดับวัน",
+    "monday": "วันจันทร์",
+    "tuesday": "วันอังคาร",
+    "wednesday": "วันพุธ",
+    "thursday": "วันพฤหัสบดี",
+    "friday": "วันศุกร์",
+    "verses": "บทพระคาถา"
   }
 }

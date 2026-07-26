@@ -1,6 +1,6 @@
 {
   "common": {
-    "calendar": "ပြက္ခဒိန်",
+    "calendar": "က္ခဒိန်",
     "stillness": "တိတ်ဆိတ်မှု",
     "chants": "ရွတ်ဖတ်ခြင်း",
     "study": "လေ့လာမှု",
@@ -13,7 +13,7 @@
     "today": "ယနေ့",
     "language": "ဘာသာစကား",
     "appearance": "အသွင်အပြင်",
-    "script": "အက္ခရာ"
+    "script": "က္ခရာ"
   },
   "calendar": {
     "yearSuffix": "သာသနာနှစ်",
@@ -58,7 +58,7 @@
     }
   },
   "settings": {
-    "tradition": "ပြက္ခဒိန် ပုံစံ",
+    "tradition": "က္ခဒိန် ပုံစံ",
     "location": "တည်နေရာ",
     "address": "လိပ်စာ ရှာဖွေပါ",
     "searching": "ရှာဖွေနေသည်...",
@@ -194,7 +194,7 @@
     "createCustomChant": "စိတ်ကြိုက်ဂုဏ်တော် ဖန်တီးရန်",
     "newChant": "ဂုဏ်တော်အသစ်",
     "chantName": "ဂုဏ်တော် အမည်",
-    "chantContent": "Chant Text (Pali)",
+    "chantContent": "ဂုဏ်တော်စာသား (ပါဠိ)",
     "milestone": "မှတ်တိုင်",
     "createChant": "ဂုဏ်တော် ဖန်တီးရန်",
     "loading": "လုပ်ဆောင်နေသည်...",
@@ -213,5 +213,29 @@
     "novice": "အလုပ်သင်",
     "devotee": "ဝတ်ပြုသူ",
     "master": "ကျွမ်းကျင်သူ"
+  },
+  "chantNotes": {
+    "threeTimes": "(သုံးကြိမ်)",
+    "mondayTesattati": "တနင်္လာနေ့: တေသတ္တတိ-ဉာဏဝန္ဒနာ",
+    "wednesdaySattasattati": "ဗုဒ္ဓဟူးနေ့: သတ္တသတ္တတိ-ဉာဏာဝန္ဒနာ",
+    "toPastRelatives": "ကွယ်လွန်သူ ဆွေမျိုးများထံ",
+    "toLateTeachers": "ကွယ်လွန်သူ ဆရာတော်များထံ",
+    "toRespectedElders": "ရိုသေလေးစားအပ်သော ဆရာတော်/ဆရာများထံ",
+    "wholesomeWishes": "ကောင်းမြတ်သော ဆုတောင်းချက်များ",
+    "askingForForgiveness": "ခွင့်လွှတ်တောင်းပန်ခြင်း",
+    "fourteenAuspiciousKnowledge": "မြတ်သော ဉာဏ်တော်ဆယ့်လေးပါး",
+    "firstHalf": "ရှေ့တစ်ဝက်",
+    "secondHalf": "ဒုတိယတစ်ဝက်",
+    "lastHalf": "နောက်ဆုံးတစ်ဝက်",
+    "toCelestialBeings": "နတ်များထံ",
+    "toCelestialAndAllBeings": "နတ်များနှင့် သတ္တဝါအားလုံးထံ",
+    "suttas": "သုတ္တန်များ",
+    "inRowForEachDay": "နေ့အလိုက် အစဉ်လိုက်",
+    "monday": "တနင်္လာ",
+    "tuesday": "အင်္ဂါ",
+    "wednesday": "ဗုဒ္ဓဟူး",
+    "thursday": "ကြာသပတေး",
+    "friday": "သောကြာ",
+    "verses": "ဂါထာများ"
   }
 }

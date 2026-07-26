@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import en from '../i18n/en.json';
 import vi from '../i18n/vi.json';
 import th from '../i18n/th.json';
@@ -38,7 +38,7 @@ export const useI18n = () => {
     };
   }, [lang]);
 
-  const t = (path: string, params?: Record<string, any>) => {
+  const t = useCallback((path: string, params?: Record<string, any>) => {
     const dict = translations[lang] || en;
     let result = path.split('.').reduce((obj, key) => obj?.[key], dict) || path.split('.').reduce((obj, key) => obj?.[key], en) || path;
     
@@ -49,7 +49,15 @@ export const useI18n = () => {
     }
     
     return result;
-  };
+  }, [lang]);
 
-  return { t, language: lang };
+  /** Resolve a translation key for an explicit language (ignores active UI lang). Falls back to English. */
+  const tFor = useCallback((targetLang: string, path: string): string => {
+    const dict = translations[targetLang] || en;
+    return path.split('.').reduce((obj: any, key) => obj?.[key], dict)
+      || path.split('.').reduce((obj: any, key) => obj?.[key], en)
+      || path;
+  }, []); // stable — translations is a module-level constant
+
+  return { t, tFor, language: lang };
 };

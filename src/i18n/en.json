@@ -239,5 +239,29 @@
     "novice": "Novice",
     "devotee": "Devotee",
     "master": "Master"
+  },
+  "chantNotes": {
+    "threeTimes": "(Three times)",
+    "mondayTesattati": "Monday: Tesattati-ñāṇavandanā",
+    "wednesdaySattasattati": "Wednesday: Sattasattati-ñāṇāvandanā",
+    "toPastRelatives": "To Past Relatives",
+    "toLateTeachers": "To Late Teachers",
+    "toRespectedElders": "To Respected Elders/Teachers",
+    "wholesomeWishes": "Wholesome Wishes",
+    "askingForForgiveness": "Asking For Forgiveness",
+    "fourteenAuspiciousKnowledge": "Fourteen Auspicious Knowledge",
+    "firstHalf": "first half",
+    "secondHalf": "second half",
+    "lastHalf": "last half",
+    "toCelestialBeings": "To Celestial Beings",
+    "toCelestialAndAllBeings": "To Celestial and all Beings",
+    "suttas": "Suttas",
+    "inRowForEachDay": "in row for each day",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "verses": "Verses"
   }
 }
