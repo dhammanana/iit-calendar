@@ -61,3 +61,4 @@ export interface MeditationSession {
   date: string;
   durationMin: number;
 }
+export * from './book';
