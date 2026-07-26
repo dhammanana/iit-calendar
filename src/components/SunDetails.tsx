@@ -208,6 +208,11 @@ export function SunDetails({
     const now = new Date();
     const target = new Date(date);
     target.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+    const nowMs = target.getTime();
+
+    const sr = times.sunrise ? times.sunrise.getTime() : 0;
+    const ss = times.sunset ? times.sunset.getTime() : 0;
+    const isNight = sr > 0 && ss > 0 ? (nowMs < sr || nowMs > ss) : false;
 
     const val = target.getHours() * 3600000 + target.getMinutes() * 60000 + target.getSeconds() * 1000;
     const dayPercent = (val / (24 * 3600000)) * 100;
@@ -220,6 +225,7 @@ export function SunDetails({
     return {
       xPercent: Math.max(1, Math.min(99, xVal)),
       yPercent: (yVal / 40) * 100,
+      isNight
     };
   };
 
@@ -297,16 +303,23 @@ export function SunDetails({
                     <stop offset="0%" stopColor="#e8ac41" stopOpacity="0.25" />
                     <stop offset="100%" stopColor="#e8ac41" stopOpacity="0" />
                   </linearGradient>
+                  <linearGradient id="nightArcGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#1e1b4b" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#1e1b4b" stopOpacity="0" />
+                  </linearGradient>
                 </defs>
 
-                {/* Day Arc Gradient Fill */}
-                <path d="M 0 38 Q 50 -10 100 38 L 100 38 L 0 38 Z" fill="url(#sunArcGrad)" />
+                {/* Arc Gradient Fill (Day / Night) */}
+                <path 
+                  d="M 0 38 Q 50 -10 100 38 L 100 38 L 0 38 Z" 
+                  fill={sunPos.isNight ? "url(#nightArcGrad)" : "url(#sunArcGrad)"} 
+                />
 
-                {/* Day Arc Dashed Line */}
+                {/* Arc Dashed Line */}
                 <path 
                   d="M 0 38 Q 50 -10 100 38" 
                   fill="none" 
-                  stroke="#e8ac41" 
+                  stroke={sunPos.isNight ? "#475569" : "#e8ac41"} 
                   strokeWidth="1.5" 
                   strokeDasharray="3 3"
                   vectorEffect="non-scaling-stroke"
@@ -321,21 +334,23 @@ export function SunDetails({
                 />
               </svg>
 
-              {/* Sun Position Dot */}
-              <motion.div
-                initial={false}
-                animate={{
-                  left: `${sunPos.xPercent}%`,
-                  top: `${sunPos.yPercent}%`,
-                }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="absolute -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
-              >
-                <div className="relative flex items-center justify-center">
-                  <div className="absolute w-5 h-5 rounded-full bg-amber-500/25 animate-pulse" />
-                  <div className="w-3 h-3 rounded-full bg-[#7f5700] dark:bg-amber-400 border-2 border-white dark:border-slate-800 shadow-[0_0_6px_rgba(127,87,0,0.5)]" />
-                </div>
-              </motion.div>
+              {/* Sun Position Dot (Hides completely at night) */}
+              {!sunPos.isNight && (
+                <motion.div
+                  initial={false}
+                  animate={{
+                    left: `${sunPos.xPercent}%`,
+                    top: `${sunPos.yPercent}%`,
+                  }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                  className="absolute -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none"
+                >
+                  <div className="relative flex items-center justify-center">
+                    <div className="absolute w-5 h-5 rounded-full bg-amber-500/25 animate-pulse" />
+                    <div className="w-3 h-3 rounded-full bg-[#7f5700] dark:bg-amber-400 border-2 border-white dark:border-slate-800 shadow-[0_0_6px_rgba(127,87,0,0.5)]" />
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             {/* Baseline Labels (RISE, MERIDIAN, SET) directly below horizon line */}

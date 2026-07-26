@@ -16,7 +16,6 @@ interface ChantCounterProps {
 export function ChantCounter({ currentCount, onCountChange, onCommit, targetCount, timerSettings, children }: ChantCounterProps) {
   const { t } = useI18n();
   const controls = useAnimation();
-  const [manualValue, setManualValue] = useState(currentCount.toString());
 
   // Timer states
   const totalDurationMs = (timerSettings.hours * 60 + timerSettings.minutes) * 60 * 1000;
@@ -63,9 +62,6 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
     };
   }, [isStarted]);
 
-  useEffect(() => {
-    setManualValue(currentCount.toString());
-  }, [currentCount]);
 
   useEffect(() => {
     if (!isRunning && !isFinished && elapsedMs === 0) {
@@ -134,14 +130,6 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
       scale: [1, 0.95, 1],
       transition: { duration: 0.08 }
     });
-  };
-
-  const handleManualChange = (val: string) => {
-    setManualValue(val);
-    const parsed = parseInt(val);
-    if (!isNaN(parsed) && parsed >= 0) {
-      onCountChange(parsed);
-    }
   };
 
   const formatTime = (ms: number) => {
@@ -286,13 +274,14 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
               </button>
 
               <div className="text-center flex flex-col items-center">
-                <input
-                  type="number"
-                  value={manualValue}
-                  onChange={(e) => handleManualChange(e.target.value)}
-                  disabled={!isRunning}
-                  className="font-serif text-6xl font-medium tracking-tight bg-transparent text-center focus:outline-none w-32 text-[var(--text-primary)] disabled:opacity-50"
-                />
+                <div
+                  className={cn(
+                    "font-serif text-6xl font-medium tracking-tight text-center min-w-32 text-[var(--text-primary)] select-none transition-opacity",
+                    !isRunning && "opacity-50"
+                  )}
+                >
+                  {currentCount}
+                </div>
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)] mt-1">
                   {t('chant.ofChants', { count: targetCount })}
                 </p>

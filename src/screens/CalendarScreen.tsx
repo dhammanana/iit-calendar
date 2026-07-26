@@ -345,8 +345,6 @@ export function CalendarScreen({
           />
           <div className="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none flex-wrap">
             <span>{settings.calendarType === 'srilanka' ? t('calendar.srilanka') : settings.calendarType}</span>
-            <span>·</span>
-            <span>{t('calendar.mode')}</span>
             {settings.address && (
               <>
                 <span>·</span>

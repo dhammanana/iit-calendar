@@ -51,7 +51,7 @@ export function BookControlBar({
 
   return (
     <div
-      className="fixed left-0 right-0 z-40 bg-[var(--bg-main)]/95 backdrop-blur-xl border-t border-[var(--border-subtle)] px-3 sm:px-6 py-2 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.25)] flex items-center justify-between gap-2 sm:gap-3"
+      className="fixed left-0 right-0 z-40 bg-[var(--bg-main)]/95 backdrop-blur-xl border-t border-[var(--border-subtle)] px-3 sm:px-6 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.25)] flex items-center justify-between gap-2 sm:gap-3"
       style={{
         bottom: 'calc(4.55rem + env(safe-area-inset-bottom, 0px))',
       }}
@@ -67,8 +67,8 @@ export function BookControlBar({
       )}
 
       {/* Search Input Bar */}
-      <div className="relative flex-1 min-w-0">
-        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors" />
+      <div className="relative flex-1 min-w-0 flex items-center">
+        <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--accent)] transition-colors pointer-events-none" />
         <input
           type="text"
           placeholder={
@@ -82,29 +82,38 @@ export function BookControlBar({
             setSearchTerm(e.target.value);
             setIsSearchFocused(true);
           }}
-          className="w-full pl-10 pr-16 py-2 bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 transition-all"
+          className={cn(
+            "w-full h-9 pl-10 py-1.5 bg-[var(--bg-input)] text-[var(--text-primary)] border border-[var(--border-subtle)] rounded-full text-sm leading-normal focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/30 transition-all",
+            searchTerm ? (selectedSectionId ? "pr-24" : "pr-10") : "pr-4"
+          )}
         />
         {searchTerm && (
-          <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 bg-[var(--bg-input)] pl-1.5 py-0.5 rounded-full">
             {selectedSectionId && (
-              <>
+              <div className="flex items-center gap-0.5 border-r border-[var(--border-subtle)] pr-1 mr-0.5">
                 <button
+                  type="button"
                   onClick={() => onNavigateMatch('prev')}
-                  className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
+                  title="Previous match"
+                  className="p-1 hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] rounded-full text-[var(--text-muted)] transition-colors active:scale-95"
                 >
                   <ChevronUp size={14} />
                 </button>
                 <button
+                  type="button"
                   onClick={() => onNavigateMatch('next')}
-                  className="p-1 hover:bg-[var(--bg-card-alt)] rounded-full text-[var(--text-muted)] transition-colors"
+                  title="Next match"
+                  className="p-1 hover:bg-[var(--accent-soft)] hover:text-[var(--accent)] rounded-full text-[var(--text-muted)] transition-colors active:scale-95"
                 >
                   <ChevronDown size={14} />
                 </button>
-              </>
+              </div>
             )}
             <button
+              type="button"
               onClick={() => setSearchTerm('')}
-              className="p-1 text-[var(--text-muted)] hover:text-rose-500 transition-colors ml-1"
+              title="Clear search"
+              className="p-1 text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 rounded-full transition-colors active:scale-95"
             >
               <X size={14} />
             </button>
