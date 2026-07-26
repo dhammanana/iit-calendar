@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 import { BookItem } from '../../types/book';
 
 interface BookControlBarProps {
+  isActive?: boolean;
   selectedBook: BookItem | null;
   selectedSectionId: string | null;
   searchTerm: string;
@@ -20,6 +21,7 @@ interface BookControlBarProps {
 }
 
 export function BookControlBar({
+  isActive = true,
   selectedBook,
   selectedSectionId,
   searchTerm,
@@ -34,6 +36,8 @@ export function BookControlBar({
   onNextSection,
   t
 }: BookControlBarProps) {
+  if (!isActive) return null;
+
   const showPagination =
     selectedBook &&
     selectedSectionId !== null &&

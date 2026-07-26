@@ -127,6 +127,17 @@
     @apply transition-colors duration-300;
     background-color: var(--bg-main);
     color: var(--text-primary);
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"],
+  .selectable {
+    -webkit-user-select: text;
+    user-select: text;
   }
 }
 

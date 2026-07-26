@@ -89,7 +89,8 @@ export function CardOrderModal({
             initial={{ y: 100 }}
             animate={{ y: 0 }}
             exit={{ y: 100 }}
-            className="w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl relative border flex flex-col max-h-[90vh]"
+            transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
+            className="w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl relative border flex flex-col max-h-[90vh] will-change-transform transform-gpu"
             style={{
               backgroundColor: 'var(--bg-card)',
               borderColor: 'var(--border-subtle)',

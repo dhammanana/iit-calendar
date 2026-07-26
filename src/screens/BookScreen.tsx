@@ -24,7 +24,7 @@ import { BookTocSheet } from '../components/books/BookTocSheet';
 
 export type { BookItem, SearchResultItem };
 
-export function BookScreen({ settings }: { settings: Settings }) {
+export function BookScreen({ settings, isActive = true }: { settings: Settings; isActive?: boolean }) {
   const { t, tFor, language } = useI18n();
 
   // Multi-level navigation state:
@@ -246,7 +246,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
 
 
   return (
-    <div className="flex flex-col relative bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 pb-10 selection:bg-amber-500/20">
+    <div className="flex flex-col min-h-full relative bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 selection:bg-amber-500/20">
 
       {/* Top Header Background Illustration */}
       <div className="w-full relative overflow-hidden bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent pt-6 pb-12 px-4 flex flex-col items-center justify-center">
@@ -305,7 +305,7 @@ export function BookScreen({ settings }: { settings: Settings }) {
       </div>
 
       {/* Card Overlay container */}
-      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex flex-col gap-4">
+      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex-1 flex flex-col gap-4">
 
         {/* Header & Interactive Breadcrumbs */}
         <div className="px-2 text-center relative flex flex-col items-center">
@@ -402,78 +402,79 @@ export function BookScreen({ settings }: { settings: Settings }) {
             contentRef={contentRef}
           />
         )}
-
-        {/* Permanent Bottom Control Bar */}
-        <BookControlBar
-          selectedBook={selectedBook}
-          selectedSectionId={selectedSectionId}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          setIsSearchFocused={setIsSearchFocused}
-          onNavigateMatch={navigateMatch}
-          onCatalog={() => {
-            setSelectedBookId(null);
-            setSelectedH1Title(null);
-            setSelectedSectionId(null);
-            setSearchTerm('');
-          }}
-          onToggleToc={() => setShowToc(true)}
-          currentSectionIndex={currentSectionIndex}
-          totalSections={parsedBook.allSections.length}
-          onPrevSection={goToPrevSection}
-          onNextSection={goToNextSection}
-          t={t}
-        />
-
-        {/* Live Search Bottom Sheet Modal */}
-        <BookSearchSheet
-          isOpen={isSearchFocused}
-          onClose={() => setIsSearchFocused(false)}
-          selectedBook={selectedBook}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          searchResults={searchResults}
-          scriptKey={scriptKey}
-          booksList={booksList}
-          onSelectSearchResult={handleSelectSearchResult}
-          t={t}
-        />
-
-        {/* Table of Contents Bottom Sheet Modal */}
-        <BookTocSheet
-          isOpen={showToc}
-          onClose={() => setShowToc(false)}
-          selectedBook={selectedBook}
-          parsedBook={parsedBook}
-          selectedSectionId={selectedSectionId}
-          scriptKey={scriptKey}
-          language={language}
-          tocRef={tocRef}
-          onSelectH1={(h1Title) => {
-            setSelectedH1Title(h1Title);
-            setSelectedSectionId(null);
-            setShowToc(false);
-          }}
-          onSelectSection={(h1Title, sectionId) => {
-            setSelectedH1Title(h1Title);
-            setSelectedSectionId(sectionId);
-            setShowToc(false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onSelectH3={(h1Title, sectionId, h3Id) => {
-            setSelectedH1Title(h1Title);
-            setSelectedSectionId(sectionId);
-            setShowToc(false);
-            if (h3Id) {
-              scrollToId(h3Id);
-            } else {
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-          }}
-          t={t}
-          tFor={tFor}
-        />
       </div>
+
+      {/* Permanent Bottom Control Bar */}
+      <BookControlBar
+        isActive={isActive}
+        selectedBook={selectedBook}
+        selectedSectionId={selectedSectionId}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        setIsSearchFocused={setIsSearchFocused}
+        onNavigateMatch={navigateMatch}
+        onCatalog={() => {
+          setSelectedBookId(null);
+          setSelectedH1Title(null);
+          setSelectedSectionId(null);
+          setSearchTerm('');
+        }}
+        onToggleToc={() => setShowToc(true)}
+        currentSectionIndex={currentSectionIndex}
+        totalSections={parsedBook.allSections.length}
+        onPrevSection={goToPrevSection}
+        onNextSection={goToNextSection}
+        t={t}
+      />
+
+      {/* Live Search Bottom Sheet Modal */}
+      <BookSearchSheet
+        isOpen={isSearchFocused}
+        onClose={() => setIsSearchFocused(false)}
+        selectedBook={selectedBook}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchResults={searchResults}
+        scriptKey={scriptKey}
+        booksList={booksList}
+        onSelectSearchResult={handleSelectSearchResult}
+        t={t}
+      />
+
+      {/* Table of Contents Bottom Sheet Modal */}
+      <BookTocSheet
+        isOpen={showToc}
+        onClose={() => setShowToc(false)}
+        selectedBook={selectedBook}
+        parsedBook={parsedBook}
+        selectedSectionId={selectedSectionId}
+        scriptKey={scriptKey}
+        language={language}
+        tocRef={tocRef}
+        onSelectH1={(h1Title) => {
+          setSelectedH1Title(h1Title);
+          setSelectedSectionId(null);
+          setShowToc(false);
+        }}
+        onSelectSection={(h1Title, sectionId) => {
+          setSelectedH1Title(h1Title);
+          setSelectedSectionId(sectionId);
+          setShowToc(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        onSelectH3={(h1Title, sectionId, h3Id) => {
+          setSelectedH1Title(h1Title);
+          setSelectedSectionId(sectionId);
+          setShowToc(false);
+          if (h3Id) {
+            scrollToId(h3Id);
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }}
+        t={t}
+        tFor={tFor}
+      />
     </div>
   );
 }

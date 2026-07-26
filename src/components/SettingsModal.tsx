@@ -153,12 +153,14 @@ export function SettingsModal({
           <motion.div
             key="settings-overlay"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4"
             style={{ background: 'rgba(0,0,0,0.45)' }}
           >
             <motion.div
               initial={{ y: 100 }} animate={{ y: 0 }} exit={{ y: 100 }}
-              className="w-full max-w-lg rounded-[2.5rem] px-2 py-4 shadow-2xl relative border"
+              transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
+              className="w-full max-w-lg rounded-[2.5rem] px-2 py-4 shadow-2xl relative border will-change-transform transform-gpu"
               style={{
                 backgroundColor: 'var(--bg-card)',
                 borderColor: 'var(--border-subtle)',

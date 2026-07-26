@@ -138,45 +138,8 @@ export default function App() {
   const [activeTab, setActiveTab] = React.useState('calendar');
   const { showSettings, setShowSettings } = useUI();
 
-  useEffect(() => {
-    const main = document.getElementById('main-tabs');
-    if (!main) return;
-
-    if (!('onscrollsnapchange' in window)) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const tabId = entry.target.id.replace('tab-', '');
-            setActiveTab(tabId);
-          }
-        });
-      }, { root: main, threshold: 0.5 });
-
-      TABS.forEach(tab => {
-        const el = document.getElementById(`tab-${tab}`);
-        if (el) observer.observe(el);
-      });
-
-      return () => observer.disconnect();
-    } else {
-      const handleSnapChange = (e: any) => {
-        const target = e.snapTargetInline || e.snapTargetBlock;
-        if (target) {
-          const tabId = target.id.replace('tab-', '');
-          setActiveTab(tabId);
-        }
-      };
-      main.addEventListener('scrollsnapchange', handleSnapChange as any);
-      return () => main.removeEventListener('scrollsnapchange', handleSnapChange as any);
-    }
-  }, []);
-
   const handleTabClick = (tab: string) => {
     setActiveTab(tab);
-    const el = document.getElementById(`tab-${tab}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
   };
 
   // Choose engine based on settings
@@ -216,10 +179,9 @@ export default function App() {
 
       <main
         id="main-tabs"
-        className="flex-1 flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory hide-scrollbar"
-        style={{ scrollBehavior: 'smooth' }}
+        className="flex-1 relative overflow-hidden"
       >
-        <div id="tab-calendar" className="min-w-full w-full h-full flex-shrink-0 snap-center overflow-y-auto hide-scrollbar" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-calendar" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'calendar' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <CalendarScreen
             settings={settings}
             onUpdateSettings={setSettings}
@@ -232,19 +194,19 @@ export default function App() {
           />
         </div>
 
-        <div id="tab-meditation" className="min-w-full w-full h-full flex-shrink-0 snap-center overflow-y-auto hide-scrollbar" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-meditation" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'meditation' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <MeditationScreen />
         </div>
 
-        <div id="tab-chants" className="min-w-full w-full h-full flex-shrink-0 snap-center overflow-y-auto hide-scrollbar" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-chants" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'chants' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <ChantsScreen settings={settings} />
         </div>
 
-        <div id="tab-book" className="min-w-full w-full h-full flex-shrink-0 snap-center overflow-y-auto hide-scrollbar" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
-          <BookScreen settings={settings} />
+        <div id="tab-book" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'book' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(8rem + env(safe-area-inset-bottom))' }}>
+          <BookScreen settings={settings} isActive={activeTab === 'book'} />
         </div>
 
-        <div id="tab-study" className="min-w-full w-full h-full flex-shrink-0 snap-center overflow-y-auto hide-scrollbar" style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-study" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'study' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <StudyScreen />
         </div>
       </main>

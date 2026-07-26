@@ -101,16 +101,17 @@ export function BookSearchSheet({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-slate-950/60 dark:bg-black/75"
           />
           {/* Slide-Up Bottom Sheet */}
           <motion.div
             initial={{ y: '100%' }}
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 max-h-[85vh] h-[75vh] bg-[var(--bg-main)] backdrop-blur-2xl z-[60] shadow-2xl border-t border-[var(--border-subtle)] flex flex-col rounded-t-[2.5rem] overflow-hidden"
+            transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
+            className="fixed bottom-0 left-0 right-0 max-h-[85vh] h-[75vh] bg-[var(--bg-card)] z-[60] shadow-2xl border-t border-[var(--border-subtle)] flex flex-col rounded-t-[2.5rem] overflow-hidden will-change-transform transform-gpu"
           >
             {/* Grab Handle */}
             <div className="pt-3 pb-1 flex justify-center cursor-pointer" onClick={onClose}>
@@ -183,12 +184,10 @@ export function BookSearchSheet({
                   );
 
                   return (
-                    <motion.div
+                    <div
                       key={item.id}
-                      whileHover={{ scale: 1.005, x: 2 }}
-                      whileTap={{ scale: 0.98 }}
                       onClick={() => onSelectSearchResult(item)}
-                      className="glass-card p-3.5 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--accent)] cursor-pointer transition-all flex flex-col gap-2 group"
+                      className="glass-card p-3.5 rounded-2xl border border-[var(--border-subtle)] hover:border-[var(--accent)] cursor-pointer transition-all hover:scale-[1.005] active:scale-[0.98] flex flex-col gap-2 group"
                     >
                       {/* Hierarchy Path */}
                       <div className="flex items-center flex-wrap gap-1 text-xs text-[var(--text-muted)] font-medium">
@@ -248,7 +247,7 @@ export function BookSearchSheet({
                           {renderSnippetWithHighlight(matchSnippet || item.title, searchTerm, scriptKey)}
                         </div>
                       )}
-                    </motion.div>
+                    </div>
                   );
                 })
               )}
