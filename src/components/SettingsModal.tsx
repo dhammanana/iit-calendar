@@ -8,6 +8,7 @@ import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 import { LegalModal } from './LegalModal';
+import { Toggle } from './Toggle';
 import SunCalc from 'suncalc';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 
@@ -681,21 +682,5 @@ function StyledSelect({ value, onChange, children }: {
     >
       {children}
     </select>
-  );
-}
-
-/** Reusable toggle switch driven entirely by CSS variables */
-function Toggle({ value, onToggle }: { value: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={onToggle}
-      className="w-12 h-6 rounded-full relative transition-colors"
-      style={{ backgroundColor: value ? 'var(--accent)' : 'var(--bg-muted)' }}
-    >
-      <motion.div
-        animate={{ x: value ? 24 : 4 }}
-        className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm"
-      />
-    </button>
   );
 }

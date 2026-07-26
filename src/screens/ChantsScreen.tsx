@@ -13,6 +13,7 @@ import { convertPali, SCRIPTS } from '../services/conversionService';
 import { Script } from '../lib/pali-script';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
+import { Toggle } from '../components/Toggle';
 
 function ConvertedText({ text, script, className }: { text: string; script: string; className?: string }) {
   const [display, setDisplay] = useState(text);
@@ -216,7 +217,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
           {/* Mode Switcher */}
           <div className="h-14 flex items-center justify-center">
-            <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border border-slate-100 dark:border-slate-800">
+            <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border" style={{ borderColor: 'var(--border-subtle)' }}>
               {[
                 { id: 'counter', icon: List, label: t('chant.chant') || 'Chant' },
                 { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
@@ -258,7 +259,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                   >
                     {/* Selected Chant Display */}
                     <div 
-                      className="rounded-[2.5rem] p-8 border flex flex-col gap-6 mt-8 w-full"
+                      className="rounded-[2.5rem] p-8 border flex flex-col gap-6 w-full"
                       style={{
                         backgroundColor: 'var(--bg-card)',
                         borderColor: 'var(--border-subtle)'
@@ -318,20 +319,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                         <h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-tight">Stopwatch Mode</h4>
                         <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-1">Chant without duration limit</p>
                       </div>
-                      <button
-                        onClick={() => setIsStopwatch(!isStopwatch)}
-                        className={cn(
-                          "w-12 h-6 rounded-full transition-colors relative focus:outline-none flex-shrink-0 cursor-pointer",
-                          isStopwatch ? "bg-[var(--accent)]" : "bg-slate-200 dark:bg-slate-800"
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            "absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform shadow-md",
-                            isStopwatch ? "translate-x-6" : "translate-x-0"
-                          )}
-                        />
-                      </button>
+                      <Toggle value={isStopwatch} onToggle={() => setIsStopwatch(!isStopwatch)} />
                     </div>
 
                     {/* Duration Section (Only visible if not stopwatch) */}

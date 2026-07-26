@@ -356,7 +356,7 @@ export function StudyScreen() {
 
         {/* Tab Strip — Timer / Insights / Configs */}
         <div className="h-14 flex items-center justify-center">
-          <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border border-slate-100 dark:border-slate-800">
+          <div className="flex justify-center gap-2 p-1.5 rounded-full w-fit mx-auto border" style={{ borderColor: 'var(--border-subtle)' }}>
             {[
               { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
               { id: 'insights', icon: BarChart2, label: t('study.insights') || 'Insights' },

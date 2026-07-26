@@ -160,7 +160,7 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
       {!isStarted ? (
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-          className="flex flex-col items-center w-full pt-3 pb-5 gap-6"
+          className="flex flex-col items-center w-full pb-4 gap-8"
         >
           <div className="relative w-64 h-64 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 256 256">
@@ -177,14 +177,14 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
               />
             </svg>
 
-            <div className="text-center z-10 flex flex-col items-center">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] mb-2" style={{ color: 'var(--text-muted)' }}>
+            <div className="text-center z-10 flex flex-col items-center justify-center">
+              <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
                 Duration
               </span>
-              <div className="font-serif text-5xl font-medium tracking-tight text-[var(--text-primary)]">
+              <div className="font-serif text-5xl font-medium tracking-tight text-[var(--text-primary)] leading-none mb-2.5">
                 {timerSettings.hours > 0 ? `${timerSettings.hours}:${timerSettings.minutes.toString().padStart(2, '0')}:00` : `${timerSettings.minutes.toString().padStart(2, '0')}:00`}
               </div>
-              <div className="mt-3 text-[10px] font-medium text-[var(--text-secondary)] bg-[var(--surface)] px-3.5 py-1.5 rounded-full inline-block border border-[var(--border-subtle)]">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--border-subtle)]">
                 {timerSettings.hours === 0 && timerSettings.minutes === 0 ? "Stopwatch" : "Countdown"}
               </div>
             </div>
@@ -201,7 +201,7 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
             <Play size={20} fill="currentColor" /> Start Chanting
           </button>
           
-          <div className="w-full mt-8">
+          <div className="w-full">
             {children}
           </div>
         </motion.div>
@@ -215,7 +215,7 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
 
           {/* Big Tap Button & Actions Sticky Container */}
           <div className={cn(
-            "flex flex-col items-center sticky top-16 z-30 pt-3 pb-5 bg-[var(--bg-main)]/95 backdrop-blur-sm w-[calc(100%+2rem)] -mx-4 px-4 gap-6 transition-all duration-300",
+            "flex flex-col items-center sticky top-16 z-30 pb-5 bg-[var(--bg-main)]/95 backdrop-blur-sm w-[calc(100%+2rem)] -mx-4 px-4 gap-8 transition-all duration-300",
             isStuck 
               ? "border-b border-[var(--border-subtle)]/30 shadow-sm" 
               : "border-b-transparent shadow-none"
@@ -251,7 +251,7 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
                 }}
               >
                 <div
-                  className="w-full h-full rounded-full flex flex-col items-center justify-center relative overflow-hidden"
+                  className="w-full h-full rounded-full flex flex-col items-center justify-center relative overflow-hidden p-4 text-center"
                   style={{
                     backgroundColor: 'var(--accent)'
                   }}
@@ -261,11 +261,13 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
                     className="absolute inset-0 bg-white opacity-0"
                     whileTap={{ opacity: 0.15 }}
                   />
-                  <Hand size={36} className="text-white mb-1" />
-                  <span className="text-2xl font-serif text-white tracking-wide mb-1">
+                  <Hand size={28} className="text-white mb-1.5" />
+                  <span className="text-3xl font-serif text-white tracking-wide leading-none mb-2">
                     {totalDurationMs > 0 ? formatTime(remainingMs) : formatTime(elapsedMs)}
                   </span>
-                  <span className="text-[0.55rem] font-black uppercase tracking-[0.3em] text-white/80">{t('chant.tapToChant')}</span>
+                  <span className="text-[0.6rem] font-bold uppercase tracking-[0.25em] text-white/80 leading-none">
+                    {t('chant.tapToChant')}
+                  </span>
                 </div>
               </div>
             </motion.button>
@@ -372,7 +374,9 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
             </div>
           </div>
 
-          {children}
+          <div className="w-full mt-6">
+            {children}
+          </div>
         </motion.div>
       )}
     </div>

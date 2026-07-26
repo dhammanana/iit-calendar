@@ -542,11 +542,11 @@ export function MeditationScreen() {
                 exit={{ opacity: 0, y: -10 }}
                 className="flex flex-col items-center pb-4 relative"
               >
-                <div className="relative w-[300px] h-[300px] flex items-center justify-center mb-8">
-                  <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                    <circle cx="150" cy="150" r="120" stroke="var(--sm-surface)" strokeWidth="4" fill="none" className="opacity-40" />
+                <div className="relative w-64 h-64 flex items-center justify-center mb-8">
+                  <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 256 256">
+                    <circle cx="128" cy="128" r="120" stroke="var(--sm-surface)" strokeWidth="4" fill="none" className="opacity-40" />
                     <circle
-                      cx="150" cy="150" r="120"
+                      cx="128" cy="128" r="120"
                       stroke="var(--accent)"
                       strokeWidth="6"
                       fill="none"
@@ -557,22 +557,22 @@ export function MeditationScreen() {
                     />
                   </svg>
 
-                  <div className="text-center z-10 flex flex-col items-center">
+                  <div className="text-center z-10 flex flex-col items-center justify-center">
                     {countdown > 0 ? (
                       <>
-                        <span className="text-sm font-bold uppercase tracking-[0.3em] mb-2" style={{ color: 'var(--sm-text-muted)' }}>
+                        <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
                           {t('meditation.startingIn')}
                         </span>
-                        <div className="font-serif text-6xl font-medium tracking-tight" style={{ color: 'var(--accent)' }}>
+                        <div className="font-serif text-5xl font-medium tracking-tight leading-none" style={{ color: 'var(--accent)' }}>
                           {Math.ceil(countdown)}
                         </div>
                       </>
                     ) : (
                       <>
-                        <span className="text-sm font-bold uppercase tracking-[0.3em] mb-2" style={{ color: 'var(--sm-text-muted)' }}>
+                        <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
                           {isFinished ? t('meditation.complete') : (isPaused ? 'Paused' : t('meditation.remaining'))}
                         </span>
-                        <div className="font-serif text-6xl font-medium tracking-tight" style={{ color: 'var(--sm-text-primary)' }}>
+                        <div className="font-serif text-5xl font-medium tracking-tight leading-none" style={{ color: 'var(--text-primary)' }}>
                           {timeString}
                         </div>
                       </>

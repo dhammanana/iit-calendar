@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Clock, CheckSquare, Settings2 } from 'lucide-react';
 import { useI18n } from '../../hooks/useI18n';
+import { Toggle } from '../Toggle';
 
 export interface StudySettingsData {
   pomodoro: number;
@@ -196,19 +197,3 @@ export function StudySettings({ show, onClose, settings, onUpdate, inline }: Pro
   );
 }
 
-function Toggle({ checked, onChange }: { checked: boolean; onChange: (c: boolean) => void }) {
-  return (
-    <button
-      onClick={() => onChange(!checked)}
-      className="w-12 h-6 rounded-full flex items-center px-1 transition-colors"
-      style={{ backgroundColor: checked ? 'var(--sm-accent)' : 'var(--sm-surface)', border: '1px solid var(--sm-border)' }}
-    >
-      <motion.div
-        layout
-        className="w-4 h-4 bg-white rounded-full shadow-sm"
-        animate={{ x: checked ? 24 : 0 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-      />
-    </button>
-  );
-}
