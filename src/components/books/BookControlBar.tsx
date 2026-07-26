@@ -2,6 +2,7 @@ import React from 'react';
 import { BookOpen, Search, ChevronUp, ChevronDown, X, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { BookItem } from '../../types/book';
+import { Button } from '../Button';
 
 interface BookControlBarProps {
   isActive?: boolean;
@@ -57,13 +58,12 @@ export function BookControlBar({
     >
       {selectedBook && (
         /* Book Catalog Button */
-        <button
+        <Button
           onClick={onCatalog}
           title="Book Catalog"
-          className="btn-icon flex-shrink-0"
-        >
-          <BookOpen size={18} />
-        </button>
+          variant="outline"
+          icon={BookOpen}
+        />
       )}
 
       {/* Search Input Bar */}
@@ -115,42 +115,34 @@ export function BookControlBar({
       {/* Right Controls: Table of Contents & Section Pagination */}
       {selectedBook && (
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
-          <button
+          <Button
             onClick={onToggleToc}
             title="Table of Contents"
-            className="btn-icon flex-shrink-0"
-          >
-            <List size={18} />
-          </button>
+            variant="outline"
+            icon={List}
+          />
 
           {showPagination && (
             <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-              <button
+              <Button
                 onClick={onPrevSection}
                 disabled={currentSectionIndex <= 0}
                 title="Previous Section"
-                className="btn-icon flex-shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
-              >
-                <ChevronLeft size={18} />
-              </button>
+                variant="outline"
+                icon={ChevronLeft}
+              />
 
               <span className="text-[11px] sm:text-xs font-semibold text-[var(--text-muted)] flex-shrink-0 whitespace-nowrap px-0.5 select-none">
                 {currentSectionIndex + 1} of {totalSections}
               </span>
 
-              <button
+              <Button
                 onClick={onNextSection}
                 disabled={!hasNext}
                 title="Next Section"
-                className={cn(
-                  "btn-icon flex-shrink-0 transition-all",
-                  hasNext
-                    ? "bg-[var(--accent)] text-white border-transparent shadow-sm hover:opacity-90"
-                    : "disabled:opacity-30 disabled:cursor-not-allowed disabled:active:scale-100"
-                )}
-              >
-                <ChevronRight size={18} />
-              </button>
+                variant={hasNext ? "primary" : "outline"}
+                icon={ChevronRight}
+              />
             </div>
           )}
         </div>

@@ -11,6 +11,7 @@ import { Share } from '@capacitor/share';
 import { LegalModal } from './LegalModal';
 import { Toggle } from './Toggle';
 import { LabeledSelect } from './LabeledSelect';
+import { Button } from './Button';
 import SunCalc from 'suncalc';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 
@@ -573,16 +574,15 @@ export function SettingsModal({
                   </button>
                 </section>
 
-                <button
+                <Button
                   onClick={onClose}
-                  className="w-full py-4 rounded-3xl font-bold uppercase tracking-[0.2em] text-xs shadow-xl active:scale-[0.98] transition-all"
-                  style={{
-                    backgroundColor: 'var(--text-primary)',
-                    color: 'var(--bg-main)',
-                  }}
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  className="shadow-xl"
                 >
                   {t('common.confirm')}
-                </button>
+                </Button>
         </div>
       </Modal>
       <LegalModal show={showLegal} onClose={() => setShowLegal(false)} />

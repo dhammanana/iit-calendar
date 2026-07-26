@@ -3,6 +3,7 @@ import { ExternalLink, Shield, FileText, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useI18n } from '../hooks/useI18n';
 import { Modal } from './Modal';
+import { Button } from './Button';
 
 export function LegalModal({ show, onClose }: { show: boolean; onClose: () => void }) {
   const { t } = useI18n();
@@ -141,16 +142,15 @@ export function LegalModal({ show, onClose }: { show: boolean; onClose: () => vo
               )}
             </div>
 
-            <button
+            <Button
               onClick={onClose}
-              className="w-full mt-6 py-4 rounded-3xl font-bold uppercase tracking-[0.2em] text-xs active:scale-[0.98] transition-all"
-              style={{
-                backgroundColor: 'var(--text-primary)',
-                color: 'var(--bg-main)',
-              }}
+              variant="primary"
+              size="lg"
+              fullWidth
+              className="mt-6 tracking-[0.2em]"
             >
               Close
-            </button>
+            </Button>
     </Modal>
   );
 }

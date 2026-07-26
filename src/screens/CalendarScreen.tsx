@@ -37,6 +37,7 @@ import { useData } from '../DataContext';
 import { COLOR_TOKENS } from '../theme/index'
 import { CardOrderModal, DEFAULT_CARD_ORDER } from '../components/CardOrderModal';
 import { Edit2, Settings as SettingsIcon } from 'lucide-react';
+import { Button } from '../components/Button';
 import { useUI } from '../UIContext';
 import { PaliText } from '../components/PaliText';
 
@@ -335,13 +336,13 @@ export function CalendarScreen({
           <h1 className="font-serif text-3xl font-bold text-slate-800 dark:text-slate-100 leading-none mb-1.5">
             IIT Calendar
           </h1>
-          <button
+          <Button
             onClick={() => setShowSettings(true)}
-            className="btn-icon absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            variant="outline"
+            icon={SettingsIcon}
             aria-label="Settings"
-          >
-            <SettingsIcon size={18} />
-          </button>
+            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+          />
           <div className="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none flex-wrap">
             <span>{settings.calendarType === 'srilanka' ? t('calendar.srilanka') : settings.calendarType}</span>
             <span>·</span>
@@ -377,12 +378,14 @@ export function CalendarScreen({
                   {format(currentDate, 'yyyy')}
                 </span>
               </h2>
-              <button
+              <Button
                 onClick={goToToday}
-                className="btn-pill-ghost h-9"
+                variant="outline"
+                size="sm"
+                className="h-9"
               >
                 {t('common.today')}
-              </button>
+              </Button>
             </div>
 
             <div className="flex items-center gap-3">
@@ -984,30 +987,32 @@ export function CalendarScreen({
                       </div>
 
                       <div className="flex justify-center items-center gap-3 pt-2 relative z-10">
-                        <button
+                        <Button
                           onClick={() => setReflectionOffset(prev => prev - 1)}
-                          className="btn-pill-ghost w-9 h-9 !px-0 justify-center rounded-full"
-                        >
-                          <ChevronLeft size={20} />
-                        </button>
+                          variant="outline"
+                          icon={ChevronLeft}
+                          aria-label="Previous reflection"
+                        />
 
-                        <button
+                        <Button
                           onClick={() => {
                             const rand = Math.floor(Math.random() * firebaseReflections.length);
                             setReflectionOffset(rand);
                           }}
-                          className="btn-pill-ghost h-9 px-4"
+                          variant="outline"
+                          size="sm"
+                          icon={Shuffle}
+                          className="h-9"
                         >
-                          <Shuffle size={14} />
                           {t('calendar.random')}
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                           onClick={() => setReflectionOffset(prev => prev + 1)}
-                          className="btn-pill-ghost w-9 h-9 !px-0 justify-center rounded-full"
-                        >
-                          <ChevronRight size={20} />
-                        </button>
+                          variant="outline"
+                          icon={ChevronRight}
+                          aria-label="Next reflection"
+                        />
                       </div>
 
                       <div
@@ -1023,13 +1028,14 @@ export function CalendarScreen({
 
             {/* Edit Button */}
             <div className="flex justify-center mt-4">
-              <button
+              <Button
                 onClick={() => setShowOrderModal(true)}
-                className="btn-pill-lg"
+                variant="outline"
+                size="lg"
+                icon={Edit2}
               >
-                <Edit2 size={16} />
-                <span>{t('common.edit')}</span>
-              </button>
+                {t('common.edit')}
+              </Button>
             </div>
           </motion.div>
         </AnimatePresence>

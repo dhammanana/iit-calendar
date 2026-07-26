@@ -3,6 +3,7 @@ import { ChevronUp, ChevronDown, GripVertical, Check } from 'lucide-react';
 import { useI18n } from '../hooks/useI18n';
 import { cn } from '../lib/utils';
 import { Modal } from './Modal';
+import { Button } from './Button';
 
 export const DEFAULT_CARD_ORDER = [
   'uposatha',
@@ -130,12 +131,15 @@ export function CardOrderModal({
           })}
         </div>
 
-        <button
+        <Button
           onClick={onClose}
-          className="btn-primary mt-2"
+          variant="primary"
+          size="lg"
+          fullWidth
+          className="mt-2"
         >
           {t('common.confirm')}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

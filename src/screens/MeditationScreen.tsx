@@ -9,6 +9,7 @@ import { useI18n } from '../hooks/useI18n';
 import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { LabeledSelect } from '../components/LabeledSelect';
+import { Button } from '../components/Button';
 
 interface MeditationSession {
   id: string;
@@ -583,17 +584,15 @@ export function MeditationScreen() {
                         <RotateCcw size={18} />
                       </button>
 
-                      <button
+                      <Button
                         onClick={toggleTimer}
-                        className="flex-1 h-14 rounded-full flex items-center justify-center gap-3 font-bold tracking-widest uppercase text-xs transition-transform active:scale-95 border text-white shadow-lg"
-                        style={{
-                          backgroundColor: 'var(--accent)',
-                          borderColor: 'var(--accent-shadow)',
-                          boxShadow: '0 0 20px var(--accent-shadow)'
-                        }}
+                        variant="primary"
+                        size="lg"
+                        icon={Play}
+                        className="flex-1 h-14"
                       >
-                        <Play size={16} fill="currentColor" /> {t('meditation.startMeditation')}
-                      </button>
+                        {t('meditation.startMeditation')}
+                      </Button>
 
                       <button
                         onClick={() => setSettings(s => ({ ...s, soundEnabled: !s.soundEnabled }))}
@@ -617,32 +616,25 @@ export function MeditationScreen() {
                     </>
                   ) : (
                     <>
-                      <button
+                      <Button
                         onClick={handleStop}
-                        className="flex-1 h-14 rounded-full flex items-center justify-center gap-3 font-bold tracking-widest uppercase text-xs transition-all active:scale-95 border"
-                        style={{
-                          backgroundColor: 'var(--surface)',
-                          borderColor: 'var(--border)',
-                          color: 'var(--text-secondary)'
-                        }}
+                        variant="secondary"
+                        size="lg"
+                        icon={Square}
+                        className="flex-1 h-14"
                       >
-                        <Square size={16} fill="currentColor" /> Stop
-                      </button>
+                        Stop
+                      </Button>
 
-                      <button
+                      <Button
                         onClick={toggleTimer}
-                        className="flex-1 h-14 rounded-full flex items-center justify-center gap-3 font-bold tracking-widest uppercase text-xs transition-all active:scale-95 text-white shadow-lg"
-                        style={{
-                          backgroundColor: 'var(--accent)',
-                          boxShadow: '0 10px 15px -3px var(--accent-shadow), 0 4px 6px -4px var(--accent-shadow)'
-                        }}
+                        variant="primary"
+                        size="lg"
+                        icon={isRunning ? Pause : Play}
+                        className="flex-1 h-14"
                       >
-                        {isRunning ? (
-                          <><Pause size={16} fill="currentColor" /> Pause</>
-                        ) : (
-                          <><Play size={16} fill="currentColor" /> Resume</>
-                        )}
-                      </button>
+                        {isRunning ? 'Pause' : 'Resume'}
+                      </Button>
                     </>
                   )}
                 </div>

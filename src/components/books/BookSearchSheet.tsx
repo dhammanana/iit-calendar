@@ -5,6 +5,7 @@ import { cn } from '../../lib/utils';
 import { BookItem, SearchResultItem } from '../../types/book';
 import { TextProcessor, Script, buildDiacriticRegex } from '../../lib/pali-script';
 import { convertScriptText, getBookTitle } from '../../lib/bookUtils';
+import { Button } from '../Button';
 
 interface BookSearchSheetProps {
   isOpen: boolean;
@@ -132,13 +133,12 @@ export function BookSearchSheet({
                     {searchTerm.trim().length >= 2 && ` • ${searchResults.length} ${searchResults.length === 1 ? 'result' : 'results'} found`}
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={onClose}
-                  className="btn-icon"
+                  variant="outline"
+                  icon={X}
                   title="Close search"
-                >
-                  <X size={18} />
-                </button>
+                />
               </div>
 
               {/* Embedded Input inside Sheet Header */}

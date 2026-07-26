@@ -8,6 +8,7 @@ import { StudySettings, StudySettingsData } from '../components/study/StudySetti
 import { StudyInsights, StudySession } from '../components/study/StudyInsights';
 import { alarmService } from '../services/alarm/AlarmService';
 import { SegmentedControl } from '../components/SegmentedControl';
+import { Button } from '../components/Button';
 
 type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
@@ -516,31 +517,38 @@ export function StudyScreen() {
 
                       <div className="flex justify-between items-center pt-4 bg-[var(--bg-card-alt)] border-t border-[var(--border-subtle)] -mx-5 -mb-5 px-5 py-4 rounded-b-[2rem]">
                         {editingTaskId ? (
-                          <button onClick={() => deleteTask(editingTaskId)} className="text-sm font-bold text-red-500 uppercase tracking-widest">{t('study.delete') || 'Delete'}</button>
+                          <Button variant="danger" size="sm" onClick={() => deleteTask(editingTaskId)}>
+                            {t('study.delete') || 'Delete'}
+                          </Button>
                         ) : <div />}
                         <div className="flex gap-3">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => { setShowTaskForm(false); setEditingTaskId(null); }}
-                            className="px-5 py-2 rounded-full text-sm font-bold uppercase tracking-widest text-slate-500"
                           >
                             {t('study.cancel') || 'Cancel'}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="primary"
+                            size="sm"
                             onClick={handleSaveTask}
-                            className="px-6 py-2 rounded-full text-sm font-bold uppercase tracking-widest bg-saffron text-white shadow-md shadow-saffron/20 active:scale-95 hover:bg-saffron/90"
                           >
                             {t('study.save') || 'Save'}
-                          </button>
+                          </Button>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <button
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      size="lg"
+                      icon={PlusCircle}
                       onClick={() => { setTaskForm({ name: '', est: 1 }); setShowTaskForm(true); }}
-                      className="w-full py-3.5 border border-dashed border-slate-300 dark:border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-xs hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all duration-200 active:scale-[0.98]"
                     >
-                      <PlusCircle size={16} /> {t('study.addTask') || 'Add Task'}
-                    </button>
+                      {t('study.addTask') || 'Add Task'}
+                    </Button>
                   )}
                 </div>
 

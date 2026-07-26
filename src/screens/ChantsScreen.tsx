@@ -17,6 +17,7 @@ import { SegmentedControl } from '../components/SegmentedControl';
 import { Toggle } from '../components/Toggle';
 import { LabeledSelect } from '../components/LabeledSelect';
 import { PaliText } from '../components/PaliText';
+import { Button } from '../components/Button';
 
 export function ChantsScreen({ settings }: { settings: Settings }) {
   const { t } = useI18n();
@@ -421,17 +422,15 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                   </div>
                 </div>
 
-                <button
+                <Button
                   onClick={handleAddChant}
                   disabled={!newChant.title}
-                  className="w-full py-5 text-white rounded-full font-black uppercase tracking-widest transition-all shadow-lg active:scale-95"
-                  style={{
-                    backgroundColor: 'var(--accent)',
-                    boxShadow: '0 10px 15px -3px var(--accent-shadow), 0 4px 6px -4px var(--accent-shadow)'
-                  }}
+                  variant="primary"
+                  size="lg"
+                  fullWidth
                 >
                   {t('chant.createChant')}
-                </button>
+                </Button>
               </motion.div>
             </div>
           )}

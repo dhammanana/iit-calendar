@@ -4,6 +4,7 @@ import { X, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { BookItem, ParsedBook } from '../../types/book';
 import { convertScriptText, getBookTitle, SCRIPT_TO_LANG } from '../../lib/bookUtils';
+import { Button } from '../Button';
 
 interface BookTocSheetProps {
   isOpen: boolean;
@@ -65,7 +66,7 @@ export function BookTocSheet({
                 <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">Table of Contents</h3>
                 <p className="text-xs text-[var(--text-muted)] mt-0.5">{getBookTitle(selectedBook, t)}</p>
               </div>
-              <button onClick={onClose} className="btn-icon"><X size={18} /></button>
+              <Button onClick={onClose} variant="outline" icon={X} aria-label="Close table of contents" />
             </div>
 
             <div ref={tocRef} className="flex-1 overflow-y-auto p-4 space-y-5 pb-[calc(7rem+env(safe-area-inset-bottom,24px))] scrollbar-hide">
