@@ -93,6 +93,9 @@ export function useMeditationInsights(
       if (last7Days.some(d => isSameDay(d, sDate))) return acc + s.durationMin;
       return acc;
     }, 0);
+    const weeklySessionCount = sessions.filter(s =>
+      last7Days.some(d => isSameDay(startOfDay(new Date(s.date)), d))
+    ).length;
 
     const totalMinutes = sessions.reduce((acc, curr) => acc + curr.durationMin, 0);
     const totalHours = Math.floor(totalMinutes / 60);
@@ -115,6 +118,7 @@ export function useMeditationInsights(
       chartData,
       maxMinutesInChart,
       weeklyMinutes,
+      weeklySessionCount,
       totalMinutes,
       totalHours,
       currentStreak,

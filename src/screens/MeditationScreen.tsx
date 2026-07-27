@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { format, differenceInDays, startOfDay } from 'date-fns';
+
 import { meditationDbService } from '../services/MeditationDbService';
 import { bellSoundService } from '../services/BellSoundService';
 import { useI18n } from '../hooks/useI18n';
@@ -21,19 +21,30 @@ export function MeditationScreen() {
   const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day');
   const [chartOffset, setChartOffset] = useState(0);
 
-  const [settings, setSettings] = useState({
-    durationHours: 0,
-    durationMinutes: 15,
-    intervalMinutes: 0,
-    intervalSeconds: 0,
-    soundEnabled: true,
-    delaySeconds: 5,
-    bellType: 'bowl',
+  const SETTINGS_KEY = 'meditation_settings';
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SETTINGS_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return {
+      durationHours: 0,
+      durationMinutes: 15,
+      intervalMinutes: 0,
+      intervalSeconds: 0,
+      soundEnabled: true,
+      delaySeconds: 5,
+      bellType: 'bowl',
+    };
   });
 
   const totalDurationMin = (settings.durationHours || 0) * 60 + (settings.durationMinutes || 0);
   const totalDurationMs = totalDurationMin * 60 * 1000;
   const intervalMs = ((settings.intervalMinutes || 0) * 60 + (settings.intervalSeconds || 0)) * 1000;
+
+  useEffect(() => {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  }, [settings]);
 
   useEffect(() => {
     const refreshStats = async () => {
@@ -65,13 +76,12 @@ export function MeditationScreen() {
     chartData,
     maxMinutesInChart,
     weeklyMinutes,
+    weeklySessionCount,
     totalMinutes,
     totalHours,
     currentStreak,
     progressPercent,
   } = useMeditationInsights(stats.sessions, chartView, chartOffset);
-
-  const today = startOfDay(new Date());
 
   const hours = Math.floor(remainingMs / 3600000);
   const mins = Math.floor((remainingMs % 3600000) / 60000);
@@ -356,7 +366,7 @@ export function MeditationScreen() {
                   {[
                     { icon: Award, value: currentStreak, label: t('meditation.currentStreak') || 'Day Streak' },
                     { icon: Clock, value: Math.floor(weeklyMinutes / 60) > 0 ? `${Math.floor(weeklyMinutes / 60)}h ${weeklyMinutes % 60}m` : `${weeklyMinutes}m`, label: t('meditation.weeklyTime') || 'This Week' },
-                    { icon: Activity, value: stats.sessions.filter(s => differenceInDays(today, new Date(s.date)) < 7).length, label: t('meditation.sessions') || 'Sessions' },
+                    { icon: Activity, value: weeklySessionCount, label: t('meditation.sessions') || 'Sessions' },
                   ].map(({ icon: Icon, value, label }) => (
                     <div
                       key={label}
