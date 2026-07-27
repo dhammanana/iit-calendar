@@ -13,6 +13,9 @@ import { useMeditationTimer } from '../hooks/useMeditationTimer';
 import { useMeditationInsights } from '../hooks/useMeditationInsights';
 import { MeditationSession } from '../types';
 
+/** localStorage key for persisting meditation settings. */
+const SETTINGS_KEY = 'meditation_settings';
+
 export function MeditationScreen() {
   const { t } = useI18n();
 
@@ -21,7 +24,6 @@ export function MeditationScreen() {
   const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day');
   const [chartOffset, setChartOffset] = useState(0);
 
-  const SETTINGS_KEY = 'meditation_settings';
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
@@ -394,19 +396,19 @@ export function MeditationScreen() {
                   {/* Chart Controls */}
                   <div className="flex justify-between items-center mb-6">
                     <div className="flex bg-stone-100 dark:bg-stone-900 rounded-full p-1" style={{ backgroundColor: 'var(--sm-surface)' }}>
-                      {(['day', 'week', 'month'] as const).map(view => (
+                      {(['day', 'week', 'month'] as const).map(chartTab => (
                         <button
-                          key={view}
-                          onClick={() => { setChartView(view); setChartOffset(0); }}
+                          key={chartTab}
+                          onClick={() => { setChartView(chartTab); setChartOffset(0); }}
                           className={cn(
                             "px-3 sm:px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-full transition-all",
-                            chartView === view
+                            chartView === chartTab
                               ? "shadow-sm"
                               : "opacity-60 hover:opacity-100"
                           )}
-                          style={chartView === view ? { backgroundColor: 'var(--sm-card-bg)', color: 'var(--accent)' } : { color: 'var(--sm-text-secondary)' }}
+                          style={chartView === chartTab ? { backgroundColor: 'var(--sm-card-bg)', color: 'var(--accent)' } : { color: 'var(--sm-text-secondary)' }}
                         >
-                          {view === 'day' ? 'Day' : view === 'week' ? 'Week' : 'Month'}
+                          {chartTab === 'day' ? 'Day' : chartTab === 'week' ? 'Week' : 'Month'}
                         </button>
                       ))}
                     </div>

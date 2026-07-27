@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
 import { bellSoundService } from '../services/BellSoundService';
 
+/** Minimum elapsed session time (in minutes) required to save an interrupted session. */
+const MIN_SESSION_MINUTES = 5;
+
 export interface MeditationTimerSettings {
   delaySeconds: number;
   bellType: string;
@@ -20,9 +23,15 @@ export function useMeditationTimer(
   const [isFinished, setIsFinished] = useState(false);
   const [wakeLock, setWakeLock] = useState<WakeLockSentinel | null>(null);
 
+  // Ref mirrors wakeLock state to avoid stale closures in long-lived callbacks.
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
+
   // Ref to avoid stale closure in countdown interval
   const remainingMsRef = useRef(remainingMs);
   useEffect(() => { remainingMsRef.current = remainingMs; }, [remainingMs]);
+
+  // Ref to track countdown value inside the setInterval without going through state updater.
+  const countdownValueRef = useRef(0);
 
   const lastTickRef = useRef<number>(0);
 
@@ -31,11 +40,16 @@ export function useMeditationTimer(
     try {
       if (wakeLock) {
         await wakeLock.release();
+        wakeLockRef.current = null;
         setWakeLock(null);
       } else {
         const lock = await navigator.wakeLock.request('screen');
+        wakeLockRef.current = lock;
         setWakeLock(lock);
-        lock.addEventListener('release', () => setWakeLock(null));
+        lock.addEventListener('release', () => {
+          wakeLockRef.current = null;
+          setWakeLock(null);
+        });
       }
     } catch (err) {
       console.error('Wake Lock failed:', err);
@@ -78,25 +92,28 @@ export function useMeditationTimer(
 
     if (isRunning) {
       if (countdown > 0) {
-        // Delay countdown before starting
+        // Delay countdown before starting.
+        // Side effects (bell, alarm, timer start) are kept outside the state updater
+        // to maintain updater purity and avoid issues with React Strict Mode or
+        // future concurrent rendering.
+        countdownValueRef.current = countdown;
         lastTickRef.current = Date.now();
         countdownInterval = window.setInterval(() => {
           const now = Date.now();
           const delta = now - lastTickRef.current;
           lastTickRef.current = now;
 
-          setCountdown(prev => {
-            const next = prev - delta / 1000;
-            if (next <= 0) {
-              if (countdownInterval) clearInterval(countdownInterval);
-              const ms = remainingMsRef.current;
-              bellSoundService.playBell(settings.soundEnabled, settings.bellType);
-              alarmService.startMeditation(ms, intervalMs);
-              startActualTimer(ms);
-              return 0;
-            }
-            return next;
-          });
+          const next = Math.max(0, countdownValueRef.current - delta / 1000);
+          countdownValueRef.current = next;
+          setCountdown(next);
+
+          if (next <= 0) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            const ms = remainingMsRef.current;
+            bellSoundService.playBell(settings.soundEnabled, settings.bellType);
+            alarmService.startMeditation(ms, intervalMs);
+            startActualTimer(ms);
+          }
         }, 100);
       } else {
         // Start immediately (no delay)
@@ -119,7 +136,9 @@ export function useMeditationTimer(
       rem => setRemainingMs(rem),
       () => {
         handleComplete();
-        if (wakeLock) wakeLock.release();
+        // Use ref instead of the closed-over state value to get the current sentinel,
+        // even if the user toggled wake lock off after the session started.
+        if (wakeLockRef.current) wakeLockRef.current.release();
       },
       intervalMs,
       () => bellSoundService.playBell(settings.soundEnabled, settings.bellType)
@@ -151,7 +170,7 @@ export function useMeditationTimer(
     const elapsedMs = totalDurationMs - remainingMsRef.current;
     const elapsedMin = Math.floor(elapsedMs / 60000);
 
-    if (elapsedMin >= 5) {
+    if (elapsedMin >= MIN_SESSION_MINUTES) {
       await alarmService.completeActiveMeditation(elapsedMs);
     } else {
       await alarmService.stopMeditation();

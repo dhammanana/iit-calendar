@@ -32,6 +32,8 @@ class BellSoundService {
     let partials = [1, 1.503, 1.997, 2.502, 3.011];
     let duration = 4;
 
+    // 'bowl' is the UI name for the default singing-bowl timbre. 'singing_bowl' is the
+    // legacy alias. Both use the initial defaults set above — they deliberately have no branch.
     if (bellType === 'gong') {
       fundamental = 130.81; // C3
       partials = [1, 2.05, 3.1, 4.2];
@@ -53,6 +55,7 @@ class BellSoundService {
       partials = [1, 2, 3];
       duration = 3;
     }
+    // 'bowl', 'singing_bowl', or any unrecognised value keeps the singing-bowl defaults above.
 
     partials.forEach((p, i) => {
       const osc = ctx.createOscillator();
