@@ -1,4 +1,13 @@
-// Meditation sessions are managed fully offline inside MeditationScreen.tsx via localStorage.
-class MeditationService {}
+import { meditationDbService } from './MeditationDbService';
+
+class MeditationService {
+  public async getSessions() {
+    return meditationDbService.getSessions();
+  }
+
+  public async addSession(durationMin: number, customDate?: string) {
+    return meditationDbService.addSession(durationMin, customDate);
+  }
+}
 
 export const meditationService = new MeditationService();

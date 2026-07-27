@@ -1,60 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, X, Minus, Plus, Pause, Sun, ChevronLeft, ChevronRight, Settings as SettingsIcon, BarChart2 } from 'lucide-react';
+import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { format, differenceInDays, startOfDay, subDays, isSameDay, subWeeks, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
-import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
-import { meditationService } from '../services/MeditationService';
+import { format, differenceInDays, startOfDay } from 'date-fns';
 import { meditationDbService } from '../services/MeditationDbService';
+import { bellSoundService } from '../services/BellSoundService';
 import { useI18n } from '../hooks/useI18n';
-import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { LabeledSelect } from '../components/LabeledSelect';
 import { Button } from '../components/Button';
-
-interface MeditationSession {
-  id: string;
-  date: string;
-  durationMin: number;
-}
-
-interface MeditationStats {
-  sessions: MeditationSession[];
-}
+import { useMeditationTimer } from '../hooks/useMeditationTimer';
+import { useMeditationInsights } from '../hooks/useMeditationInsights';
+import { MeditationSession } from '../types';
 
 export function MeditationScreen() {
   const { t } = useI18n();
-  const { setShowSettings: setShowGlobalSettings } = useUI();
 
-  const [stats, setStats] = useState<MeditationStats>({ sessions: [] });
-  const [isPaused, setIsPaused] = useState(false);
-  const [wakeLock, setWakeLock] = useState<any>(null);
+  const [stats, setStats] = useState<{ sessions: MeditationSession[] }>({ sessions: [] });
   const [view, setView] = useState<'timer' | 'insights' | 'config'>('timer');
-
   const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day');
   const [chartOffset, setChartOffset] = useState(0);
-
-  const toggleWakeLock = async () => {
-    if (!('wakeLock' in navigator)) return;
-    try {
-      if (wakeLock) {
-        await wakeLock.release();
-        setWakeLock(null);
-      } else {
-        const lock = await (navigator as any).wakeLock.request('screen');
-        setWakeLock(lock);
-        lock.addEventListener('release', () => setWakeLock(null));
-      }
-    } catch (err) {
-      console.error('Wake Lock failed:', err);
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (wakeLock) wakeLock.release();
-    };
-  }, [wakeLock]);
 
   const [settings, setSettings] = useState({
     durationHours: 0,
@@ -70,15 +35,6 @@ export function MeditationScreen() {
   const totalDurationMs = totalDurationMin * 60 * 1000;
   const intervalMs = ((settings.intervalMinutes || 0) * 60 + (settings.intervalSeconds || 0)) * 1000;
 
-  const [remainingMs, setRemainingMs] = useState(totalDurationMs);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-
-  const lastTickRef = useRef<number>(Date.now());
-
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
   useEffect(() => {
     const refreshStats = async () => {
       const dbStats = await meditationDbService.getStats();
@@ -87,319 +43,35 @@ export function MeditationScreen() {
 
     refreshStats();
     const unsubscribe = meditationDbService.subscribe(refreshStats);
-
-    const init = async () => {
-      await alarmService.requestPermission();
-
-      // Reconcile sessions that finished in background
-      await alarmService.recheckMeditation();
-
-      // Refresh stats after recheck
-      refreshStats();
-
-      // Check for existing session
-      const savedActive = localStorage.getItem('active_meditation');
-
-      if (savedActive) {
-        const active: ActiveMeditation = JSON.parse(savedActive);
-        const elapsed = Date.now() - active.startTime;
-        if (elapsed < active.durationMs) {
-          setRemainingMs(active.durationMs - elapsed);
-          setIsRunning(true);
-        } else {
-          setRemainingMs(totalDurationMs);
-          setIsRunning(false);
-        }
-      }
-    };
-
-    init();
     return () => {
       unsubscribe();
     };
   }, []);
 
-  const initAudio = () => {
-    if (!audioCtxRef.current) {
-      const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
-      if (AudioCtx) audioCtxRef.current = new AudioCtx();
-    }
-    if (audioCtxRef.current?.state === 'suspended') {
-      audioCtxRef.current.resume();
-    }
-  };
+  const {
+    remainingMs,
+    countdown,
+    isRunning,
+    isPaused,
+    isFinished,
+    wakeLock,
+    toggleTimer,
+    handleStop,
+    resetTimer,
+    toggleWakeLock,
+  } = useMeditationTimer(totalDurationMs, intervalMs, settings);
 
-  const playBell = (type: string = settings.bellType) => {
-    if (!settings.soundEnabled) return;
-    initAudio();
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-
-    const now = ctx.currentTime;
-    let fundamental = 523.25; // C5
-    let partials = [1, 1.503, 1.997, 2.502, 3.011];
-    let duration = 4;
-
-    if (type === 'gong') {
-      fundamental = 130.81; // C3
-      partials = [1, 2.05, 3.1, 4.2];
-      duration = 6;
-    } else if (type === 'chime') {
-      fundamental = 1046.5; // C6
-      partials = [1, 1.2, 1.5];
-      duration = 2;
-    } else if (type === 'tibetan') {
-      fundamental = 261.63; // C4
-      partials = [1, 1.8, 2.7, 5.4];
-      duration = 5;
-    } else if (type === 'woodblock') {
-      fundamental = 800;
-      partials = [1, 1.5];
-      duration = 0.2;
-    } else if (type === 'bell') {
-      fundamental = 880; // A5
-      partials = [1, 2, 3];
-      duration = 3;
-    }
-
-    partials.forEach((p, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.frequency.setValueAtTime(fundamental * p, now);
-      gain.gain.setValueAtTime(0.15 / partials.length, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + duration + i * 0.4);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now);
-      osc.stop(now + duration + 1);
-    });
-  };
-
-  // Setup Initial Time when settings change
-  useEffect(() => {
-    if (!isRunning && !isPaused && !isFinished && countdown === 0) {
-      setRemainingMs(totalDurationMs);
-    }
-  }, [totalDurationMs, isRunning, isPaused, isFinished, countdown]);
-
-  // Main Timer Logic (Includes delay countdown)
-  useEffect(() => {
-    let countdownInterval: number | null = null;
-
-    if (isRunning) {
-      if (countdown > 0) {
-        lastTickRef.current = Date.now();
-        countdownInterval = window.setInterval(() => {
-          const now = Date.now();
-          const delta = now - lastTickRef.current;
-          lastTickRef.current = now;
-
-          setCountdown(prev => {
-            const next = prev - (delta / 1000);
-            if (next <= 0) {
-              if (countdownInterval) clearInterval(countdownInterval);
-              playBell(); // Start session bell
-              alarmService.startMeditation(remainingMs, intervalMs);
-              startActualTimer(remainingMs);
-              return 0;
-            }
-            return next;
-          });
-        }, 100);
-      } else {
-        // Start or resume actual timer
-        alarmService.startMeditation(remainingMs, intervalMs);
-        startActualTimer(remainingMs);
-      }
-    } else {
-      alarmService.stopForegroundTimer();
-    }
-
-    return () => {
-      if (countdownInterval) clearInterval(countdownInterval);
-      alarmService.stopForegroundTimer();
-    };
-  }, [isRunning]);
-
-  const startActualTimer = (ms: number) => {
-    alarmService.startForegroundTimer(
-      ms,
-      (rem) => setRemainingMs(rem),
-      () => {
-        handleComplete();
-        if (wakeLock) wakeLock.release();
-      },
-      intervalMs,
-      () => playBell()
-    );
-  };
-
-  const handleComplete = async () => {
-    setIsRunning(false);
-    setIsFinished(true);
-    playBell(); // End bell
-
-    // Complete session via AlarmService (Single Source of Truth)
-    await alarmService.completeActiveMeditation(totalDurationMs);
-  };
-
-  const handleStop = async () => {
-    setIsRunning(false);
-    setIsPaused(false);
-    if (wakeLock) wakeLock.release();
-
-    const elapsedMs = totalDurationMs - remainingMs;
-    const elapsedMin = Math.floor(elapsedMs / 60000);
-
-    if (elapsedMin >= 5) {
-      await alarmService.completeActiveMeditation(elapsedMs);
-    } else {
-      await alarmService.stopMeditation();
-    }
-
-    resetTimer();
-  };
-
-  const toggleTimer = async () => {
-    if (!isRunning && !isPaused && remainingMs === totalDurationMs) {
-      // Starting fresh
-      if (settings.delaySeconds > 0) {
-        setCountdown(settings.delaySeconds);
-      } else {
-        playBell();
-        alarmService.startMeditation(remainingMs, intervalMs);
-      }
-      setIsRunning(true);
-      setIsPaused(false);
-    } else if (isRunning) {
-      // Pause
-      setIsRunning(false);
-      setIsPaused(true);
-      alarmService.stopForegroundTimer();
-      await alarmService.stopMeditation();
-    } else if (isPaused) {
-      // Resume
-      setIsRunning(true);
-      setIsPaused(false);
-      alarmService.startMeditation(remainingMs, intervalMs);
-    } else if (isFinished) {
-      resetTimer();
-      setIsRunning(true);
-      if (settings.delaySeconds > 0) setCountdown(settings.delaySeconds);
-      else {
-        playBell();
-        alarmService.startMeditation(totalDurationMs, intervalMs);
-      }
-    }
-  };
-
-  const resetTimer = async () => {
-    setIsRunning(false);
-    setIsPaused(false);
-    setIsFinished(false);
-    setRemainingMs(totalDurationMs);
-    setCountdown(0);
-    if (wakeLock) wakeLock.release();
-
-    await alarmService.stopMeditation();
-  };
+  const {
+    chartData,
+    maxMinutesInChart,
+    weeklyMinutes,
+    totalMinutes,
+    totalHours,
+    currentStreak,
+    progressPercent,
+  } = useMeditationInsights(stats.sessions, chartView, chartOffset);
 
   const today = startOfDay(new Date());
-
-  // Calculate chart data dynamically based on view and offset
-  let chartData: { label: string; minutes: number; isCurrent: boolean; _start?: Date; _end?: Date; _date?: Date }[] = [];
-
-  if (chartView === 'day') {
-    const endDay = subDays(today, chartOffset * 7);
-    chartData = Array.from({ length: 7 }).map((_, i) => {
-      const d = subDays(endDay, 6 - i);
-      return {
-        label: format(d, 'E')[0],
-        minutes: 0,
-        isCurrent: chartOffset === 0 && isSameDay(d, today),
-        _date: d,
-      };
-    });
-
-    stats.sessions.forEach(s => {
-      const sDate = startOfDay(new Date(s.date));
-      const dayData = chartData.find(d => isSameDay(d._date!, sDate));
-      if (dayData) {
-        dayData.minutes += s.durationMin;
-      }
-    });
-  } else if (chartView === 'week') {
-    const endWeekDate = subWeeks(today, chartOffset * 7);
-    chartData = Array.from({ length: 7 }).map((_, i) => {
-      const d = subWeeks(endWeekDate, 6 - i);
-      const start = startOfWeek(d, { weekStartsOn: 1 });
-      const end = endOfWeek(d, { weekStartsOn: 1 });
-      return {
-        label: format(start, 'dd/MM'),
-        minutes: 0,
-        isCurrent: chartOffset === 0 && i === 6,
-        _start: start,
-        _end: end,
-      };
-    });
-
-    stats.sessions.forEach(s => {
-      const sDate = startOfDay(new Date(s.date));
-      const weekData = chartData.find(d => sDate >= d._start! && sDate <= d._end!);
-      if (weekData) {
-        weekData.minutes += s.durationMin;
-      }
-    });
-  } else if (chartView === 'month') {
-    const endMonthDate = subMonths(today, chartOffset * 6);
-    chartData = Array.from({ length: 6 }).map((_, i) => {
-      const d = subMonths(endMonthDate, 5 - i);
-      const start = startOfMonth(d);
-      const end = endOfMonth(d);
-      return {
-        label: format(start, 'MMM'),
-        minutes: 0,
-        isCurrent: chartOffset === 0 && i === 5,
-        _start: start,
-        _end: end,
-      };
-    });
-
-    stats.sessions.forEach(s => {
-      const sDate = startOfDay(new Date(s.date));
-      const monthData = chartData.find(d => sDate >= d._start! && sDate <= d._end!);
-      if (monthData) {
-        monthData.minutes += s.durationMin;
-      }
-    });
-  }
-
-  const maxMinutesInChart = Math.max(...chartData.map(d => d.minutes), 20);
-
-  // Keep original weeklyMinutes calculation for the stats cards (always last 7 days)
-  const last7Days = Array.from({ length: 7 }).map((_, i) => subDays(today, 6 - i));
-  const weeklyMinutes = stats.sessions.reduce((acc, s) => {
-    const sDate = startOfDay(new Date(s.date));
-    if (last7Days.some(d => isSameDay(d, sDate))) return acc + s.durationMin;
-    return acc;
-  }, 0);
-
-  const totalMinutes = stats.sessions.reduce((acc, curr) => acc + curr.durationMin, 0);
-  const totalHours = Math.floor(totalMinutes / 60);
-
-  let currentStreak = 0;
-  for (let i = 0; i < 365; i++) {
-    const d = subDays(today, i);
-    const hasSession = stats.sessions.some(s => isSameDay(startOfDay(new Date(s.date)), d));
-    if (hasSession) {
-      currentStreak++;
-    } else if (i > 0) {
-      break;
-    }
-  }
-
-  const milestone = 500;
-  const progressPercent = Math.min((weeklyMinutes / milestone) * 100, 100);
 
   const hours = Math.floor(remainingMs / 3600000);
   const mins = Math.floor((remainingMs % 3600000) / 60000);
@@ -906,7 +578,7 @@ export function MeditationScreen() {
                               key={`bell-option-${bell}`}
                               onClick={() => {
                                 setSettings({ ...settings, bellType: bell });
-                                playBell(bell);
+                                bellSoundService.playBell(true, bell);
                               }}
                               className="py-3.5 text-[10px] font-black rounded-xl capitalize border transition-all active:scale-95 cursor-pointer"
                               style={{
