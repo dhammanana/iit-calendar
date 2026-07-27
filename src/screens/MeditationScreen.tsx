@@ -5,6 +5,7 @@ import { cn } from '../lib/utils';
 import { format, differenceInDays, startOfDay, subDays, isSameDay, subWeeks, subMonths, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
 import { meditationService } from '../services/MeditationService';
+import { meditationDbService } from '../services/MeditationDbService';
 import { useI18n } from '../hooks/useI18n';
 import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -24,15 +25,8 @@ interface MeditationStats {
 export function MeditationScreen() {
   const { t } = useI18n();
   const { setShowSettings: setShowGlobalSettings } = useUI();
-  const loadStats = () => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('zen_meditation_stats');
-      return saved ? JSON.parse(saved) : { sessions: [] };
-    }
-    return { sessions: [] };
-  };
 
-  const [stats, setStats] = useState<MeditationStats>(loadStats);
+  const [stats, setStats] = useState<MeditationStats>({ sessions: [] });
   const [isPaused, setIsPaused] = useState(false);
   const [wakeLock, setWakeLock] = useState<any>(null);
   const [view, setView] = useState<'timer' | 'insights' | 'config'>('timer');
@@ -86,11 +80,22 @@ export function MeditationScreen() {
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
+    const refreshStats = async () => {
+      const dbStats = await meditationDbService.getStats();
+      setStats(dbStats);
+    };
+
+    refreshStats();
+    const unsubscribe = meditationDbService.subscribe(refreshStats);
+
     const init = async () => {
       await alarmService.requestPermission();
 
       // Reconcile sessions that finished in background
       await alarmService.recheckMeditation();
+
+      // Refresh stats after recheck
+      refreshStats();
 
       // Check for existing session
       const savedActive = localStorage.getItem('active_meditation');
@@ -102,8 +107,6 @@ export function MeditationScreen() {
           setRemainingMs(active.durationMs - elapsed);
           setIsRunning(true);
         } else {
-          const savedStats = localStorage.getItem('zen_meditation_stats');
-          if (savedStats) setStats(JSON.parse(savedStats));
           setRemainingMs(totalDurationMs);
           setIsRunning(false);
         }
@@ -111,6 +114,9 @@ export function MeditationScreen() {
     };
 
     init();
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const initAudio = () => {
@@ -233,43 +239,22 @@ export function MeditationScreen() {
     setIsFinished(true);
     playBell(); // End bell
 
-    await alarmService.stopMeditation();
-
-    // Save session
-    const newSession: MeditationSession = {
-      id: Date.now().toString(),
-      date: new Date().toISOString(),
-      durationMin: totalDurationMin,
-    };
-
-    const newStats = { ...stats, sessions: [...stats.sessions, newSession] };
-    setStats(newStats);
-    localStorage.setItem('zen_meditation_stats', JSON.stringify(newStats));
-
-
+    // Complete session via AlarmService (Single Source of Truth)
+    await alarmService.completeActiveMeditation(totalDurationMs);
   };
 
   const handleStop = async () => {
     setIsRunning(false);
     setIsPaused(false);
     if (wakeLock) wakeLock.release();
-    await alarmService.stopMeditation();
 
     const elapsedMs = totalDurationMs - remainingMs;
     const elapsedMin = Math.floor(elapsedMs / 60000);
 
     if (elapsedMin >= 5) {
-      const newSession: MeditationSession = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        durationMin: elapsedMin,
-      };
-
-      const newStats = { ...stats, sessions: [...stats.sessions, newSession] };
-      setStats(newStats);
-      localStorage.setItem('zen_meditation_stats', JSON.stringify(newStats));
-
-
+      await alarmService.completeActiveMeditation(elapsedMs);
+    } else {
+      await alarmService.stopMeditation();
     }
 
     resetTimer();

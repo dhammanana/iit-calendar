@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { WidgetBridgePlugin } from 'capacitor-widget-bridge';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { format, startOfDay, subDays, isSameDay } from 'date-fns';
+import { meditationDbService } from '../services/MeditationDbService';
 
 const APP_GROUP = 'group.iit.calendar';
 
@@ -41,11 +42,14 @@ export function useWidgetSync() {
 
       await WidgetBridgePlugin.setItem({ key: 'sun_times', value: JSON.stringify(timesArray), group: APP_GROUP });
 
-      // 3. Meditation Stats
-      const medStatsRaw = localStorage.getItem('zen_meditation_stats');
-      const medStats = medStatsRaw ? JSON.parse(medStatsRaw) : { sessions: [] };
-      const medStreak = calculateStreak(medStats.sessions || []);
-      const medMonth = calculateMonthMinutes(medStats.sessions || [], 'durationMin');
+      // 3. Meditation Stats (from SQLite DB via MeditationDbService)
+      let medSessions = await meditationDbService.getSessions();
+      if (!medSessions || medSessions.length === 0) {
+        const medStatsRaw = localStorage.getItem('zen_meditation_stats');
+        medSessions = medStatsRaw ? (JSON.parse(medStatsRaw).sessions || []) : [];
+      }
+      const medStreak = calculateStreak(medSessions);
+      const medMonth = calculateMonthMinutes(medSessions, 'durationMin');
       await WidgetBridgePlugin.setItem({ key: 'meditation_stats', value: JSON.stringify({ streak: medStreak, monthMinutes: medMonth }), group: APP_GROUP });
 
       // 4. Chanting Stats

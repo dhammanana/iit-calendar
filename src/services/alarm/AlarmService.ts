@@ -4,6 +4,7 @@ import { Settings } from '../../types';
 import { SunTimesCalculator } from '../../lib/calendar/SunTimesCalculator';
 import { subMinutes } from 'date-fns';
 import { Capacitor } from '@capacitor/core';
+import { meditationDbService } from '../MeditationDbService';
 
 export interface ActiveMeditation {
   startTime: number;
@@ -171,6 +172,19 @@ class AlarmService {
     await alarmPlugin.cancel([AlarmId.MEDITATION_END, ...intervalIds]);
   }
 
+  public async completeActiveMeditation(actualElapsedMs?: number): Promise<void> {
+    const saved = localStorage.getItem('active_meditation');
+    if (saved) {
+      const active: ActiveMeditation = JSON.parse(saved);
+      const elapsedMs = actualElapsedMs ?? (Date.now() - active.startTime);
+      const durationMin = Math.floor(elapsedMs / 60000);
+      if (durationMin >= 1) {
+        await meditationDbService.addSession(durationMin, new Date(active.startTime).toISOString());
+      }
+    }
+    await this.stopMeditation();
+  }
+
   public async recheckMeditation(): Promise<void> {
     const saved = localStorage.getItem('active_meditation');
     if (!saved) return;
@@ -180,8 +194,7 @@ class AlarmService {
     const elapsed = now - active.startTime;
 
     if (elapsed >= active.durationMs) {
-      this.logMeditationSession(active.durationMs, active.startTime);
-      localStorage.removeItem('active_meditation');
+      await this.completeActiveMeditation(active.durationMs);
     } else {
       // Reschedule remaining
       const remaining = active.durationMs - elapsed;
@@ -311,27 +324,6 @@ class AlarmService {
       this.worker.terminate();
       this.worker = null;
     }
-  }
-
-  private logMeditationSession(durationMs: number, startTime: number): void {
-    const durationMin = Math.floor(durationMs / 60000);
-    if (durationMin < 1) return;
-
-    const savedStats = localStorage.getItem('zen_meditation_stats');
-    const stats = savedStats ? JSON.parse(savedStats) : { sessions: [] };
-    
-    const sessionId = startTime.toString();
-    const exists = stats.sessions.some((s: any) => s.id === sessionId);
-    if (exists) return;
-
-    const newSession = {
-      id: sessionId,
-      date: new Date(startTime).toISOString(),
-      durationMin: durationMin,
-    };
-    
-    stats.sessions.push(newSession);
-    localStorage.setItem('zen_meditation_stats', JSON.stringify(stats));
   }
 }
 
