@@ -180,7 +180,8 @@ class AlarmService {
         const elapsedMs = actualElapsedMs ?? (Date.now() - active.startTime);
         const durationMin = Math.floor(elapsedMs / 60000);
         if (durationMin >= 1) {
-          await meditationDbService.addSession(durationMin, new Date(active.startTime).toISOString());
+          const startTimeMs = typeof active.startTime === 'number' ? active.startTime : new Date(active.startTime).getTime();
+          await meditationDbService.addSession(durationMin, new Date(startTimeMs).toISOString());
         }
       } catch (err) {
         console.error('Failed to complete meditation session:', err);

@@ -70,6 +70,7 @@ export function useMeditationTimer(
           setRemainingMs(active.durationMs - elapsed);
           setIsRunning(true);
         } else {
+          // Stale session from a previous run — recheckMeditation already completed it if needed
           setRemainingMs(totalDurationMs);
           setIsRunning(false);
         }
@@ -191,6 +192,8 @@ export function useMeditationTimer(
     if (!isRunning && !isPaused && (remainingMs === totalDurationMs || isFinished)) {
       // Fresh start or restart after finish
       setIsFinished(false);
+      setRemainingMs(totalDurationMs);
+      remainingMsRef.current = totalDurationMs;
       if (settings.delaySeconds > 0) {
         setCountdown(settings.delaySeconds);
       } else {

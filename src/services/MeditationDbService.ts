@@ -23,9 +23,13 @@ class MeditationDbService {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
-      await initPowerSync();
-      await this.migrateLegacyLocalStorageData();
-      this.isInitialized = true;
+      try {
+        await initPowerSync();
+        await this.migrateLegacyLocalStorageData();
+        this.isInitialized = true;
+      } catch (err) {
+        console.error('[MeditationDbService] Failed during init:', err);
+      }
     })();
 
     return this.initPromise;
@@ -65,19 +69,41 @@ class MeditationDbService {
 
   public async getSessions(): Promise<MeditationSession[]> {
     await this.init();
+    let sqliteSessions: MeditationSession[] = [];
     try {
-      const result = await db.getAll<MeditationSessionRecord>(
+      const dbQueryPromise = db.getAll<MeditationSessionRecord>(
         `SELECT * FROM meditation_sessions WHERE deleted IS NOT 1 ORDER BY date DESC`
       );
+      const queryTimeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('SQLite query timeout')), 1500)
+      );
 
-      return result.map(row => ({
+      const result = await Promise.race([dbQueryPromise, queryTimeout]);
+
+      sqliteSessions = result.map(row => ({
         id: row.id,
         date: row.date,
         durationMin: row.duration_min
       }));
     } catch (err) {
-      console.error('Failed to fetch meditation sessions from SQLite:', err);
-      return [];
+      console.warn('Failed or timed out fetching meditation sessions from SQLite:', err);
+    }
+
+    try {
+      const savedStatsStr = localStorage.getItem('zen_meditation_stats');
+      const parsed = savedStatsStr ? JSON.parse(savedStatsStr) : { sessions: [] };
+      const lsSessions: MeditationSession[] = Array.isArray(parsed?.sessions) ? parsed.sessions : [];
+
+      // Combine and deduplicate
+      const combined = [...sqliteSessions];
+      for (const s of lsSessions) {
+        if (!combined.some(c => c.id === s.id || c.date === s.date)) {
+          combined.push(s);
+        }
+      }
+      return combined.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    } catch {
+      return sqliteSessions;
     }
   }
 
@@ -86,34 +112,69 @@ class MeditationDbService {
     const nowIso = new Date().toISOString();
     const sessionDate = customDate || nowIso;
 
-    // Deduplication check: avoid logging multiple sessions for the exact same start timestamp
-    const existing = await db.getAll<MeditationSessionRecord>(
-      `SELECT * FROM meditation_sessions WHERE date = ? AND deleted IS NOT 1`,
-      [sessionDate]
-    );
+    try {
+      // Deduplication check: avoid logging multiple sessions for the exact same start timestamp
+      const dbQueryPromise = db.getAll<MeditationSessionRecord>(
+        `SELECT * FROM meditation_sessions WHERE date = ? AND deleted IS NOT 1`,
+        [sessionDate]
+      );
+      const queryTimeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('SQLite query timeout')), 1500)
+      );
 
-    if (existing.length > 0) {
+      const existing = await Promise.race([dbQueryPromise, queryTimeout]);
+
+      if (existing.length > 0) {
+        return {
+          id: existing[0].id,
+          date: existing[0].date,
+          durationMin: existing[0].duration_min
+        };
+      }
+
+      const id = uuidv7();
+
+      const dbExecPromise = db.execute(
+        `INSERT INTO meditation_sessions (id, date, duration_min, created_at, updated_at, deleted) VALUES (?, ?, ?, ?, ?, 0)`,
+        [id, sessionDate, durationMin, nowIso, nowIso]
+      );
+      const execTimeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('SQLite execute timeout')), 1500)
+      );
+
+      await Promise.race([dbExecPromise, execTimeout]);
+      this.notifyListeners();
+
       return {
-        id: existing[0].id,
-        date: existing[0].date,
-        durationMin: existing[0].duration_min
+        id,
+        date: sessionDate,
+        durationMin
       };
+    } catch (dbErr) {
+      console.warn('[MeditationDbService] SQLite query/execute error or timeout, saving to localStorage:', dbErr);
+      const newSession: MeditationSession = {
+        id: uuidv7(),
+        date: sessionDate,
+        durationMin
+      };
+
+      try {
+        const savedStatsStr = localStorage.getItem('zen_meditation_stats');
+        const parsed = savedStatsStr ? JSON.parse(savedStatsStr) : { sessions: [] };
+        const sessions: MeditationSession[] = Array.isArray(parsed?.sessions) ? parsed.sessions : [];
+        
+        // Prevent exact duplicate in localStorage
+        if (!sessions.some(s => s.date === sessionDate)) {
+          sessions.unshift(newSession);
+          localStorage.setItem('zen_meditation_stats', JSON.stringify({ sessions }));
+        }
+      } catch (lsErr) {
+        console.error('[MeditationDbService] Failed to save session in localStorage fallback:', lsErr);
+      }
+
+      this.notifyListeners();
+      return newSession;
     }
-
-    const id = uuidv7();
-
-    await db.execute(
-      `INSERT INTO meditation_sessions (id, date, duration_min, created_at, updated_at, deleted) VALUES (?, ?, ?, ?, ?, 0)`,
-      [id, sessionDate, durationMin, nowIso, nowIso]
-    );
-
-    this.notifyListeners();
-
-    return {
-      id,
-      date: sessionDate,
-      durationMin
-    };
   }
 
   public async deleteSession(id: string): Promise<void> {
