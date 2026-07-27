@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { WidgetBridgePlugin } from 'capacitor-widget-bridge';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { format, startOfDay, subDays, isSameDay } from 'date-fns';
@@ -16,7 +17,7 @@ export function useWidgetSync() {
 
   const syncWidgetData = async () => {
     try {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined' || !Capacitor.isNativePlatform()) return;
 
       // 1. Settings & Location
       const settingsRaw = localStorage.getItem('iit_settings');

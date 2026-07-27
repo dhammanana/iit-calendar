@@ -175,11 +175,15 @@ class AlarmService {
   public async completeActiveMeditation(actualElapsedMs?: number): Promise<void> {
     const saved = localStorage.getItem('active_meditation');
     if (saved) {
-      const active: ActiveMeditation = JSON.parse(saved);
-      const elapsedMs = actualElapsedMs ?? (Date.now() - active.startTime);
-      const durationMin = Math.floor(elapsedMs / 60000);
-      if (durationMin >= 1) {
-        await meditationDbService.addSession(durationMin, new Date(active.startTime).toISOString());
+      try {
+        const active: ActiveMeditation = JSON.parse(saved);
+        const elapsedMs = actualElapsedMs ?? (Date.now() - active.startTime);
+        const durationMin = Math.floor(elapsedMs / 60000);
+        if (durationMin >= 1) {
+          await meditationDbService.addSession(durationMin, new Date(active.startTime).toISOString());
+        }
+      } catch (err) {
+        console.error('Failed to complete meditation session:', err);
       }
     }
     await this.stopMeditation();

@@ -185,6 +185,9 @@ export function useMeditationTimer(
   };
 
   const toggleTimer = async () => {
+    // Unlock and resume Web AudioContext on direct user interaction
+    bellSoundService.initAudio();
+
     if (!isRunning && !isPaused && (remainingMs === totalDurationMs || isFinished)) {
       // Fresh start or restart after finish
       setIsFinished(false);

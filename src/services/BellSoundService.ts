@@ -11,21 +11,21 @@ class BellSoundService {
     return BellSoundService.instance;
   }
 
-  public initAudio(): void {
+  public async initAudio(): Promise<void> {
     if (!this.audioCtx) {
       const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
       if (AudioCtx) this.audioCtx = new AudioCtx();
     }
     if (this.audioCtx?.state === 'suspended') {
-      this.audioCtx.resume();
+      await this.audioCtx.resume();
     }
   }
 
-  public playBell(soundEnabled = true, bellType = 'singing_bowl'): void {
+  public async playBell(soundEnabled = true, bellType = 'singing_bowl'): Promise<void> {
     if (!soundEnabled) return;
-    this.initAudio();
+    await this.initAudio();
     const ctx = this.audioCtx;
-    if (!ctx) return;
+    if (!ctx || ctx.state === 'suspended') return;
 
     const now = ctx.currentTime;
     let fundamental = 523.25; // C5
