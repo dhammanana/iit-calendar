@@ -10,12 +10,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
     }
 
-    const { version_build, version_name } = body;
-    console.log('👉 Capgo Update Request:', { version_build, version_name });
+    const { version_build, version_name, custom_id } = body;
+    console.log('👉 Capgo Update Request:', { version_build, version_name, custom_id });
 
     if (!version_build) {
       return NextResponse.json({ error: 'Missing version_build parameter' }, { status: 400 });
     }
+
+    const channel = custom_id || 'stable';
 
     // Use version_name if available and not 'builtin'; otherwise fallback to version_build
     const currentVersion = (!version_name || version_name === 'builtin') ? version_build : version_name;
@@ -30,18 +32,25 @@ export async function POST(request: NextRequest) {
       .map(release => {
         const parsedRel = parseSemVer(release.tag_name);
         const asset = release.assets.find(a => a.name === 'web-build.zip');
+        const isDevRelease = release.tag_name.includes('-dev') || release.prerelease === true;
         return {
           release,
           parsedRel,
-          asset
+          asset,
+          isDevRelease
         };
       })
-      .filter(({ parsedRel, asset }) => {
-        return (
-          !!asset &&
-          parsedRel.major === parsedClient.major &&
-          parsedRel.minor === parsedClient.minor
-        );
+      .filter(({ parsedRel, asset, isDevRelease }) => {
+        if (!asset || parsedRel.major !== parsedClient.major || parsedRel.minor !== parsedClient.minor) {
+          return false;
+        }
+
+        // If client is on stable channel, skip dev / pre-releases
+        if (channel === 'stable' && isDevRelease) {
+          return false;
+        }
+
+        return true;
       });
 
     if (matchingReleases.length === 0) {
