@@ -226,6 +226,8 @@
     "chantContent": "Chant Text (Pali)",
     "milestone": "Milestone",
     "createChant": "Create Chant",
+    "editChant": "Edit Chant",
+    "saveChant": "Save Changes",
     "loading": "Loading...",
     "selectChant": "Select Chant",
     "unknown": "Unknown",

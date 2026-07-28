@@ -33,7 +33,8 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
   const [isStopwatch, setIsStopwatch] = useState(true);
   const [timerSettings, setTimerSettings] = useState({ hours: 0, minutes: 15 });
 
-  // New chant form
+  // New / Edit chant form
+  const [editingChantId, setEditingChantId] = useState<string | null>(null);
   const [newChant, setNewChant] = useState({ title: '', content: '', milestone: 108, isNamePali: false });
 
   useEffect(() => {
@@ -106,7 +107,24 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
     setSessions(history);
   };
 
-  const handleAddChant = async () => {
+  const handleOpenAddModal = () => {
+    setEditingChantId(null);
+    setNewChant({ title: '', content: '', milestone: 108, isNamePali: false });
+    setShowAddModal(true);
+  };
+
+  const handleOpenEditModal = (chant: UserChant) => {
+    setEditingChantId(chant.id);
+    setNewChant({
+      title: chant.title || '',
+      content: chant.content || chant.chant || '',
+      milestone: chant.milestone || 108,
+      isNamePali: chant.isNamePali !== undefined ? chant.isNamePali : false
+    });
+    setShowAddModal(true);
+  };
+
+  const handleSaveChant = async () => {
     if (!newChant.title) return;
 
     // Convert content to Roman script if it's not empty
@@ -115,11 +133,22 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
       convertedContent = await convertPali(convertedContent, 'roman');
     }
 
-    await chantService.addChant({
-      ...newChant,
-      content: convertedContent,
-      isCustom: true
-    });
+    if (editingChantId) {
+      await chantService.updateChant(editingChantId, {
+        title: newChant.title,
+        content: convertedContent,
+        milestone: newChant.milestone,
+        isNamePali: newChant.isNamePali
+      });
+    } else {
+      await chantService.addChant({
+        ...newChant,
+        content: convertedContent,
+        isCustom: true
+      });
+    }
+    
+    setEditingChantId(null);
     setNewChant({ title: '', content: '', milestone: 108, isNamePali: false });
     setShowAddModal(false);
   };
@@ -348,7 +377,8 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                     chants={chants}
                     selectedChantId={selectedChantId}
                     onSelect={setSelectedChantId}
-                    onAddChant={() => setShowAddModal(true)}
+                    onAddChant={handleOpenAddModal}
+                    onEditChant={handleOpenEditModal}
                     paliScript={settings.paliScript}
                   />
                 </div>
@@ -356,13 +386,16 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
             )}
           </AnimatePresence>
 
-          {/* Add Modal */}
+          {/* Add / Edit Modal */}
           {showAddModal && (
             <div
               className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-sm"
               style={{ background: 'rgba(0,0,0,0.45)' }}
               onClick={(e) => {
-                if (e.target === e.currentTarget) setShowAddModal(false);
+                if (e.target === e.currentTarget) {
+                  setShowAddModal(false);
+                  setEditingChantId(null);
+                }
               }}
             >
               <motion.div
@@ -374,9 +407,19 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                   borderColor: 'var(--border-subtle)'
                 }}
               >
-                <div className="flex justify-between items-start gap-4">
-                  <h3 className="font-serif text-2xl break-words min-w-0 pr-2" style={{ color: 'var(--text-primary)' }}>{t('chant.newChant')}</h3>
-                  <button onClick={() => setShowAddModal(false)} className="flex-shrink-0 mt-1" style={{ color: 'var(--accent)' }}><X /></button>
+                <div className="flex justify-between items-center">
+                  <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                    {editingChantId ? (t('chant.editChant') || 'Edit Chant') : t('chant.newChant')}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setEditingChantId(null);
+                    }}
+                    className="p-2 rounded-full hover:bg-[var(--bg-muted)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -431,13 +474,13 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                 </div>
 
                 <Button
-                  onClick={handleAddChant}
+                  onClick={handleSaveChant}
                   disabled={!newChant.title}
                   variant="primary"
                   size="lg"
                   fullWidth
                 >
-                  {t('chant.createChant')}
+                  {editingChantId ? (t('chant.saveChant') || 'Save Changes') : t('chant.createChant')}
                 </Button>
               </motion.div>
             </div>

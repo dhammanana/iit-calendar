@@ -202,6 +202,8 @@
     "chantContent": "ข้อความบทสวด (บาลี)",
     "milestone": "เป้าหมายการสวด",
     "createChant": "สร้างบทสวด",
+    "editChant": "แก้ไขบทสวด",
+    "saveChant": "บันทึกการเปลี่ยนแปลง",
     "loading": "กำลังโหลด...",
     "ofChants": "จาก {{count}} บทสวด",
     "tapToChant": "แตะเพื่อสวด",

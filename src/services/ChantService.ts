@@ -296,6 +296,29 @@ class ChantService {
     return newId;
   }
 
+  async updateChant(chantId: string, updates: { title: string; content?: string; milestone?: number; isNamePali?: boolean }): Promise<void> {
+    await this.init();
+    const nowIso = new Date().toISOString();
+
+    try {
+      await db.execute(
+        `UPDATE user_chants SET title = ?, chant = ?, milestone = ?, is_name_pali = ?, updated_at = ? WHERE id = ? AND is_custom = 1`,
+        [
+          updates.title,
+          updates.content || null,
+          updates.milestone || 108,
+          updates.isNamePali !== false ? 1 : 0,
+          nowIso,
+          chantId
+        ]
+      );
+    } catch (err) {
+      console.error('[ChantService] Failed to update custom chant in SQLite:', err);
+    }
+
+    await this.notifyListeners();
+  }
+
   async deleteChant(chantId: string): Promise<string> {
     await this.init();
     const nowIso = new Date().toISOString();

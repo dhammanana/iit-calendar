@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Trash2, Hash } from 'lucide-react';
+import { Trash2, Hash, Edit3 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { UserChant } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
@@ -13,11 +13,12 @@ interface ChantCardProps {
   chant: UserChant;
   selected: boolean;
   onClick: () => void;
+  onEdit?: () => void;
   onDelete?: () => void;
   paliScript: string;
 }
 
-export function ChantCard({ chant, selected, onClick, onDelete, paliScript }: ChantCardProps) {
+export function ChantCard({ chant, selected, onClick, onEdit, onDelete, paliScript }: ChantCardProps) {
   const { t } = useI18n();
   const chantTitle = getChantTitle(chant, t);
   const lastUsedText = chant.lastUsed 
@@ -67,7 +68,7 @@ export function ChantCard({ chant, selected, onClick, onDelete, paliScript }: Ch
         </h4>
       </div>
 
-      {/* Row 2 (Narrow, collapsed with pl-8) / Right side (Wide, sm:pl-0 inline): Last Used, Count Badge & Delete Button */}
+      {/* Row 2 (Narrow, collapsed with pl-8) / Right side (Wide, sm:pl-0 inline): Last Used, Count Badge & Action Buttons */}
       <div className="flex items-center justify-between sm:justify-end gap-2 flex-shrink-0 pl-8 sm:pl-0 w-full sm:w-auto">
         <div className="min-w-0">
           <span className="text-[0.65rem] font-bold uppercase tracking-wider text-[var(--text-muted)] truncate block">
@@ -88,6 +89,15 @@ export function ChantCard({ chant, selected, onClick, onDelete, paliScript }: Ch
             <Hash size={10} className="opacity-70 flex-shrink-0" />
             <span>{chant.totalCount.toLocaleString()}</span>
           </div>
+          {onEdit && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onEdit(); }} 
+              className="text-[var(--text-faint)] hover:text-[var(--accent)] p-1 rounded-lg hover:bg-[var(--bg-muted)] active:scale-90 transition-all"
+              title="Edit chant"
+            >
+              <Edit3 size={13} />
+            </button>
+          )}
           {onDelete && (
             <button 
               onClick={(e) => { e.stopPropagation(); onDelete(); }} 

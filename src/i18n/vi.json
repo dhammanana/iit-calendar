@@ -201,6 +201,8 @@
     "chantContent": "Nội dung bài tụng (Pali)",
     "milestone": "Cột mốc",
     "createChant": "Tạo bài tụng",
+    "editChant": "Chỉnh sửa bài tụng",
+    "saveChant": "Lưu thay đổi",
     "loading": "Đang tải...",
     "ofChants": "trong số {{count}} bài tụng",
     "tapToChant": "Chạm để đếm",

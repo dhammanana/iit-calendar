@@ -201,6 +201,8 @@
     "chantContent": "ຂໍ້ຄວາມບົດສວດ (ປາລີ)",
     "milestone": "ເປົ້າໝາຍ",
     "createChant": "ສ້າງບົດສວດ",
+    "editChant": "ແກ້ໄຂບົດສວດ",
+    "saveChant": "ບັນທຶກການປ່ຽນແປງ",
     "loading": "ກຳລັງໂຫລດ...",
     "ofChants": "ຈາກ {{count}} ບົດສວດ",
     "tapToChant": "ແຕະເພື່ອສວດ",
