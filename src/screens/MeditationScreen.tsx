@@ -182,7 +182,7 @@ export function MeditationScreen() {
                 options={[
                   { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
                   { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
-                  { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' },
+                  { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Settings' },
                 ]}
                 value={view}
                 onChange={(val) => setView(val as any)}

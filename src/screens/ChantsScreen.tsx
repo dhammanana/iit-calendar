@@ -206,7 +206,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
               options={[
                 { id: 'counter', icon: List, label: t('chant.chant') || 'Chant' },
                 { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
-                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' },
+                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Settings' },
               ]}
               value={view}
               onChange={(val) => setView(val as any)}

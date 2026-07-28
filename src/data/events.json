@@ -61,145 +61,145 @@
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "Suttanta"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "Pāḷi"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "Fundamentals"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "Samatha"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "Pāḷi"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "Vibhaṅga Vinaya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "Samatha (Practical)"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "Fundamentals"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "Khandhaka Vinaya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "Vibhaṅga Vinaya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "Pāḷi"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "Samatha"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "Suttanta"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "Khuddaka Nikāya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "Fundamentals"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "Samatha"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "Vibhaṅga Vinaya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "Recitation of memorized texts"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "Samatha (Practical)"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "Suttanta/Khuddaka Nikāya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "Fundamentals"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "Pāḷi"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "Khuddaka Nikāya"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "Khandhaka Vinaya"
     },
     {
@@ -333,145 +333,145 @@
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "සමථ (ප්‍රායෝගික)"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "ථේරවාද සිද්ධාන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "සුත්තන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "විභංග විනය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "සමථ"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Monday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "ඛුද්දක නිකාය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "ඛුද්දක නිකාය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "සුත්තන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "ථේරවාද සිද්ධාන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "පාලි"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "සමථ"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Tuesday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "කටපාඩම් දීම"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "සමථ (ප්‍රායෝගික)"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "ථේරවාද සිද්ධාන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "පාලි"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "විභංග විනය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "ඛන්ධක විනය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Wednesday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "සමථ"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "08:00-08:45",
+      "time": "08:00 - 08:45",
       "subject": "ඛුද්දක නිකාය/සුත්තන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "08:50-09:35",
+      "time": "08:50 - 09:35",
       "subject": "ථේරවාද සිද්ධාන්ත"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "09:40-10:25",
+      "time": "09:40 - 10:25",
       "subject": "පාලි"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "13:30-14:15",
+      "time": "13:30 - 14:15",
       "subject": "විභංග විනය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "14:20-15:05",
+      "time": "14:20 - 15:05",
       "subject": "ඛන්ධක විනය"
     },
     {
       "calendar_type": "day_of_week",
       "day_of_week": "Thursday",
-      "time": "15:10-15:55",
+      "time": "15:10 - 15:55",
       "subject": "පාලි"
     },
     {

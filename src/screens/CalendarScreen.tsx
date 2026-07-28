@@ -860,8 +860,9 @@ export function CalendarScreen({
                                 if (!a.time) return 1;
                                 if (!b.time) return -1;
                                 const toMinutes = (time: string) => {
-                                  const [h, m] = time.split(':').map(Number);
-                                  return h * 60 + m;
+                                  const startTime = time.split('-')[0].trim();
+                                  const [h, m] = startTime.split(':').map(Number);
+                                  return (h || 0) * 60 + (m || 0);
                                 };
                                 return toMinutes(a.time) - toMinutes(b.time);
                               });
@@ -938,7 +939,7 @@ export function CalendarScreen({
 
                                           {evt.time && (
                                             <span
-                                              className="text-xs font-mono font-bold px-2 py-0.5 rounded-lg shadow-sm"
+                                              className="text-xs font-bold px-2 py-0.5 rounded-lg shadow-sm"
                                               style={{ background: 'var(--bg-card)', color: 'var(--accent)', border: '1px solid var(--border)' }}
                                             >
                                               {evt.time}

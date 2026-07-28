@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock } from 'lucide-react';
+import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
 import { useI18n } from '../hooks/useI18n';
@@ -358,7 +358,7 @@ export function StudyScreen() {
             options={[
               { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
               { id: 'insights', icon: BarChart2, label: t('study.insights') || 'Insights' },
-              { id: 'configs', icon: Settings2, label: t('study.configs') || 'Configs' },
+              { id: 'configs', icon: Settings2, label: t('study.configs') || 'Settings' },
             ]}
             value={view}
             onChange={(val) => setView(val as any)}
@@ -431,18 +431,19 @@ export function StudyScreen() {
                   </div>
 
                   {/* Start/Stop Button */}
-                  <button
+                  <Button
                     onClick={toggleTimer}
+                    variant="primary"
+                    size="lg"
+                    icon={isRunning ? Pause : Play}
                     className={cn(
-                      "w-full max-w-[240px] py-4 rounded-full font-bold text-base uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-md text-white hover:shadow-lg",
-                      mode === 'pomodoro' ? 'bg-[var(--accent)]' : '',
-                      mode === 'shortBreak' ? 'bg-emerald-600 dark:bg-emerald-500' : '',
-                      mode === 'longBreak' ? 'bg-indigo-600 dark:bg-indigo-500' : '',
-                      isRunning && 'opacity-90'
+                      "w-full max-w-[240px] h-14 px-8",
+                      mode === 'shortBreak' && "bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700",
+                      mode === 'longBreak' && "bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700"
                     )}
                   >
                     {isRunning ? (t('study.pause') || 'PAUSE') : (t('study.start') || 'START')}
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Task Section */}
