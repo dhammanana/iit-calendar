@@ -80,29 +80,54 @@ pnpm run cap:open:ios
 
 ## Releasing & Versioning
 
-This project uses **Capgo OTA (Over-The-Air) live updates** for mobile applications to deploy UI changes instantly without waiting for App Store reviews.
+This project uses **Capgo OTA (Over-The-Air) live updates** for mobile applications to deploy UI changes instantly.
 
-To cut a new version release:
+### 1. Creating Development Pre-Releases (`dev` Channel)
+
+For testing features or data migrations on devices set to the **Dev** update channel:
 
 ```bash
-# 1. Bump version (patch, minor, major, or exact version)
-pnpm version patch
+# Start a new dev pre-release (e.g. 1.1.5 -> 1.1.6-dev.0)
+pnpm version prepatch --preid=dev
 
-# 2. Push commit and tags to GitHub
+# Bump subsequent dev builds (1.1.6-dev.0 -> 1.1.6-dev.1)
+pnpm version prerelease --preid=dev
+
+# Or specify an exact version string directly
+pnpm version 1.1.6-dev.1
+
+# Push commits and tag to trigger build
 git push --follow-tags
 ```
+
+### 2. Creating Official Stable Releases (`stable` Channel)
+
+When a feature is verified and ready for all users:
+
+```bash
+# Bump patch release (e.g. 1.1.5 -> 1.1.6)
+pnpm version patch
+
+# Bump minor release for native updates (e.g. 1.1.5 -> 1.2.0)
+pnpm version minor
+
+# Push commit and tags to GitHub
+git push --follow-tags
+```
+
+### Automatic Build Automation
 
 Running `pnpm version` automatically:
 - Bumps the version in `package.json`.
 - Runs `capacitor-set-version` to sync `Info.plist` (iOS) and `build.gradle` (Android).
-- Stages all files and creates a Git commit and tag (e.g., `v1.1.2`).
-- Triggers GitHub Actions to automatically package and release the update.
+- Stages all files and creates a Git commit and tag (e.g. `v1.1.6-dev.1` or `v1.1.6`).
+- Triggers GitHub Actions to package `web-build.zip` and publish the release.
 
 ### OTA Update Channels
 
 Users can select their preferred OTA update channel via **Settings > OTA Update Channel**:
-- **Stable**: Receives only verified, official releases.
-- **Dev**: Receives test/development releases (GitHub pre-releases or tags containing `-dev`).
+- **Stable**: Receives only verified, official releases (e.g., `v1.1.6`).
+- **Dev**: Receives test/development releases (e.g., `v1.1.6-dev.1`).
 
 For details on when to use Patch vs. Minor vs. Major versions, see the [Versioning Policy](VERSIONING.md).
 
