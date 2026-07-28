@@ -98,6 +98,12 @@ Running `pnpm version` automatically:
 - Stages all files and creates a Git commit and tag (e.g., `v1.1.2`).
 - Triggers GitHub Actions to automatically package and release the update.
 
+### OTA Update Channels
+
+Users can select their preferred OTA update channel via **Settings > OTA Update Channel**:
+- **Stable**: Receives only verified, official releases.
+- **Dev**: Receives test/development releases (GitHub pre-releases or tags containing `-dev`).
+
 For details on when to use Patch vs. Minor vs. Major versions, see the [Versioning Policy](VERSIONING.md).
 
 ## License

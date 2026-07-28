@@ -36,11 +36,13 @@ To ensure high performance and prevent hitting GitHub API rate limits, the serve
   ```json
   {
     "version_build": "1.0.0",
-    "version_name": "builtin"
+    "version_name": "builtin",
+    "custom_id": "stable"
   }
   ```
   - `version_build`: The native binary version installed on the device (e.g. `1.0.0`).
   - `version_name`: The current active OTA bundle version (e.g. `1.0.12`), or `"builtin"` if no update has been installed yet.
+  - `custom_id`: *(Optional)* Update channel selected by user (`"stable"` or `"dev"`). Defaults to `"stable"`. When set to `"stable"`, pre-releases or tags containing `-dev` are excluded.
 - **Response (Update Available)**:
   ```json
   {
