@@ -7,26 +7,32 @@ import { chantService } from '../../services/ChantService';
 import { useI18n } from '../../hooks/useI18n';
 import { buildDiacriticRegex } from '../../lib/pali-script';
 
+import { getChantTitle } from '../../services/ChantService';
+
 interface ChantListProps {
   chants: UserChant[];
   selectedChantId: string | null;
   onSelect: (id: string) => void;
   onAddChant: () => void;
+  onEditChant?: (chant: UserChant) => void;
   paliScript: string;
 }
 
-export function ChantList({ chants, selectedChantId, onSelect, onAddChant, paliScript }: ChantListProps) {
+export function ChantList({ chants, selectedChantId, onSelect, onAddChant, onEditChant, paliScript }: ChantListProps) {
   const { t } = useI18n();
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredChants = chants
+    .filter(c => !c.isDeleted)
     .filter(c => {
       const term = searchTerm.trim();
       if (!term) return true;
+      const titleToSearch = getChantTitle(c, t);
+      if (titleToSearch.toLowerCase().includes(term.toLowerCase())) return true;
       if (c.title.toLowerCase().includes(term.toLowerCase())) return true;
       try {
         const regex = buildDiacriticRegex(term);
-        return regex.test(c.title);
+        return regex.test(titleToSearch) || regex.test(c.title);
       } catch {
         return false;
       }
@@ -65,11 +71,15 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, paliS
             selected={chant.id === selectedChantId}
             onClick={() => onSelect(chant.id)}
             paliScript={paliScript}
-            onDelete={() => {
+            onEdit={chant.isCustom && onEditChant ? () => onEditChant(chant) : undefined}
+            onDelete={chant.isCustom ? async () => {
               if (confirm('Are you sure you want to delete this chant?')) {
-                chantService.deleteChant(chant.id);
+                const nextId = await chantService.deleteChant(chant.id);
+                if (nextId) {
+                  onSelect(nextId);
+                }
               }
-            }}
+            } : undefined}
           />
         ))}
         

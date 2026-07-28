@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { chantService } from '../services/ChantService';
+import { chantService, getChantTitle, isChantNamePali } from '../services/ChantService';
 import { UserChant, ChantSession, UserChantStats } from '../types';
 import { ChantCounter } from '../components/chanting/ChantCounter';
 import { ChantList } from '../components/chanting/ChantList';
@@ -24,17 +24,55 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
   const { setShowSettings } = useUI();
   const [chants, setChants] = useState<UserChant[]>([]);
   const [sessions, setSessions] = useState<ChantSession[]>([]);
-  const [selectedChantId, setSelectedChantId] = useState<string | null>(null);
+  const [selectedChantId, setSelectedChantId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('chant_selected_chant_id');
+    } catch {
+      return null;
+    }
+  });
   const [activeSessionCount, setActiveSessionCount] = useState(0);
   const [view, setView] = useState<'counter' | 'insights' | 'config'>('counter');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedPali, setExpandedPali] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isStopwatch, setIsStopwatch] = useState(true);
-  const [timerSettings, setTimerSettings] = useState({ hours: 0, minutes: 15 });
+  const [isStopwatch, setIsStopwatch] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('chant_is_stopwatch');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+  const [timerSettings, setTimerSettings] = useState<{ hours: number; minutes: number }>(() => {
+    try {
+      const saved = localStorage.getItem('chant_timer_settings');
+      return saved ? JSON.parse(saved) : { hours: 0, minutes: 15 };
+    } catch {
+      return { hours: 0, minutes: 15 };
+    }
+  });
 
-  // New chant form
-  const [newChant, setNewChant] = useState({ title: '', content: '', milestone: 108 });
+  // Save chant settings to localStorage when changed
+  useEffect(() => {
+    if (selectedChantId !== null) {
+      localStorage.setItem('chant_selected_chant_id', selectedChantId);
+    } else {
+      localStorage.removeItem('chant_selected_chant_id');
+    }
+  }, [selectedChantId]);
+
+  useEffect(() => {
+    localStorage.setItem('chant_is_stopwatch', JSON.stringify(isStopwatch));
+  }, [isStopwatch]);
+
+  useEffect(() => {
+    localStorage.setItem('chant_timer_settings', JSON.stringify(timerSettings));
+  }, [timerSettings]);
+
+  // New / Edit chant form
+  const [editingChantId, setEditingChantId] = useState<string | null>(null);
+  const [newChant, setNewChant] = useState({ title: '', content: '', milestone: 108, isNamePali: false });
 
   useEffect(() => {
     // Load history and stats (works offline too)
@@ -47,39 +85,44 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
     const unsub = chantService.subscribeToUserChants((updated) => {
       setChants(updated);
-      if (!selectedChantId && updated.length > 0) {
-        setSelectedChantId(updated[0].id);
+      const activeChants = updated.filter(c => !c.isDeleted);
+      if (activeChants.length > 0) {
+        setSelectedChantId(currentId => {
+          const savedId = localStorage.getItem('chant_selected_chant_id') || currentId;
+          if (savedId && activeChants.some(c => c.id.toString() === savedId.toString())) {
+            return savedId;
+          }
+          if (!currentId || !activeChants.some(c => c.id.toString() === currentId.toString())) {
+            const defaultChant = activeChants.find(c => c.nameKey === 'chant.itipiso' || c.title.toLowerCase().includes('itipiso') || c.id.toString() === '1') || activeChants[0];
+            return defaultChant ? defaultChant.id.toString() : null;
+          }
+          return currentId;
+        });
+      } else {
+        setSelectedChantId(null);
       }
     });
 
     return () => unsub();
-  }, [selectedChantId]);
+  }, []);
 
   useEffect(() => {
     if (showAddModal) {
       document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
   }, [showAddModal]);
 
-  const stats = useMemo<UserChantStats>(() => {
-    const distribution: Record<string, number> = {};
-    chants.forEach(c => {
-      distribution[c.id] = c.totalCount;
-    });
-
-    // Calculate streak
+  const stats: UserChantStats = useMemo(() => {
     let streak = 0;
-    const sortedSessions = [...sessions].sort((a, b) => b.timestamp - a.timestamp);
-    if (sortedSessions.length > 0) {
-      let currentCheck = new Date();
-      // If last session was today or yesterday
+    const distribution: Record<string, number> = {};
+    
+    // Calculate streak
+    if (sessions.length > 0) {
+      const today = new Date();
       for (let i = 0; i < 30; i++) {
-        const day = subDays(currentCheck, i);
+        const day = subDays(today, i);
         const hasActivity = sessions.some(s => isSameDay(new Date(s.timestamp), day));
         if (hasActivity) streak++;
         else if (i > 0) break; // Streak broken
@@ -93,7 +136,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
     };
   }, [chants, sessions]);
 
-  const selectedChant = chants.find(c => c.id === selectedChantId);
+  const selectedChant = chants.filter(c => !c.isDeleted).find(c => c.id.toString() === selectedChantId?.toString());
 
   const handleCommitSession = async (durationMin?: number) => {
     if (!selectedChantId || activeSessionCount === 0) return;
@@ -105,7 +148,24 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
     setSessions(history);
   };
 
-  const handleAddChant = async () => {
+  const handleOpenAddModal = () => {
+    setEditingChantId(null);
+    setNewChant({ title: '', content: '', milestone: 108, isNamePali: false });
+    setShowAddModal(true);
+  };
+
+  const handleOpenEditModal = (chant: UserChant) => {
+    setEditingChantId(chant.id);
+    setNewChant({
+      title: chant.title || '',
+      content: chant.content || chant.chant || '',
+      milestone: chant.milestone || 108,
+      isNamePali: chant.isNamePali !== undefined ? chant.isNamePali : false
+    });
+    setShowAddModal(true);
+  };
+
+  const handleSaveChant = async () => {
     if (!newChant.title) return;
 
     // Convert content to Roman script if it's not empty
@@ -114,12 +174,23 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
       convertedContent = await convertPali(convertedContent, 'roman');
     }
 
-    await chantService.addChant({
-      ...newChant,
-      content: convertedContent,
-      isCustom: true
-    });
-    setNewChant({ title: '', content: '', milestone: 108 });
+    if (editingChantId) {
+      await chantService.updateChant(editingChantId, {
+        title: newChant.title,
+        content: convertedContent,
+        milestone: newChant.milestone,
+        isNamePali: newChant.isNamePali
+      });
+    } else {
+      await chantService.addChant({
+        ...newChant,
+        content: convertedContent,
+        isCustom: true
+      });
+    }
+    
+    setEditingChantId(null);
+    setNewChant({ title: '', content: '', milestone: 108, isNamePali: false });
     setShowAddModal(false);
   };
 
@@ -206,7 +277,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
               options={[
                 { id: 'counter', icon: List, label: t('chant.chant') || 'Chant' },
                 { id: 'insights', icon: BarChart2, label: t('chant.insights') || 'Insights' },
-                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Configure' },
+                { id: 'config', icon: Settings2, label: t('meditation.configure') || 'Settings' },
               ]}
               value={view}
               onChange={(val) => setView(val as any)}
@@ -239,7 +310,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                       }}
                     >
                       <h3 className="font-serif text-2xl" style={{ color: 'var(--accent)' }}>
-                        <PaliText text={selectedChant.title} script={settings.paliScript} />
+                        <PaliText text={getChantTitle(selectedChant, t)} script={settings.paliScript} isPali={isChantNamePali(selectedChant)} />
                       </h3>
                       {(selectedChant.content || (selectedChant as any).chant) && (
                         <div 
@@ -347,7 +418,8 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                     chants={chants}
                     selectedChantId={selectedChantId}
                     onSelect={setSelectedChantId}
-                    onAddChant={() => setShowAddModal(true)}
+                    onAddChant={handleOpenAddModal}
+                    onEditChant={handleOpenEditModal}
                     paliScript={settings.paliScript}
                   />
                 </div>
@@ -355,13 +427,16 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
             )}
           </AnimatePresence>
 
-          {/* Add Modal */}
+          {/* Add / Edit Modal */}
           {showAddModal && (
             <div
               className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-sm"
               style={{ background: 'rgba(0,0,0,0.45)' }}
               onClick={(e) => {
-                if (e.target === e.currentTarget) setShowAddModal(false);
+                if (e.target === e.currentTarget) {
+                  setShowAddModal(false);
+                  setEditingChantId(null);
+                }
               }}
             >
               <motion.div
@@ -373,9 +448,19 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                   borderColor: 'var(--border-subtle)'
                 }}
               >
-                <div className="flex justify-between items-start gap-4">
-                  <h3 className="font-serif text-2xl break-words min-w-0 pr-2" style={{ color: 'var(--text-primary)' }}>{t('chant.newChant')}</h3>
-                  <button onClick={() => setShowAddModal(false)} className="flex-shrink-0 mt-1" style={{ color: 'var(--accent)' }}><X /></button>
+                <div className="flex justify-between items-center">
+                  <h3 className="font-serif text-xl font-bold text-[var(--text-primary)]">
+                    {editingChantId ? (t('chant.editChant') || 'Edit Chant') : t('chant.newChant')}
+                  </h3>
+                  <button
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setEditingChantId(null);
+                    }}
+                    className="p-2 rounded-full hover:bg-[var(--bg-muted)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  >
+                    <X size={18} />
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -392,6 +477,13 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                         borderColor: 'var(--border-subtle)'
                       }}
                     />
+                  </div>
+                  <div className="flex justify-between items-center py-1">
+                    <div>
+                      <h4 className="text-xs font-bold text-[var(--text-primary)]">{t('chant.titleInPali') || 'Title is in Pali'}</h4>
+                      <p className="text-[10px] text-stone-500 dark:text-stone-400">{t('chant.transliterateTitleDesc') || 'Transliterate title into selected script'}</p>
+                    </div>
+                    <Toggle value={newChant.isNamePali} onToggle={() => setNewChant({ ...newChant, isNamePali: !newChant.isNamePali })} />
                   </div>
                   <div>
                     <label className="text-[0.65rem] font-black uppercase tracking-widest block mb-2 px-1" style={{ color: 'var(--text-secondary)' }}>{t('chant.chantContent')}</label>
@@ -423,13 +515,13 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
                 </div>
 
                 <Button
-                  onClick={handleAddChant}
+                  onClick={handleSaveChant}
                   disabled={!newChant.title}
                   variant="primary"
                   size="lg"
                   fullWidth
                 >
-                  {t('chant.createChant')}
+                  {editingChantId ? (t('chant.saveChant') || 'Save Changes') : t('chant.createChant')}
                 </Button>
               </motion.div>
             </div>

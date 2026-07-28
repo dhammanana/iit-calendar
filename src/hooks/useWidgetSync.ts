@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
 import { WidgetBridgePlugin } from 'capacitor-widget-bridge';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { format, startOfDay, subDays, isSameDay } from 'date-fns';
+import { meditationDbService } from '../services/MeditationDbService';
+import { chantService } from '../services/ChantService';
+import { studyDbService } from '../services/StudyDbService';
 
 const APP_GROUP = 'group.iit.calendar';
 
@@ -15,7 +19,7 @@ export function useWidgetSync() {
 
   const syncWidgetData = async () => {
     try {
-      if (typeof window === 'undefined') return;
+      if (typeof window === 'undefined' || !Capacitor.isNativePlatform()) return;
 
       // 1. Settings & Location
       const settingsRaw = localStorage.getItem('iit_settings');
@@ -41,24 +45,21 @@ export function useWidgetSync() {
 
       await WidgetBridgePlugin.setItem({ key: 'sun_times', value: JSON.stringify(timesArray), group: APP_GROUP });
 
-      // 3. Meditation Stats
-      const medStatsRaw = localStorage.getItem('zen_meditation_stats');
-      const medStats = medStatsRaw ? JSON.parse(medStatsRaw) : { sessions: [] };
-      const medStreak = calculateStreak(medStats.sessions || []);
-      const medMonth = calculateMonthMinutes(medStats.sessions || [], 'durationMin');
+      // 3. Meditation Stats (from SQLite DB via MeditationDbService)
+      const medSessions = await meditationDbService.getSessions();
+      const medStreak = calculateStreak(medSessions);
+      const medMonth = calculateMonthMinutes(medSessions, 'durationMin');
       await WidgetBridgePlugin.setItem({ key: 'meditation_stats', value: JSON.stringify({ streak: medStreak, monthMinutes: medMonth }), group: APP_GROUP });
 
-      // 4. Chanting Stats
-      const chantStatsRaw = localStorage.getItem('app_chant_sessions');
-      const chantStats = chantStatsRaw ? JSON.parse(chantStatsRaw) : [];
+      // 4. Chanting Stats (from SQLite DB via ChantService)
+      const chantStats = await chantService.getSessionHistory();
       const chantStreak = calculateStreak(chantStats);
       // Chanting doesn't inherently track minutes in the same way, we'll track session count for the month
       const chantMonth = calculateMonthCount(chantStats);
       await WidgetBridgePlugin.setItem({ key: 'chant_stats', value: JSON.stringify({ streak: chantStreak, monthSessions: chantMonth }), group: APP_GROUP });
 
-      // 5. Studying Stats
-      const studyStatsRaw = localStorage.getItem('study_sessions');
-      const studyStats = studyStatsRaw ? JSON.parse(studyStatsRaw) : [];
+      // 5. Studying Stats (from SQLite DB via StudyDbService)
+      const studyStats = await studyDbService.getSessions();
       const studyStreak = calculateStreak(studyStats);
       const studyMonthMs = calculateMonthMinutes(studyStats, 'durationMs');
       const studyMonthMin = Math.floor(studyMonthMs / 60000);

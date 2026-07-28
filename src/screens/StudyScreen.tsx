@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock } from 'lucide-react';
+import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
 import { useI18n } from '../hooks/useI18n';
 import { StudySettings, StudySettingsData } from '../components/study/StudySettings';
 import { StudyInsights, StudySession } from '../components/study/StudyInsights';
 import { alarmService } from '../services/alarm/AlarmService';
+import { studyDbService } from '../services/StudyDbService';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { Button } from '../components/Button';
 
@@ -41,10 +42,15 @@ export function StudyScreen() {
     return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
   });
 
-  const [sessions, setSessions] = useState<StudySession[]>(() => {
-    const saved = localStorage.getItem('study_sessions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [sessions, setSessions] = useState<StudySession[]>([]);
+
+  useEffect(() => {
+    studyDbService.getSessions().then(setSessions);
+    const unsubscribe = studyDbService.subscribe(() => {
+      studyDbService.getSessions().then(setSessions);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // UI State
   const [view, setView] = useState<'timer' | 'insights' | 'configs'>('timer');
@@ -56,13 +62,28 @@ export function StudyScreen() {
   const [pomodoroCount, setPomodoroCount] = useState(0);
 
   // Tasks State
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('study_tasks');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(() => {
-    return localStorage.getItem('study_active_task') || null;
-  });
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTaskId, setActiveTaskIdState] = useState<string | null>(null);
+
+  const setActiveTaskId = async (id: string | null) => {
+    setActiveTaskIdState(id);
+    await studyDbService.setActiveTaskId(id);
+  };
+
+  const reloadTasks = async () => {
+    const loadedTasks = await studyDbService.getTasks();
+    const activeId = await studyDbService.getActiveTaskId();
+    setTasks(loadedTasks);
+    setActiveTaskIdState(activeId);
+  };
+
+  useEffect(() => {
+    reloadTasks();
+    const unsubscribe = studyDbService.subscribe(() => {
+      reloadTasks();
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Form State
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -74,22 +95,6 @@ export function StudyScreen() {
   useEffect(() => {
     localStorage.setItem('study_settings', JSON.stringify(settings));
   }, [settings]);
-
-  useEffect(() => {
-    localStorage.setItem('study_sessions', JSON.stringify(sessions));
-  }, [sessions]);
-
-  useEffect(() => {
-    localStorage.setItem('study_tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  useEffect(() => {
-    if (activeTaskId) {
-      localStorage.setItem('study_active_task', activeTaskId);
-    } else {
-      localStorage.removeItem('study_active_task');
-    }
-  }, [activeTaskId]);
 
   const initAudio = () => {
     if (!audioCtxRef.current) {
@@ -154,36 +159,18 @@ export function StudyScreen() {
       setPomodoroCount(newCount);
 
       // Log session
-      const session: StudySession = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        durationMs: settings.pomodoro * 1000
-      };
-      setSessions(prev => [...prev, session]);
+      studyDbService.addSession(settings.pomodoro * 1000).then(session => {
+        setSessions(prev => [session, ...prev.filter(s => s.id !== session.id)]);
+      });
 
       // Update task actual count if there is an active task
       if (activeTaskId) {
-        setTasks(prev => {
-          let updated = prev.map(t =>
-            t.id === activeTaskId ? { ...t, act: t.act + 1 } : t
-          );
-
-          if (settings.autoCheckTasks) {
-            updated = updated.map(t => {
-              if (t.id === activeTaskId && t.act >= t.est) {
-                return { ...t, completed: true };
-              }
-              return t;
-            });
-          }
-
-          if (settings.checkToBottom) {
-            const completed = updated.filter(t => t.completed);
-            const active = updated.filter(t => !t.completed);
-            return [...active, ...completed];
-          }
-          return updated;
-        });
+        const activeTask = tasks.find(t => t.id === activeTaskId);
+        if (activeTask) {
+          const newAct = activeTask.act + 1;
+          const isCompleted = settings.autoCheckTasks ? (newAct >= activeTask.est) : activeTask.completed;
+          studyDbService.updateTask(activeTaskId, { act: newAct, completed: isCompleted });
+        }
       }
 
       if (newCount % settings.longBreakInterval === 0) {
@@ -209,23 +196,16 @@ export function StudyScreen() {
     setIsRunning(!isRunning);
   };
 
-  const handleSaveTask = () => {
+  const handleSaveTask = async () => {
     if (!taskForm.name.trim()) return;
 
     if (editingTaskId) {
-      setTasks(prev => prev.map(t =>
-        t.id === editingTaskId ? { ...t, name: taskForm.name, est: taskForm.est } : t
-      ));
+      await studyDbService.updateTask(editingTaskId, { name: taskForm.name, est: taskForm.est });
     } else {
-      const newTask: Task = {
-        id: Date.now().toString(),
-        name: taskForm.name,
-        est: taskForm.est,
-        act: 0,
-        completed: false,
-      };
-      setTasks(prev => [...prev, newTask]);
-      if (!activeTaskId) setActiveTaskId(newTask.id);
+      const newTask = await studyDbService.addTask(taskForm.name, taskForm.est);
+      if (!activeTaskId) {
+        await setActiveTaskId(newTask.id);
+      }
     }
 
     setTaskForm({ name: '', est: 1 });
@@ -239,16 +219,19 @@ export function StudyScreen() {
     setShowTaskForm(true);
   };
 
-  const toggleTaskCompletion = (taskId: string, e: React.MouseEvent) => {
+  const toggleTaskCompletion = async (taskId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setTasks(prev => prev.map(t =>
-      t.id === taskId ? { ...t, completed: !t.completed } : t
-    ));
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      await studyDbService.updateTask(taskId, { completed: !task.completed });
+    }
   };
 
-  const deleteTask = (taskId: string) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId));
-    if (activeTaskId === taskId) setActiveTaskId(null);
+  const deleteTask = async (taskId: string) => {
+    await studyDbService.deleteTask(taskId);
+    if (activeTaskId === taskId) {
+      await setActiveTaskId(null);
+    }
     if (editingTaskId === taskId) {
       setShowTaskForm(false);
       setEditingTaskId(null);
@@ -358,7 +341,7 @@ export function StudyScreen() {
             options={[
               { id: 'timer', icon: Clock, label: t('study.timer') || 'Timer' },
               { id: 'insights', icon: BarChart2, label: t('study.insights') || 'Insights' },
-              { id: 'configs', icon: Settings2, label: t('study.configs') || 'Configs' },
+              { id: 'configs', icon: Settings2, label: t('study.configs') || 'Settings' },
             ]}
             value={view}
             onChange={(val) => setView(val as any)}
@@ -431,18 +414,19 @@ export function StudyScreen() {
                   </div>
 
                   {/* Start/Stop Button */}
-                  <button
+                  <Button
                     onClick={toggleTimer}
+                    variant="primary"
+                    size="lg"
+                    icon={isRunning ? Pause : Play}
                     className={cn(
-                      "w-full max-w-[240px] py-4 rounded-full font-bold text-base uppercase tracking-wider transition-all duration-300 active:scale-95 shadow-md text-white hover:shadow-lg",
-                      mode === 'pomodoro' ? 'bg-[var(--accent)]' : '',
-                      mode === 'shortBreak' ? 'bg-emerald-600 dark:bg-emerald-500' : '',
-                      mode === 'longBreak' ? 'bg-indigo-600 dark:bg-indigo-500' : '',
-                      isRunning && 'opacity-90'
+                      "w-full max-w-[240px] h-14 px-8",
+                      mode === 'shortBreak' && "bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700",
+                      mode === 'longBreak' && "bg-indigo-600 dark:bg-indigo-500 hover:bg-indigo-700"
                     )}
                   >
                     {isRunning ? (t('study.pause') || 'PAUSE') : (t('study.start') || 'START')}
-                  </button>
+                  </Button>
                 </div>
 
                 {/* Task Section */}
@@ -495,22 +479,38 @@ export function StudyScreen() {
                         value={taskForm.name}
                         onChange={(e) => setTaskForm({ ...taskForm, name: e.target.value })}
                         autoFocus
-                        className="w-full text-lg font-medium bg-transparent outline-none border-b-2 border-slate-200 dark:border-slate-700 focus:border-saffron pb-2 mb-4 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 transition-colors"
+                        className="w-full text-lg font-medium bg-transparent outline-none border-b-2 border-[var(--border-subtle)] focus:border-[var(--accent)] pb-2 mb-4 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors"
                       />
 
                       <div className="mb-6">
-                        <label className="text-sm font-bold text-slate-500 uppercase tracking-widest block mb-2">{t('study.estPomodoros') || 'Est Pomodoros'}</label>
+                        <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">{t('study.estPomodoros') || 'Est Pomodoros'}</label>
                         <div className="flex items-center gap-3">
                           <input
                             type="number"
                             min="1"
                             value={taskForm.est}
                             onChange={(e) => setTaskForm({ ...taskForm, est: Math.max(1, parseInt(e.target.value) || 1) })}
-                            className="w-20 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-xl text-center font-bold text-slate-700 dark:text-slate-300 outline-none border border-slate-200 dark:border-slate-700 focus:border-saffron transition-colors"
+                            className="w-20 bg-[var(--bg-card-alt)] px-3 py-2 rounded-xl text-center font-bold text-[var(--text-primary)] outline-none border border-[var(--border-subtle)] focus:border-[var(--accent)] transition-colors"
                           />
                           <div className="flex gap-2">
-                            <button onClick={() => setTaskForm(prev => ({ ...prev, est: prev.est + 1 }))} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-200 dark:hover:bg-slate-700">+</button>
-                            <button onClick={() => setTaskForm(prev => ({ ...prev, est: Math.max(1, prev.est - 1) }))} className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 hover:bg-slate-200 dark:hover:bg-slate-700">-</button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              isIconOnly
+                              onClick={() => setTaskForm(prev => ({ ...prev, est: prev.est + 1 }))}
+                              aria-label="Increase estimated pomodoros"
+                            >
+                              +
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              isIconOnly
+                              onClick={() => setTaskForm(prev => ({ ...prev, est: Math.max(1, prev.est - 1) }))}
+                              aria-label="Decrease estimated pomodoros"
+                            >
+                              -
+                            </Button>
                           </div>
                         </div>
                       </div>

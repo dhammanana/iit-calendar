@@ -13,7 +13,7 @@ interface BookshelfGridProps {
 export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
   return (
     <div className="max-w-4xl w-full mx-auto px-2 sm:px-4 py-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 justify-items-center">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-8 justify-items-center">
         {books.map((book) => {
           const bookTitle = getBookTitle(book, t);
           const bookSubtitle = getBookSubtitle(book, t);
@@ -28,7 +28,7 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
             >
               {/* 3D Hardcover Book Container */}
               <div
-                className="relative w-full aspect-[3/4.2] rounded-r-2xl rounded-l-md shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between p-5 border-y border-r border-white/20 text-white"
+                className="relative w-full aspect-[3/4.2] rounded-r-2xl rounded-l-md shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between p-3 sm:p-5 border-y border-r border-white/20 text-white"
                 style={{
                   background: book.coverImage
                     ? `url(${book.coverImage}) center/cover no-repeat`
@@ -49,21 +49,21 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
 
                     {/* Top Ornament */}
                     <div className="relative z-20 flex justify-between items-center pt-1" style={{ color: book.accentColor || '#f59e0b' }}>
-                      <Sparkles size={16} />
+                      <Sparkles size={14} className="sm:w-4 sm:h-4" />
                       {book.author && (
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
+                        <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-white/90">
                           {book.author}
                         </span>
                       )}
                     </div>
 
                     {/* Center Title & Subtitle */}
-                    <div className="relative z-20 my-auto text-center px-2 py-4 border-y bg-black/25 backdrop-blur-[2px] rounded-lg" style={{ borderColor: `${book.accentColor || '#f59e0b'}40` }}>
-                      <h2 className="font-serif text-xl sm:text-2xl font-bold leading-tight text-white drop-shadow-md group-hover:text-amber-200 transition-colors">
+                    <div className="relative z-20 my-auto text-center px-1.5 sm:px-2 py-2 sm:py-4 border-y bg-black/25 backdrop-blur-[2px] rounded-lg" style={{ borderColor: `${book.accentColor || '#f59e0b'}40` }}>
+                      <h2 className="font-serif text-base sm:text-2xl font-bold leading-tight text-white drop-shadow-md group-hover:text-amber-200 transition-colors">
                         {bookTitle}
                       </h2>
                       {bookSubtitle && (
-                        <p className="text-xs text-white/80 mt-2 font-serif italic line-clamp-2">
+                        <p className="text-[10px] sm:text-xs text-white/80 mt-1 sm:mt-2 font-serif italic line-clamp-2">
                           {bookSubtitle}
                         </p>
                       )}
@@ -71,19 +71,19 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
 
                     {/* Bottom Decorative Icon */}
                     <div className="relative z-20 flex justify-center items-center pb-1" style={{ color: book.accentColor || '#f59e0b' }}>
-                      <BookOpen size={20} />
+                      <BookOpen size={16} className="sm:w-5 sm:h-5" />
                     </div>
                   </>
                 )}
               </div>
 
               {/* Book Label below Cover */}
-              <div className="mt-3 text-center">
-                <h3 className="font-serif text-base font-bold text-slate-800 dark:text-slate-100 group-hover:text-saffron dark:group-hover:text-amber-400 transition-colors">
+              <div className="mt-2 sm:mt-3 text-center">
+                <h3 className="font-serif text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 group-hover:text-saffron dark:group-hover:text-amber-400 transition-colors">
                   {bookTitle}
                 </h3>
                 {bookSubtitle && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                     {bookSubtitle}
                   </p>
                 )}

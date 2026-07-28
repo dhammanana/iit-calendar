@@ -6,6 +6,7 @@ import { cn } from '../lib/utils';
 export interface PaliTextProps {
   text: string;
   script?: string;
+  isPali?: boolean;
   className?: string;
   as?: React.ElementType;
   style?: React.CSSProperties;
@@ -15,6 +16,7 @@ export interface PaliTextProps {
 export function PaliText({
   text,
   script = 'roman',
+  isPali = true,
   className,
   as: Component = 'span',
   style,
@@ -24,8 +26,8 @@ export function PaliText({
 
   useEffect(() => {
     let active = true;
-    if (!text) {
-      setDisplayText('');
+    if (!text || isPali === false) {
+      setDisplayText(text || '');
       return;
     }
     convertPali(text, script).then((res) => {
@@ -36,7 +38,18 @@ export function PaliText({
     return () => {
       active = false;
     };
-  }, [text, script]);
+  }, [text, script, isPali]);
+
+  if (isPali === false) {
+    return (
+      <Component
+        className={className}
+        style={style}
+        dangerouslySetInnerHTML={{ __html: text || '' }}
+        {...props}
+      />
+    );
+  }
 
   const scriptCode =
     SCRIPTS[script] ||

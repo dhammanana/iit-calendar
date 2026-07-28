@@ -14,6 +14,9 @@ import { LabeledSelect } from './LabeledSelect';
 import { Button } from './Button';
 import SunCalc from 'suncalc';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
+import { meditationDbService } from '../services/MeditationDbService';
+import { chantService } from '../services/ChantService';
+import { studyDbService } from '../services/StudyDbService';
 
 export function SettingsModal({ 
   show, 
@@ -47,13 +50,22 @@ export function SettingsModal({
   };
 
   const handleExportData = async () => {
+    const meditationDbRecords = await meditationDbService.getAllRecordsForBackup();
+    const chantDbRecords = await chantService.getAllRecordsForBackup();
+    const studyDbRecords = await studyDbService.getAllRecordsForBackup();
     const backup = {
-      version: 1,
+      version: 2,
       timestamp: Date.now(),
       settings: localStorage.getItem('iit_settings'),
       chants: localStorage.getItem('app_user_chants'),
       chant_sessions: localStorage.getItem('app_chant_sessions'),
-      meditation_stats: localStorage.getItem('zen_meditation_stats')
+      meditation_stats: localStorage.getItem('zen_meditation_stats'),
+      study_sessions: localStorage.getItem('study_sessions'),
+      study_tasks: localStorage.getItem('study_tasks'),
+      study_settings: localStorage.getItem('study_settings'),
+      meditation_db_records: meditationDbRecords,
+      chant_db_records: chantDbRecords,
+      study_db_records: studyDbRecords
     };
 
     const jsonStr = JSON.stringify(backup, null, 2);
@@ -96,7 +108,7 @@ export function SettingsModal({
     if (!file) return;
     
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result as string;
         const backup = JSON.parse(content);
@@ -106,6 +118,19 @@ export function SettingsModal({
           if (backup.chants) localStorage.setItem('app_user_chants', backup.chants);
           if (backup.chant_sessions) localStorage.setItem('app_chant_sessions', backup.chant_sessions);
           if (backup.meditation_stats) localStorage.setItem('zen_meditation_stats', backup.meditation_stats);
+          if (backup.study_sessions) localStorage.setItem('study_sessions', backup.study_sessions);
+          if (backup.study_tasks) localStorage.setItem('study_tasks', backup.study_tasks);
+          if (backup.study_settings) localStorage.setItem('study_settings', backup.study_settings);
+
+          if (backup.meditation_db_records) {
+            await meditationDbService.restoreBackupRecords(backup.meditation_db_records);
+          }
+          if (backup.chant_db_records) {
+            await chantService.restoreBackupRecords(backup.chant_db_records);
+          }
+          if (backup.study_db_records) {
+            await studyDbService.restoreBackupRecords(backup.study_db_records);
+          }
           
           alert("Data imported successfully! The application will now reload to apply changes.");
           window.location.reload();

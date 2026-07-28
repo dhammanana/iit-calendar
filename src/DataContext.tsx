@@ -90,7 +90,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     });
-    console.log('Total parsed events:', parsedEvents.length);
     return parsedEvents;
   }, [rawEvents]);
 

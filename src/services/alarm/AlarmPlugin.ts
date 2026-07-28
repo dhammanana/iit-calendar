@@ -35,8 +35,12 @@ class AlarmPlugin {
       } catch (e) {
         console.error("AlarmPlugin: Permission error", e);
       }
-    } else if ('Notification' in window) {
-      await Notification.requestPermission();
+    } else if ('Notification' in window && Notification.permission === 'default') {
+      try {
+        await Notification.requestPermission();
+      } catch (e) {
+        console.warn("Notification requestPermission skipped or denied", e);
+      }
     }
   }
 

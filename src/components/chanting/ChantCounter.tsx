@@ -3,6 +3,7 @@ import { motion, useAnimation, AnimatePresence } from 'motion/react';
 import { Minus, Plus, Hand, Play, Pause, RotateCcw, Clock, Settings2, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useI18n } from '../../hooks/useI18n';
+import { Button } from '../Button';
 
 interface ChantCounterProps {
   currentCount: number;
@@ -178,16 +179,15 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
             </div>
           </div>
           
-          <button 
+          <Button
             onClick={toggleTimer}
-            className="h-16 px-10 rounded-full flex items-center justify-center gap-3 font-bold tracking-widest uppercase text-sm transition-transform active:scale-95 shadow-lg text-white cursor-pointer"
-            style={{
-              backgroundColor: 'var(--accent)',
-              boxShadow: '0 10px 15px -3px var(--accent-shadow), 0 4px 6px -4px var(--accent-shadow)'
-            }}
+            variant="primary"
+            size="lg"
+            icon={Play}
+            className="h-14 px-8"
           >
-            <Play size={20} fill="currentColor" /> Start Chanting
-          </button>
+            Start Chanting
+          </Button>
           
           <div className="w-full">
             {children}

@@ -30,6 +30,8 @@ export interface Settings {
 export interface Chant {
   id: string;
   title: string;
+  nameKey?: string;
+  isNamePali?: boolean;
   content?: string;
   chant?: string;
   category?: string;
@@ -39,6 +41,7 @@ export interface UserChant extends Chant {
   totalCount: number;
   lastUsed?: number; // timestamp
   isCustom?: boolean;
+  isDeleted?: boolean;
   milestone?: number;
 }
 
