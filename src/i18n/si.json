@@ -26,6 +26,8 @@
     "nextUposatha": "මීළඟ උපෝසථය",
     "uposatha": "උපෝසථ",
     "startsIn": "තව දින",
+    "inDays": "තව දින {{count}}යි",
+    "inDays_one": "තව 1 දිනයයි",
     "paliRecitation": "පාලි සජ්ඣායනය",
     "month": "මාසය",
     "year": "වර්ෂය",

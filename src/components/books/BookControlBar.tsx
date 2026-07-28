@@ -88,7 +88,7 @@ export function BookControlBar({
           )}
         />
         {searchTerm && (
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 bg-[var(--bg-input)] pl-1.5 py-0.5 rounded-full">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 bg-[var(--bg-input)] pl-1.5 py-0.5 rounded-full transition-all duration-200 animate-in fade-in zoom-in-95">
             {selectedSectionId && (
               <div className="flex items-center gap-0.5 border-r border-[var(--border-subtle)] pr-1 mr-0.5">
                 <button
@@ -132,7 +132,14 @@ export function BookControlBar({
           />
 
           {showPagination && (
-            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+            <div
+              className={cn(
+                "flex items-center gap-1 sm:gap-1.5 flex-shrink-0 transition-all duration-300 ease-in-out origin-right overflow-hidden",
+                searchTerm
+                  ? "max-w-0 opacity-0 scale-95 pointer-events-none sm:max-w-[300px] sm:opacity-100 sm:scale-100 sm:pointer-events-auto"
+                  : "max-w-[300px] opacity-100 scale-100 pointer-events-auto"
+              )}
+            >
               <Button
                 onClick={onPrevSection}
                 disabled={currentSectionIndex <= 0}

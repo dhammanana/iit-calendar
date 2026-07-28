@@ -23,6 +23,7 @@
     "nextUposatha": "ថ្ងៃឧបោសថបន្ទាប់",
     "uposatha": "ថ្ងៃសីល",
     "startsIn": "ចាប់ផ្តើមនៅ (ថ្ងៃ)",
+    "inDays": "នៅសល់ {{count}} ថ្ងៃ",
     "paliRecitation": "ការសូត្របាលី",
     "month": "ខែ",
     "year": "ឆ្នាំ",

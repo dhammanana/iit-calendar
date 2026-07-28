@@ -23,6 +23,7 @@
     "nextUposatha": "နောက် ဥပုသ်နေ့",
     "uposatha": "ဥပုသ်",
     "startsIn": "စတင်ရန် ကျန်ရက်",
+    "inDays": "{{count}} ရက် ကျန်",
     "paliRecitation": "ပါဠိ ရွတ်ဖတ်ခြင်း",
     "month": "လ",
     "year": "နှစ်",

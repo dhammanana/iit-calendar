@@ -23,6 +23,7 @@
     "nextUposatha": "ວັນອຸໂປສົດຖັດໄປ",
     "uposatha": "ອຸໂປສົດ",
     "startsIn": "ເລີ່ມຕົ້ນໃນ (ມື້)",
+    "inDays": "ອີກ {{count}} ມື້",
     "paliRecitation": "ການສວດປາລີ",
     "month": "ເດືອນ",
     "year": "ປີ",

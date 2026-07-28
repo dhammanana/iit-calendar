@@ -23,6 +23,7 @@
     "nextUposatha": "Uposatha Tiếp theo",
     "uposatha": "Ngày Uposatha",
     "startsIn": "Bắt đầu sau (ngày)",
+    "inDays": "Sau {{count}} ngày",
     "paliRecitation": "Tụng Pali",
     "month": "Tháng",
     "year": "Năm",

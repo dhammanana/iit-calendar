@@ -23,6 +23,8 @@
     "nextUposatha": "วันอุโบสถถัดไป",
     "uposatha": "อุโบสถ",
     "startsIn": "เริ่มต้นใน (วัน)",
+    "inDays": "อีก {{count}} วัน",
+    "inDays_one": "อีก 1 วัน",
     "paliRecitation": "การสวดปาฬิ",
     "month": "เดือน",
     "year": "ปี",

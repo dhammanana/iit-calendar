@@ -27,6 +27,8 @@
     "nextUposatha": "Next Uposatha",
     "uposatha": "Uposatha",
     "startsIn": "Starts in (days)",
+    "inDays": "In {{count}} days",
+    "inDays_one": "In 1 day",
     "paliRecitation": "Pali Recitation",
     "month": "Month",
     "year": "Year",

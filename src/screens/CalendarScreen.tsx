@@ -416,7 +416,7 @@ export function CalendarScreen({
               {DAYS_OF_WEEK.map(day => (
                 <span
                   key={`header-${day}`}
-                  className="text-sm font-black text-center tracking-widest"
+                  className="text-xs sm:text-sm font-bold text-center tracking-tight sm:tracking-wider truncate px-0.5"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   {t(`calendar.days.${day.toLowerCase()}`)}
@@ -581,22 +581,14 @@ export function CalendarScreen({
                                 className="px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest"
                                 style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
                               >
-                                Today
+                                {t('today')}
                               </div>
                             ) : (
-                              <div className="flex flex-col items-end">
-                                <p
-                                  className="text-xs font-black uppercase tracking-[0.2em] mb-0.5 whitespace-nowrap"
-                                  style={{ color: 'var(--text-muted)' }}
-                                >
-                                  {t('calendar.startsIn')}
-                                </p>
-                                <p
-                                  className="text-2xl font-black leading-none"
-                                  style={{ color: 'var(--accent)' }}
-                                >
-                                  {Math.max(0, Math.round((nextUposatha.date.getTime() - selectedDate.setHours(0, 0, 0, 0)) / 86400000))}
-                                </p>
+                              <div
+                                className="px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest"
+                                style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
+                              >
+                                {t('calendar.inDays', { count: Math.max(0, Math.round((startOfDay(nextUposatha.date).getTime() - startOfDay(selectedDate).getTime()) / 86400000)) })}
                               </div>
                             )}
                           </div>
@@ -672,7 +664,7 @@ export function CalendarScreen({
                         <h4 className="label-eyebrow mb-4 text-center">
                           {t('calendar.vassaAndPavarana')}
                         </h4>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                           <VassaItem
                             label={t('calendar.pubbaVassa')}
                             entry={vassaDates.pubbaVassaEntry}
@@ -1115,18 +1107,18 @@ function VassaItem({ label, entry, pavarana, t }: { label: string; entry: Date |
   if (!entry || !pavarana) return null;
   return (
     <div
-      className="flex flex-col gap-2 p-3 rounded-2xl"
+      className="flex flex-col gap-2 p-3 rounded-2xl min-w-0"
       style={{ background: 'var(--accent-subtle)', border: '1px solid var(--border)' }}
     >
-      <span className="text-[11px] font-black uppercase tracking-tighter" style={{ color: 'var(--accent)' }}>{label}</span>
+      <span className="text-[11px] font-black uppercase tracking-tighter truncate" style={{ color: 'var(--accent)' }}>{label}</span>
       <div className="space-y-1">
-        <div className="flex justify-between items-center">
-          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('calendar.entry')}</span>
-          <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>{format(entry, 'MMM d')}</span>
+        <div className="flex justify-between items-center gap-2 text-xs sm:text-sm">
+          <span className="truncate" style={{ color: 'var(--text-muted)' }}>{t('calendar.entry')}</span>
+          <span className="font-bold shrink-0 whitespace-nowrap" style={{ color: 'var(--accent)' }}>{format(entry, 'MMM d')}</span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{t('calendar.pavarana')}</span>
-          <span className="text-sm font-bold" style={{ color: 'var(--accent)' }}>{format(pavarana, 'MMM d')}</span>
+        <div className="flex justify-between items-center gap-2 text-xs sm:text-sm">
+          <span className="truncate" style={{ color: 'var(--text-muted)' }}>{t('calendar.pavarana')}</span>
+          <span className="font-bold shrink-0 whitespace-nowrap" style={{ color: 'var(--accent)' }}>{format(pavarana, 'MMM d')}</span>
         </div>
       </div>
     </div>
