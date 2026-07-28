@@ -221,26 +221,6 @@ export function SettingsModal({
                   </div>
                 </section>
 
-                {/* Update Channel */}
-                <section className="space-y-4">
-                  <SectionLabel>Update Channel</SectionLabel>
-                  <LabeledSelect
-                    label="OTA Update Channel"
-                    value={settings.updateChannel || 'stable'}
-                    onChange={(val) => onUpdate({ ...settings, updateChannel: val as 'stable' | 'dev' })}
-                    options={[
-                      { value: 'stable', label: 'Stable (Official Releases)' },
-                      { value: 'dev', label: 'Dev (Development & Pre-releases)' }
-                    ]}
-                    selectClassName="text-sm px-4 py-3 font-sans"
-                  />
-                  <p className="text-[11px] px-1" style={{ color: 'var(--text-secondary)' }}>
-                    {settings.updateChannel === 'dev' 
-                      ? 'Dev channel receives test updates (-dev) before official releases.' 
-                      : 'Stable channel receives verified official updates.'}
-                  </p>
-                </section>
-
                 {/* 1.5 Font Size */}
                 <section className="space-y-4">
                   <div className="flex justify-between items-center px-1">
@@ -592,6 +572,26 @@ export function SettingsModal({
                     </div>
                     <div className="text-[var(--accent)]">→</div>
                   </button>
+                </section>
+
+                {/* Update Channel */}
+                <section className="space-y-4">
+                  <SectionLabel>Update Channel</SectionLabel>
+                  <LabeledSelect
+                    label="OTA Update Channel"
+                    value={settings.updateChannel || 'stable'}
+                    onChange={(val) => onUpdate({ ...settings, updateChannel: val as 'stable' | 'dev' })}
+                    options={[
+                      { value: 'stable', label: 'Stable (Official Releases)' },
+                      { value: 'dev', label: 'Dev (Development & Pre-releases)' }
+                    ]}
+                    selectClassName="text-sm px-4 py-3 font-sans"
+                  />
+                  <p className="text-[11px] px-1" style={{ color: 'var(--text-secondary)' }}>
+                    {settings.updateChannel === 'dev' 
+                      ? 'Dev channel receives test updates (-dev) before official releases.' 
+                      : 'Stable channel receives verified official updates.'}
+                  </p>
                 </section>
 
                 <Button
