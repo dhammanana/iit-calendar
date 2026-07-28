@@ -147,7 +147,7 @@ export function SettingsModal({
         title={t('common.settings')}
         maxWidth="lg"
       >
-        <div className="space-y-8 pr-1">
+        <div className="space-y-8 px-1 pr-2">
 
                 {/* Backup & Restore Section */}
                 <section className="space-y-4">
