@@ -62,13 +62,28 @@ export function StudyScreen() {
   const [pomodoroCount, setPomodoroCount] = useState(0);
 
   // Tasks State
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    const saved = localStorage.getItem('study_tasks');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(() => {
-    return localStorage.getItem('study_active_task') || null;
-  });
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [activeTaskId, setActiveTaskIdState] = useState<string | null>(null);
+
+  const setActiveTaskId = async (id: string | null) => {
+    setActiveTaskIdState(id);
+    await studyDbService.setActiveTaskId(id);
+  };
+
+  const reloadTasks = async () => {
+    const loadedTasks = await studyDbService.getTasks();
+    const activeId = await studyDbService.getActiveTaskId();
+    setTasks(loadedTasks);
+    setActiveTaskIdState(activeId);
+  };
+
+  useEffect(() => {
+    reloadTasks();
+    const unsubscribe = studyDbService.subscribe(() => {
+      reloadTasks();
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Form State
   const [showTaskForm, setShowTaskForm] = useState(false);
@@ -80,18 +95,6 @@ export function StudyScreen() {
   useEffect(() => {
     localStorage.setItem('study_settings', JSON.stringify(settings));
   }, [settings]);
-
-  useEffect(() => {
-    localStorage.setItem('study_tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  useEffect(() => {
-    if (activeTaskId) {
-      localStorage.setItem('study_active_task', activeTaskId);
-    } else {
-      localStorage.removeItem('study_active_task');
-    }
-  }, [activeTaskId]);
 
   const initAudio = () => {
     if (!audioCtxRef.current) {
@@ -162,27 +165,12 @@ export function StudyScreen() {
 
       // Update task actual count if there is an active task
       if (activeTaskId) {
-        setTasks(prev => {
-          let updated = prev.map(t =>
-            t.id === activeTaskId ? { ...t, act: t.act + 1 } : t
-          );
-
-          if (settings.autoCheckTasks) {
-            updated = updated.map(t => {
-              if (t.id === activeTaskId && t.act >= t.est) {
-                return { ...t, completed: true };
-              }
-              return t;
-            });
-          }
-
-          if (settings.checkToBottom) {
-            const completed = updated.filter(t => t.completed);
-            const active = updated.filter(t => !t.completed);
-            return [...active, ...completed];
-          }
-          return updated;
-        });
+        const activeTask = tasks.find(t => t.id === activeTaskId);
+        if (activeTask) {
+          const newAct = activeTask.act + 1;
+          const isCompleted = settings.autoCheckTasks ? (newAct >= activeTask.est) : activeTask.completed;
+          studyDbService.updateTask(activeTaskId, { act: newAct, completed: isCompleted });
+        }
       }
 
       if (newCount % settings.longBreakInterval === 0) {
@@ -208,23 +196,16 @@ export function StudyScreen() {
     setIsRunning(!isRunning);
   };
 
-  const handleSaveTask = () => {
+  const handleSaveTask = async () => {
     if (!taskForm.name.trim()) return;
 
     if (editingTaskId) {
-      setTasks(prev => prev.map(t =>
-        t.id === editingTaskId ? { ...t, name: taskForm.name, est: taskForm.est } : t
-      ));
+      await studyDbService.updateTask(editingTaskId, { name: taskForm.name, est: taskForm.est });
     } else {
-      const newTask: Task = {
-        id: Date.now().toString(),
-        name: taskForm.name,
-        est: taskForm.est,
-        act: 0,
-        completed: false,
-      };
-      setTasks(prev => [...prev, newTask]);
-      if (!activeTaskId) setActiveTaskId(newTask.id);
+      const newTask = await studyDbService.addTask(taskForm.name, taskForm.est);
+      if (!activeTaskId) {
+        await setActiveTaskId(newTask.id);
+      }
     }
 
     setTaskForm({ name: '', est: 1 });
@@ -238,16 +219,19 @@ export function StudyScreen() {
     setShowTaskForm(true);
   };
 
-  const toggleTaskCompletion = (taskId: string, e: React.MouseEvent) => {
+  const toggleTaskCompletion = async (taskId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setTasks(prev => prev.map(t =>
-      t.id === taskId ? { ...t, completed: !t.completed } : t
-    ));
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      await studyDbService.updateTask(taskId, { completed: !task.completed });
+    }
   };
 
-  const deleteTask = (taskId: string) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId));
-    if (activeTaskId === taskId) setActiveTaskId(null);
+  const deleteTask = async (taskId: string) => {
+    await studyDbService.deleteTask(taskId);
+    if (activeTaskId === taskId) {
+      await setActiveTaskId(null);
+    }
     if (editingTaskId === taskId) {
       setShowTaskForm(false);
       setEditingTaskId(null);
