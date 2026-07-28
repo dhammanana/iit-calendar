@@ -436,7 +436,7 @@ export function SettingsModal({
                   </div>
                 </section>
 
-                {/* 4. Tradition & Calculation */}
+                {/* 4. Tradition */}
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Sun}>{t('settings.tradition')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-3">
@@ -454,7 +454,7 @@ export function SettingsModal({
                                 boxShadow: '0 4px 16px var(--accent-ring)',
                               }
                             : {
-                                backgroundColor: 'transparent',
+                                backgroundColor: 'var(--bg-card)',
                                 color: 'var(--text-secondary)',
                                 border: '1px solid var(--border-base)',
                               }
@@ -464,87 +464,102 @@ export function SettingsModal({
                       </button>
                     ))}
                   </div>
+                </section>
 
-                  <div className="pt-2">
-                    <SectionLabel icon={Sun}>{t('settings.dawnCalculation')}</SectionLabel>
-                    <div className="flex flex-col gap-2 mt-2">
-                      {['astrology', 'offset'].map(m => (
-                        <div key={`dawn-opt-wrap-${m}`} className="flex flex-col gap-2">
+                {/* 5. Dawn Calculation */}
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <SectionLabel icon={Sun}>{t('settings.dawnCalculation')}</SectionLabel>
+                  <div className="flex flex-col gap-3">
+                    {[
+                      { id: 'astrology', label: 'Sun Angle (Astrology Method)' },
+                      { id: 'offset', label: 'Time Shift (Fixed Minutes Early)' }
+                    ].map(opt => {
+                      const isSelected = settings.dawnMethod === opt.id;
+                      return (
+                        <div key={`dawn-opt-wrap-${opt.id}`} className="flex flex-col gap-2">
                           <button
-                            key={`dawn-opt-${m}`}
-                            onClick={() => onUpdate({ ...settings, dawnMethod: m })}
-                            className="px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex justify-between items-center transition-all"
+                            key={`dawn-opt-${opt.id}`}
+                            onClick={() => onUpdate({ ...settings, dawnMethod: opt.id })}
+                            className="px-4 py-3.5 rounded-2xl text-xs font-bold flex justify-between items-center transition-all border"
                             style={
-                              settings.dawnMethod === m
+                              isSelected
                                 ? {
-                                    backgroundColor: 'var(--accent)',
-                                    color: '#fff',
-                                    border: '1px solid var(--accent)',
-                                    boxShadow: '0 4px 16px var(--accent-ring)',
+                                    backgroundColor: 'var(--accent-soft)',
+                                    color: 'var(--accent)',
+                                    borderColor: 'var(--accent)',
                                   }
                                 : {
-                                    backgroundColor: 'transparent',
-                                    color: 'var(--text-saffron)',
-                                    border: '1px solid var(--border-base)',
+                                    backgroundColor: 'var(--bg-card)',
+                                    color: 'var(--text-secondary)',
+                                    borderColor: 'var(--border-subtle)',
                                   }
                             }
                           >
-                            <span>{t(`settings.dawnMethods.${m}`) !== `settings.dawnMethods.${m}` ? t(`settings.dawnMethods.${m}`) : m === 'offset' ? 'Time Shift' : 'Sun Angle'}</span>
-                            {settings.dawnMethod === m && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                            <div className="flex items-center gap-3">
+                              <div className={cn(
+                                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                                isSelected ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--text-tertiary)]"
+                              )}>
+                                {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                              </div>
+                              <span>{opt.label}</span>
+                            </div>
                           </button>
                           
-                          {settings.dawnMethod === m && m === 'astrology' && (
+                          {isSelected && opt.id === 'astrology' && (
                             <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-2 text-sm border border-[var(--border-subtle)]">
-                              <span className="text-[var(--text-secondary)]">Angle: {settings.dawnAngle?.toFixed(2) ?? 9.0}°</span>
+                              <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                                Sun Altitude Angle: <strong style={{ color: 'var(--accent)' }}>{settings.dawnAngle?.toFixed(2) ?? 9.0}°</strong>
+                              </span>
                               <div className="flex gap-2">
                                 <input 
                                   type="time" 
                                   value={calibratingTime}
                                   onChange={(e) => setCalibratingTime(e.target.value)}
-                                  className="flex-1 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-[var(--text-primary)]"
+                                  className="flex-1 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-3 py-1.5 text-xs text-[var(--text-primary)]"
                                 />
                                 <button 
                                   onClick={handleCalibrateDawn}
-                                  className="bg-[var(--accent)] text-white px-3 py-1 rounded-lg font-bold text-xs"
+                                  className="bg-[var(--accent)] text-white px-3 py-1.5 rounded-lg font-bold text-xs active:scale-95 transition-all"
                                 >
                                   Calibrate
                                 </button>
                               </div>
-                              <span className="text-xs text-[var(--text-tertiary)] opacity-70">
-                                Input today's dawn time to calibrate the angle. Preview: {(() => {
+                              <span className="text-[11px] text-[var(--text-tertiary)] opacity-80 leading-relaxed">
+                                Input today's actual dawn time to calibrate. Preview: <strong>{(() => {
                                   const stc = new SunTimesCalculator(settings.lat, settings.lng);
                                   const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'astrology' });
                                   return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                })()}
+                                })()}</strong>
                               </span>
                             </div>
                           )}
                           
-                          {settings.dawnMethod === m && m === 'offset' && (
+                          {isSelected && opt.id === 'offset' && (
                             <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-2 text-sm border border-[var(--border-subtle)]">
                               <div className="flex items-center justify-between">
-                                <span className="text-[var(--text-secondary)]">Minutes before sunrise</span>
+                                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Minutes before sunrise</span>
                                 <input 
                                   type="number" 
                                   min={20}
                                   max={50}
                                   value={settings.dawnDurationOffset ?? 30}
                                   onChange={(e) => onUpdate({ ...settings, dawnDurationOffset: Number(e.target.value) })}
-                                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-[var(--text-primary)]"
+                                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-xs font-bold text-[var(--text-primary)]"
                                 />
                               </div>
-                              <span className="text-xs text-[var(--text-tertiary)] opacity-70">
-                                Preview: {(() => {
+                              <span className="text-[11px] text-[var(--text-tertiary)] opacity-80 leading-relaxed">
+                                Preview: <strong>{(() => {
                                   const stc = new SunTimesCalculator(settings.lat, settings.lng);
                                   const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'offset' });
                                   return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                })()}
+                                })()}</strong>
                               </span>
                             </div>
                           )}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
                 </section>
 
