@@ -24,6 +24,7 @@ export interface Settings {
   syncToFirebase: boolean;
   isIITStudent?: boolean;
   calendarCardOrder?: string[];
+  updateChannel?: 'stable' | 'dev';
 }
 
 export interface Chant {

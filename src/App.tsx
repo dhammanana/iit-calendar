@@ -59,6 +59,7 @@ export default function App() {
         solarNoonBell: false,
         dawnBell: false,
         isIITStudent: true,
+        updateChannel: 'stable',
         ...parsed
       };
     }
@@ -75,6 +76,7 @@ export default function App() {
       solarNoonBell: false,
       dawnBell: false,
       isIITStudent: true,
+      updateChannel: 'stable',
     };
   });
 
@@ -83,8 +85,13 @@ export default function App() {
       CapacitorUpdater.notifyAppReady()
         .then(() => console.log('Capgo: App ready notified successfully'))
         .catch(err => console.error('Capgo: Failed to notify app ready', err));
+
+      if (settings.updateChannel) {
+        CapacitorUpdater.setCustomId({ customId: settings.updateChannel })
+          .catch(err => console.error('Capgo: Failed to set channel customId', err));
+      }
     }
-  }, []);
+  }, [settings.updateChannel]);
 
   useEffect(() => {
     localStorage.setItem('iit_settings', JSON.stringify(settings));
