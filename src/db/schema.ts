@@ -32,10 +32,19 @@ export const chantSessionsTable = new Table({
   deleted: column.integer
 });
 
+export const studySessionsTable = new Table({
+  date: column.text,
+  duration_ms: column.integer,
+  created_at: column.text,
+  updated_at: column.text,
+  deleted: column.integer
+});
+
 export const AppSchemaDefinition = new Schema({
   meditation_sessions: meditationSessionsTable,
   user_chants: userChantsTable,
-  chant_sessions: chantSessionsTable
+  chant_sessions: chantSessionsTable,
+  study_sessions: studySessionsTable
 });
 
 export type MeditationSessionRecord = {
@@ -73,3 +82,11 @@ export type ChantSessionRecord = {
   deleted?: number;
 };
 
+export type StudySessionRecord = {
+  id: string;
+  date: string;
+  duration_ms: number;
+  created_at: string;
+  updated_at: string;
+  deleted?: number;
+};

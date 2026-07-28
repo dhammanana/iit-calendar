@@ -7,6 +7,7 @@ import { useI18n } from '../hooks/useI18n';
 import { StudySettings, StudySettingsData } from '../components/study/StudySettings';
 import { StudyInsights, StudySession } from '../components/study/StudyInsights';
 import { alarmService } from '../services/alarm/AlarmService';
+import { studyDbService } from '../services/StudyDbService';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { Button } from '../components/Button';
 
@@ -41,10 +42,15 @@ export function StudyScreen() {
     return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
   });
 
-  const [sessions, setSessions] = useState<StudySession[]>(() => {
-    const saved = localStorage.getItem('study_sessions');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [sessions, setSessions] = useState<StudySession[]>([]);
+
+  useEffect(() => {
+    studyDbService.getSessions().then(setSessions);
+    const unsubscribe = studyDbService.subscribe(() => {
+      studyDbService.getSessions().then(setSessions);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // UI State
   const [view, setView] = useState<'timer' | 'insights' | 'configs'>('timer');
@@ -74,10 +80,6 @@ export function StudyScreen() {
   useEffect(() => {
     localStorage.setItem('study_settings', JSON.stringify(settings));
   }, [settings]);
-
-  useEffect(() => {
-    localStorage.setItem('study_sessions', JSON.stringify(sessions));
-  }, [sessions]);
 
   useEffect(() => {
     localStorage.setItem('study_tasks', JSON.stringify(tasks));
@@ -154,12 +156,9 @@ export function StudyScreen() {
       setPomodoroCount(newCount);
 
       // Log session
-      const session: StudySession = {
-        id: Date.now().toString(),
-        date: new Date().toISOString(),
-        durationMs: settings.pomodoro * 1000
-      };
-      setSessions(prev => [...prev, session]);
+      studyDbService.addSession(settings.pomodoro * 1000).then(session => {
+        setSessions(prev => [session, ...prev.filter(s => s.id !== session.id)]);
+      });
 
       // Update task actual count if there is an active task
       if (activeTaskId) {
