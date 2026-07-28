@@ -470,7 +470,7 @@ export function SettingsModal({
                     ))}
                   </div>
 
-                  <SectionLabel icon={Sun} centered>{t('settings.dawnCalculation')}</SectionLabel>
+                  <SectionLabel icon={Sun}>{t('settings.dawnCalculation')}</SectionLabel>
                   <div className="flex flex-col gap-2">
                     {['astrology', 'offset'].map(m => (
                       <div key={`dawn-opt-wrap-${m}`} className="flex flex-col gap-2">
