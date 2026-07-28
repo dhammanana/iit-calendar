@@ -40,6 +40,7 @@ import { Edit2, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '../components/Button';
 import { useUI } from '../UIContext';
 import { PaliText } from '../components/PaliText';
+import packageJson from '../../package.json';
 
 const DAYS_OF_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -1027,6 +1028,13 @@ export function CalendarScreen({
               >
                 {t('common.edit')}
               </Button>
+            </div>
+
+            {/* App Version */}
+            <div className="flex justify-center mt-6 mb-2">
+              <span className="text-[10px] tracking-wider opacity-40 font-mono" style={{ color: 'var(--text-muted)' }}>
+                v{packageJson.version}
+              </span>
             </div>
           </motion.div>
         </AnimatePresence>

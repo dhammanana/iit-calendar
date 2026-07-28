@@ -24,14 +24,51 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
   const { setShowSettings } = useUI();
   const [chants, setChants] = useState<UserChant[]>([]);
   const [sessions, setSessions] = useState<ChantSession[]>([]);
-  const [selectedChantId, setSelectedChantId] = useState<string | null>(null);
+  const [selectedChantId, setSelectedChantId] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem('chant_selected_chant_id');
+    } catch {
+      return null;
+    }
+  });
   const [activeSessionCount, setActiveSessionCount] = useState(0);
   const [view, setView] = useState<'counter' | 'insights' | 'config'>('counter');
   const [showAddModal, setShowAddModal] = useState(false);
   const [expandedPali, setExpandedPali] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isStopwatch, setIsStopwatch] = useState(true);
-  const [timerSettings, setTimerSettings] = useState({ hours: 0, minutes: 15 });
+  const [isStopwatch, setIsStopwatch] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('chant_is_stopwatch');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+  const [timerSettings, setTimerSettings] = useState<{ hours: number; minutes: number }>(() => {
+    try {
+      const saved = localStorage.getItem('chant_timer_settings');
+      return saved ? JSON.parse(saved) : { hours: 0, minutes: 15 };
+    } catch {
+      return { hours: 0, minutes: 15 };
+    }
+  });
+
+  // Save chant settings to localStorage when changed
+  useEffect(() => {
+    if (selectedChantId !== null) {
+      localStorage.setItem('chant_selected_chant_id', selectedChantId);
+    } else {
+      localStorage.removeItem('chant_selected_chant_id');
+    }
+  }, [selectedChantId]);
+
+  useEffect(() => {
+    localStorage.setItem('chant_is_stopwatch', JSON.stringify(isStopwatch));
+  }, [isStopwatch]);
+
+  useEffect(() => {
+    localStorage.setItem('chant_timer_settings', JSON.stringify(timerSettings));
+  }, [timerSettings]);
 
   // New / Edit chant form
   const [editingChantId, setEditingChantId] = useState<string | null>(null);
@@ -51,6 +88,10 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
       const activeChants = updated.filter(c => !c.isDeleted);
       if (activeChants.length > 0) {
         setSelectedChantId(currentId => {
+          const savedId = localStorage.getItem('chant_selected_chant_id') || currentId;
+          if (savedId && activeChants.some(c => c.id.toString() === savedId.toString())) {
+            return savedId;
+          }
           if (!currentId || !activeChants.some(c => c.id.toString() === currentId.toString())) {
             const defaultChant = activeChants.find(c => c.nameKey === 'chant.itipiso' || c.title.toLowerCase().includes('itipiso') || c.id.toString() === '1') || activeChants[0];
             return defaultChant ? defaultChant.id.toString() : null;
