@@ -617,7 +617,6 @@ function SectionLabel({ children, inline, centered }: { children: React.ReactNod
     <h3
       className={cn(
         "text-sm font-black uppercase tracking-widest",
-        !inline && "px-1",
         centered && "text-center pt-2",
       )}
       style={{ color: 'var(--accent)' }}
