@@ -29,6 +29,8 @@ export interface Settings {
 export interface Chant {
   id: string;
   title: string;
+  nameKey?: string;
+  isNamePali?: boolean;
   content?: string;
   chant?: string;
   category?: string;

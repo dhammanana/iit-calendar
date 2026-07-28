@@ -343,12 +343,12 @@ export function CalendarScreen({
             aria-label="Settings"
             className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
           />
-          <div className="flex items-center justify-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none flex-wrap">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight text-center">
             <span>{settings.calendarType === 'srilanka' ? t('calendar.srilanka') : settings.calendarType}</span>
             {settings.address && (
               <>
-                <span>·</span>
-                <span className="normal-case font-medium text-slate-400 dark:text-slate-500 truncate max-w-[200px]">{settings.address}</span>
+                <span className="hidden sm:inline" aria-hidden="true">·</span>
+                <span className="normal-case font-medium text-slate-400 dark:text-slate-500 max-w-[280px] sm:max-w-[360px] break-words text-center">{settings.address}</span>
               </>
             )}
           </div>

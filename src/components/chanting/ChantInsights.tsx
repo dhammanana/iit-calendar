@@ -7,6 +7,8 @@ import { cn } from '../../lib/utils';
 import { format, startOfDay, subDays, isSameDay } from 'date-fns';
 import { useI18n } from '../../hooks/useI18n';
 
+import { getChantTitle } from '../../services/ChantService';
+
 interface ChantInsightsProps {
   chants: UserChant[];
   sessions: ChantSession[];
@@ -26,7 +28,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
     .sort((a, b) => b.totalCount - a.totalCount)
     .slice(0, 5)
     .map(c => ({
-      name: c.title,
+      name: getChantTitle(c, t),
       value: c.totalCount,
       percent: Math.round((c.totalCount / (totalChants || 1)) * 100)
     }));
@@ -170,7 +172,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
           {chants.filter(c => c.milestone && c.milestone > 0).map(chant => (
             <div key={chant.id} className="space-y-2">
               <div className="flex justify-between items-center text-[0.65rem] font-black uppercase tracking-widest text-slate-500">
-                <span>{chant.title} {t('chant.goal')}</span>
+                <span>{getChantTitle(chant, t)} {t('chant.goal')}</span>
                 <span className="text-[#d48820]">{chant.totalCount} / {chant.milestone}</span>
               </div>
               <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
