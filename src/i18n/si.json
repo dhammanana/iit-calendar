@@ -58,7 +58,8 @@
       "thu": "බ්",
       "fri": "සි",
       "sat": "සෙ"
-    }
+    },
+    "buddhistCalendar": "බෞද්ධ දිනදර්ශනය"
   },
   "settings": {
     "tradition": "දින දර්ශන ක්‍රමය",
@@ -184,7 +185,8 @@
     "noDelay": "ප්‍රමාදයකින් තොරව",
     "seconds": "තත්පර",
     "bellType": "සීනු වර්ගය",
-    "saveSettings": "සැකසුම් සුරකින්න"
+    "saveSettings": "සැකසුම් සුරකින්න",
+    "minutes": "මිනිත්තුව"
   },
   "chant": {
     "chantCounter": "සජ්ඣායනා ගණකය",

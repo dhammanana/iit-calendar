@@ -55,7 +55,8 @@
       "thu": "ພ",
       "fri": "ສ",
       "sat": "ເ"
-    }
+    },
+    "buddhistCalendar": "ປະຕິທິນພຸດ"
   },
   "settings": {
     "tradition": "ປະເພນີ",
@@ -181,7 +182,8 @@
     "noDelay": "ບໍ່ມີຄວາມຊັກຊ້າ",
     "seconds": "ວິນາທີ",
     "bellType": "ປະເພດກະດິ່ງ",
-    "saveSettings": "ບັນທຶກການຕັ້ງຄ່າ"
+    "saveSettings": "ບັນທຶກການຕັ້ງຄ່າ",
+    "minutes": "ນາທີ"
   },
   "chant": {
     "chantCounter": "ເຄື່ອງນັບບົດສວດ",

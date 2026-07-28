@@ -55,7 +55,8 @@
       "thu": "พฤ",
       "fri": "ศ",
       "sat": "ส"
-    }
+    },
+    "buddhistCalendar": "ปฏิทินพุทธ"
   },
   "settings": {
     "tradition": "รูปแบบปฏิทิน",
@@ -181,7 +182,8 @@
     "noDelay": "ไม่มีความล่าช้า",
     "seconds": "วินาที",
     "bellType": "ประเภทกระดิ่ง",
-    "saveSettings": "บันทึกการตั้งค่า"
+    "saveSettings": "บันทึกการตั้งค่า",
+    "minutes": "นาที"
   },
   "chant": {
     "chantCounter": "เครื่องนับบทสวด",

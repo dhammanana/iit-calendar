@@ -69,7 +69,8 @@
       "thu": "THU",
       "fri": "FRI",
       "sat": "SAT"
-    }
+    },
+    "buddhistCalendar": "Buddhist Calendar"
   },
   "settings": {
     "tradition": "Calendar style",
@@ -205,7 +206,8 @@
     "noDelay": "No delay",
     "seconds": "seconds",
     "bellType": "Bell Type",
-    "saveSettings": "Save Settings"
+    "saveSettings": "Save Settings",
+    "minutes": "minute"
   },
   "chant": {
     "chantCounter": "Chant Counter",

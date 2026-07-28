@@ -55,7 +55,8 @@
       "thu": "ព្",
       "fri": "ស",
       "sat": "ស"
-    }
+    },
+    "buddhistCalendar": "ប្រតិទិនពុទ្ធសាសនា"
   },
   "settings": {
     "tradition": "ប្រពៃណី",
@@ -181,7 +182,8 @@
     "noDelay": "គ្មានការពន្យារពេល",
     "seconds": "វិនាទី",
     "bellType": "ប្រភេទជួង",
-    "saveSettings": "រក្សាទុកការកំណត់"
+    "saveSettings": "រក្សាទុកការកំណត់",
+    "minutes": "នាទី"
   },
   "chant": {
     "chantCounter": "ម៉ាស៊ីនរាប់ការសូត្រមន្ត",

@@ -55,7 +55,8 @@
       "thu": "T5",
       "fri": "T6",
       "sat": "T7"
-    }
+    },
+    "buddhistCalendar": "Lịch Phật Giáo"
   },
   "settings": {
     "tradition": "Truyền thống Lịch",
@@ -181,7 +182,8 @@
     "noDelay": "Không trì hoãn",
     "seconds": "giây",
     "bellType": "Loại chuông",
-    "saveSettings": "Lưu cài đặt"
+    "saveSettings": "Lưu cài đặt",
+    "minutes": "phút"
   },
   "chant": {
     "chantCounter": "Máy đếm số lần tụng",

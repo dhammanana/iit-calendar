@@ -40,7 +40,8 @@ export const useI18n = () => {
 
   const t = useCallback((path: string, params?: Record<string, any>) => {
     const dict = translations[lang] || en;
-    let result = path.split('.').reduce((obj, key) => obj?.[key], dict) || path.split('.').reduce((obj, key) => obj?.[key], en) || path;
+    let result = path.split('.').reduce((obj, key) => obj?.[key], dict) ?? path.split('.').reduce((obj, key) => obj?.[key], en);
+    if (!result) return undefined;
     
     if (params && typeof result === 'string') {
       Object.entries(params).forEach(([key, value]) => {
