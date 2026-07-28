@@ -554,26 +554,6 @@ export function SettingsModal({
                   </div>
                 </section>
 
-                {/* Legal & About */}
-                <section className="space-y-4">
-                  <SectionLabel>{t('settings.legal.title')}</SectionLabel>
-                  <button
-                    onClick={() => setShowLegal(true)}
-                    className="w-full px-4 py-4 rounded-2xl text-sm font-bold flex items-center justify-between transition-all border"
-                    style={{
-                      backgroundColor: 'var(--bg-card-alt)',
-                      borderColor: 'var(--border-subtle)',
-                      color: 'var(--text-primary)',
-                    }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Info size={18} className="text-[var(--accent)]" />
-                      <span>{t('settings.legal.button')}</span>
-                    </div>
-                    <div className="text-[var(--accent)]">→</div>
-                  </button>
-                </section>
-
                 {/* Update Channel */}
                 <section className="space-y-4">
                   <SectionLabel>Update Channel</SectionLabel>
@@ -592,6 +572,26 @@ export function SettingsModal({
                       ? 'Dev channel receives test updates (-dev) before official releases.' 
                       : 'Stable channel receives verified official updates.'}
                   </p>
+                </section>
+
+                {/* Legal & About */}
+                <section className="space-y-4">
+                  <SectionLabel>{t('settings.legal.title')}</SectionLabel>
+                  <button
+                    onClick={() => setShowLegal(true)}
+                    className="w-full px-4 py-4 rounded-2xl text-sm font-bold flex items-center justify-between transition-all border"
+                    style={{
+                      backgroundColor: 'var(--bg-card-alt)',
+                      borderColor: 'var(--border-subtle)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Info size={18} className="text-[var(--accent)]" />
+                      <span>{t('settings.legal.button')}</span>
+                    </div>
+                    <div className="text-[var(--accent)]">→</div>
+                  </button>
                 </section>
 
                 <Button
