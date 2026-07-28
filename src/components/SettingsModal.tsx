@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Search, Loader2, Download, Upload, Info } from 'lucide-react';
+import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, RefreshCw, FileText } from 'lucide-react';
 import { Modal } from './Modal';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
@@ -151,7 +151,7 @@ export function SettingsModal({
 
                 {/* Backup & Restore Section */}
                 <section className="space-y-4">
-                  <SectionLabel>Backup & Restore</SectionLabel>
+                  <SectionLabel icon={Database}>Backup & Restore</SectionLabel>
                   <div
                     className="rounded-[1.5rem] p-5 border flex flex-col gap-4"
                     style={{ backgroundColor: 'var(--bg-card-alt)', borderColor: 'var(--border-subtle)' }}
@@ -196,7 +196,7 @@ export function SettingsModal({
 
                 {/* 1. Language & Script */}
                 <section className="space-y-4">
-                  <SectionLabel>{t('common.language')} & {t('common.script')}</SectionLabel>
+                  <SectionLabel icon={Globe}>{t('common.language')} & {t('common.script')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-4">
                     <LabeledSelect
                       label={t('settings.language')}
@@ -224,7 +224,7 @@ export function SettingsModal({
                 {/* 1.5 Font Size */}
                 <section className="space-y-4">
                   <div className="flex justify-between items-center px-1">
-                    <SectionLabel>Font Size</SectionLabel>
+                    <SectionLabel icon={Type}>Font Size</SectionLabel>
                     <span className="text-sm font-bold opacity-60" style={{ color: 'var(--text-primary)' }}>
                       {settings.fontSize}px
                     </span>
@@ -254,10 +254,7 @@ export function SettingsModal({
                 {/* 2. Location & Timezone */}
                 <section className="space-y-4">
                   <div className="flex items-center justify-between px-1">
-                    <div className="flex items-center gap-2">
-                      <MapPin size="1em" style={{ color: 'var(--accent)' }} />
-                      <SectionLabel inline>{t('settings.location')}</SectionLabel>
-                    </div>
+                    <SectionLabel icon={MapPin} inline>{t('settings.location')}</SectionLabel>
                     <button
                       className="text-sm font-bold hover:underline"
                       style={{ color: 'var(--accent)' }}
@@ -322,7 +319,7 @@ export function SettingsModal({
 
                 {/* 3. Appearance */}
                 <section className="space-y-4">
-                  <SectionLabel>{t('common.appearance')}</SectionLabel>
+                  <SectionLabel icon={Palette}>{t('common.appearance')}</SectionLabel>
                   <div className="flex flex-col gap-4 px-1">
                     <div className="flex justify-between items-center w-full">
                       <span className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
@@ -446,7 +443,7 @@ export function SettingsModal({
 
                 {/* 4. Tradition & Calculation */}
                 <section className="space-y-4 pb-4">
-                  <SectionLabel>{t('settings.tradition')}</SectionLabel>
+                  <SectionLabel icon={Sun}>{t('settings.tradition')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-3">
                     {(['myanmar', 'thai', 'srilanka', 'lunar'] as const).map(type => (
                       <button
@@ -473,7 +470,7 @@ export function SettingsModal({
                     ))}
                   </div>
 
-                  <SectionLabel centered>{t('settings.dawnCalculation')}</SectionLabel>
+                  <SectionLabel icon={Sun} centered>{t('settings.dawnCalculation')}</SectionLabel>
                   <div className="flex flex-col gap-2">
                     {['astrology', 'offset'].map(m => (
                       <div key={`dawn-opt-wrap-${m}`} className="flex flex-col gap-2">
@@ -556,7 +553,7 @@ export function SettingsModal({
 
                 {/* Update Channel */}
                 <section className="space-y-4">
-                  <SectionLabel>Update Channel</SectionLabel>
+                  <SectionLabel icon={RefreshCw}>Update Channel</SectionLabel>
                   <LabeledSelect
                     label="OTA Update Channel"
                     value={settings.updateChannel || 'stable'}
@@ -576,7 +573,7 @@ export function SettingsModal({
 
                 {/* Legal & About */}
                 <section className="space-y-4">
-                  <SectionLabel>{t('settings.legal.title')}</SectionLabel>
+                  <SectionLabel icon={FileText}>{t('settings.legal.title')}</SectionLabel>
                   <button
                     onClick={() => setShowLegal(true)}
                     className="w-full px-4 py-4 rounded-2xl text-sm font-bold flex items-center justify-between transition-all border"
@@ -612,16 +609,16 @@ export function SettingsModal({
 
 // ── Small helpers ────────────────────────────────────────────────────────────
 
-function SectionLabel({ children, inline, centered }: { children: React.ReactNode; inline?: boolean; centered?: boolean }) {
+function SectionLabel({ children, icon: Icon, inline, centered }: { children: React.ReactNode; icon?: React.ComponentType<{ size?: number | string; className?: string; style?: React.CSSProperties }>; inline?: boolean; centered?: boolean }) {
   return (
-    <h3
-      className={cn(
-        "text-sm font-black uppercase tracking-widest",
-        centered && "text-center pt-2",
-      )}
-      style={{ color: 'var(--accent)' }}
-    >
-      {children}
-    </h3>
+    <div className={cn("flex items-center gap-2", centered && "justify-center pt-2")}>
+      {Icon && <Icon size={16} style={{ color: 'var(--accent)' }} />}
+      <h3
+        className="text-sm font-black uppercase tracking-widest"
+        style={{ color: 'var(--accent)' }}
+      >
+        {children}
+      </h3>
+    </div>
   );
 }
