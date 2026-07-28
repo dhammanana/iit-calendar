@@ -147,55 +147,50 @@ export function SettingsModal({
         title={t('common.settings')}
         maxWidth="lg"
       >
-        <div className="space-y-8 px-1 pr-2">
+        <div className="space-y-6 px-1 pr-2">
 
                 {/* Backup & Restore Section */}
-                <section className="space-y-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Database}>Backup & Restore</SectionLabel>
-                  <div
-                    className="rounded-[1.5rem] p-5 border flex flex-col gap-4"
-                    style={{ backgroundColor: 'var(--bg-card-alt)', borderColor: 'var(--border-subtle)' }}
-                  >
-                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      Export your local settings, chanting history, and meditation stats to move them to another device, or import a previously saved backup file.
-                    </p>
-                    <div className="flex gap-4">
-                      <button
-                        onClick={handleExportData}
-                        className="flex-grow py-3 px-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border transition-all active:scale-95"
-                        style={{
-                          borderColor: 'var(--accent)',
-                          color: 'var(--accent)',
-                          backgroundColor: 'transparent'
-                        }}
-                      >
-                        <Download size={14} />
-                        Export
-                      </button>
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="flex-grow py-3 px-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 text-white"
-                        style={{
-                          backgroundColor: 'var(--accent)',
-                          boxShadow: '0 4px 12px var(--accent-ring)'
-                        }}
-                      >
-                        <Upload size={14} />
-                        Import
-                      </button>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImportData}
-                        accept=".json"
-                        className="hidden"
-                      />
-                    </div>
+                  <p className="text-xs px-1" style={{ color: 'var(--text-secondary)' }}>
+                    Export your local settings, chanting history, and meditation stats to move them to another device, or import a previously saved backup file.
+                  </p>
+                  <div className="flex gap-4 pt-1">
+                    <button
+                      onClick={handleExportData}
+                      className="flex-grow py-3 px-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 border transition-all active:scale-95"
+                      style={{
+                        borderColor: 'var(--accent)',
+                        color: 'var(--accent)',
+                        backgroundColor: 'transparent'
+                      }}
+                    >
+                      <Download size={14} />
+                      Export
+                    </button>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex-grow py-3 px-4 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 text-white"
+                      style={{
+                        backgroundColor: 'var(--accent)',
+                        boxShadow: '0 4px 12px var(--accent-ring)'
+                      }}
+                    >
+                      <Upload size={14} />
+                      Import
+                    </button>
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImportData}
+                      accept=".json"
+                      className="hidden"
+                    />
                   </div>
                 </section>
 
                 {/* 1. Language & Script */}
-                <section className="space-y-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Globe}>{t('common.language')} & {t('common.script')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-4">
                     <LabeledSelect
@@ -222,14 +217,14 @@ export function SettingsModal({
                 </section>
 
                 {/* 1.5 Font Size */}
-                <section className="space-y-4">
-                  <div className="flex justify-between items-center px-1">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <div className="flex justify-between items-center">
                     <SectionLabel icon={Type}>Font Size</SectionLabel>
-                    <span className="text-sm font-bold opacity-60" style={{ color: 'var(--text-primary)' }}>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)]" style={{ color: 'var(--accent)' }}>
                       {settings.fontSize}px
                     </span>
                   </div>
-                  <div className="px-1">
+                  <div className="pt-1">
                     <input
                       type="range"
                       min="8"
@@ -242,7 +237,7 @@ export function SettingsModal({
                     />
                     <div
                       className="flex justify-between mt-2 text-[10px] font-black uppercase tracking-widest"
-                      style={{ color: 'var(--accent)' }}
+                      style={{ color: 'var(--text-tertiary)' }}
                     >
                       <span>Small</span>
                       <span>Normal</span>
@@ -252,11 +247,11 @@ export function SettingsModal({
                 </section>
 
                 {/* 2. Location & Timezone */}
-                <section className="space-y-4">
-                  <div className="flex items-center justify-between px-1">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <div className="flex items-center justify-between">
                     <SectionLabel icon={MapPin} inline>{t('settings.location')}</SectionLabel>
                     <button
-                      className="text-sm font-bold hover:underline"
+                      className="text-xs font-bold hover:underline"
                       style={{ color: 'var(--accent)' }}
                       onClick={onGetLocation}
                     >
@@ -264,7 +259,7 @@ export function SettingsModal({
                     </button>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {/* Address search */}
                     <div className="relative">
                       <input
@@ -273,7 +268,7 @@ export function SettingsModal({
                         value={addressSearch}
                         onChange={e => setAddressSearch(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
-                        className="w-full pl-4 pr-12 py-4 rounded-2xl text-base focus:outline-none transition-all bg-transparent"
+                        className="w-full pl-4 pr-12 py-3 rounded-2xl text-sm focus:outline-none transition-all bg-[var(--bg-card)]"
                         style={{
                           border: '1px solid var(--border-base)',
                           color: 'var(--text-primary)',
@@ -284,13 +279,13 @@ export function SettingsModal({
                       />
                       <button
                         onClick={handleSearch}
-                        className="absolute right-2 top-2 bottom-2 px-3 rounded-xl text-white active:scale-95 transition-all"
+                        className="absolute right-2 top-1.5 bottom-1.5 px-3 rounded-xl text-white active:scale-95 transition-all"
                         style={{
                           backgroundColor: 'var(--accent)',
                           boxShadow: '0 4px 12px var(--accent-ring)',
                         }}
                       >
-                        {isSearching ? <Loader2 size="1.2em" className="animate-spin" /> : <Search size="1.2em" />}
+                        {isSearching ? <Loader2 size="1em" className="animate-spin" /> : <Search size="1em" />}
                       </button>
                     </div>
 
@@ -305,10 +300,10 @@ export function SettingsModal({
                       >
                         <MapPin size="1.1em" className="mt-1 shrink-0" style={{ color: 'var(--accent)' }} />
                         <div>
-                          <p className="text-sm leading-tight font-medium" style={{ color: 'var(--text-secondary)' }}>
+                          <p className="text-xs leading-tight font-medium" style={{ color: 'var(--text-secondary)' }}>
                             {settings.address}
                           </p>
-                          <p className="text-sm mt-1 font-mono" style={{ color: 'var(--accent)' }}>
+                          <p className="text-xs mt-1 font-mono font-bold" style={{ color: 'var(--accent)' }}>
                             {settings.lat.toFixed(4)}°, {settings.lng.toFixed(4)}°
                           </p>
                         </div>
@@ -318,11 +313,11 @@ export function SettingsModal({
                 </section>
 
                 {/* 3. Appearance */}
-                <section className="space-y-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Palette}>{t('common.appearance')}</SectionLabel>
-                  <div className="flex flex-col gap-4 px-1">
+                  <div className="flex flex-col gap-4">
                     <div className="flex justify-between items-center w-full">
-                      <span className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                         Solar Noon Alert
                       </span>
                       <Toggle
@@ -380,7 +375,7 @@ export function SettingsModal({
                     )}
 
                     <div className="flex justify-between items-center w-full">
-                      <span className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                         Dawn Alert
                       </span>
                       <Toggle
@@ -390,7 +385,7 @@ export function SettingsModal({
                     </div>
 
                     <div className="flex justify-between items-center w-full">
-                      <span className="text-sm font-bold" style={{ color: 'var(--text-secondary)' }}>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                         {t('settings.iitStudent')}
                       </span>
                       <Toggle
@@ -399,7 +394,7 @@ export function SettingsModal({
                       />
                     </div>
 
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
                       {/* Theme color swatches */}
                       <div className="flex gap-2">
                         {(['saffron', 'indigo', 'emerald', 'rose', 'slate'] as const).map(color => (
@@ -410,7 +405,7 @@ export function SettingsModal({
                               transform: settings.themeColor === color ? 'scale(1.12)' : 'scale(1)',
                             }}
                             className={cn(
-                              "w-8 h-8 rounded-full transition-all",
+                              "w-7 h-7 rounded-full transition-all",
                               color === 'saffron'  && "bg-[#7f5700]",
                               color === 'indigo'   && "bg-indigo-500",
                               color === 'emerald'  && "bg-emerald-500",
@@ -427,7 +422,7 @@ export function SettingsModal({
                       {/* Dark/Light toggle */}
                       <button
                         onClick={() => onUpdate({ ...settings, darkMode: !settings.darkMode })}
-                        className="px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all active:scale-95"
+                        className="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
                         style={{
                           backgroundColor: 'var(--text-primary)',
                           color: 'var(--bg-main)',
@@ -442,7 +437,7 @@ export function SettingsModal({
                 </section>
 
                 {/* 4. Tradition & Calculation */}
-                <section className="space-y-4 pb-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Sun}>{t('settings.tradition')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-3">
                     {(['myanmar', 'thai', 'srilanka', 'lunar'] as const).map(type => (
@@ -470,89 +465,91 @@ export function SettingsModal({
                     ))}
                   </div>
 
-                  <SectionLabel icon={Sun}>{t('settings.dawnCalculation')}</SectionLabel>
-                  <div className="flex flex-col gap-2">
-                    {['astrology', 'offset'].map(m => (
-                      <div key={`dawn-opt-wrap-${m}`} className="flex flex-col gap-2">
-                        <button
-                          key={`dawn-opt-${m}`}
-                          onClick={() => onUpdate({ ...settings, dawnMethod: m })}
-                          className="px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex justify-between items-center transition-all"
-                          style={
-                            settings.dawnMethod === m
-                              ? {
-                                  backgroundColor: 'var(--accent)',
-                                  color: '#fff',
-                                  border: '1px solid var(--accent)',
-                                  boxShadow: '0 4px 16px var(--accent-ring)',
-                                }
-                              : {
-                                  backgroundColor: 'transparent',
-                                  color: 'var(--text-saffron)',
-                                  border: '1px solid var(--border-base)',
-                                }
-                          }
-                        >
-                          <span>{t(`settings.dawnMethods.${m}`) !== `settings.dawnMethods.${m}` ? t(`settings.dawnMethods.${m}`) : m === 'offset' ? 'Time Shift' : 'Sun Angle'}</span>
-                          {settings.dawnMethod === m && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                        </button>
-                        
-                        {settings.dawnMethod === m && m === 'astrology' && (
-                          <div className="px-4 py-3 bg-[var(--bg-card-alt)] rounded-2xl flex flex-col gap-2 text-sm">
-                            <span className="text-[var(--text-secondary)]">Angle: {settings.dawnAngle?.toFixed(2) ?? 9.0}°</span>
-                            <div className="flex gap-2">
-                              <input 
-                                type="time" 
-                                value={calibratingTime}
-                                onChange={(e) => setCalibratingTime(e.target.value)}
-                                className="flex-1 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-[var(--text-primary)]"
-                              />
-                              <button 
-                                onClick={handleCalibrateDawn}
-                                className="bg-[var(--accent)] text-white px-3 py-1 rounded-lg font-bold"
-                              >
-                                Calibrate
-                              </button>
+                  <div className="pt-2">
+                    <SectionLabel icon={Sun}>{t('settings.dawnCalculation')}</SectionLabel>
+                    <div className="flex flex-col gap-2 mt-2">
+                      {['astrology', 'offset'].map(m => (
+                        <div key={`dawn-opt-wrap-${m}`} className="flex flex-col gap-2">
+                          <button
+                            key={`dawn-opt-${m}`}
+                            onClick={() => onUpdate({ ...settings, dawnMethod: m })}
+                            className="px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest flex justify-between items-center transition-all"
+                            style={
+                              settings.dawnMethod === m
+                                ? {
+                                    backgroundColor: 'var(--accent)',
+                                    color: '#fff',
+                                    border: '1px solid var(--accent)',
+                                    boxShadow: '0 4px 16px var(--accent-ring)',
+                                  }
+                                : {
+                                    backgroundColor: 'transparent',
+                                    color: 'var(--text-saffron)',
+                                    border: '1px solid var(--border-base)',
+                                  }
+                            }
+                          >
+                            <span>{t(`settings.dawnMethods.${m}`) !== `settings.dawnMethods.${m}` ? t(`settings.dawnMethods.${m}`) : m === 'offset' ? 'Time Shift' : 'Sun Angle'}</span>
+                            {settings.dawnMethod === m && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                          </button>
+                          
+                          {settings.dawnMethod === m && m === 'astrology' && (
+                            <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-2 text-sm border border-[var(--border-subtle)]">
+                              <span className="text-[var(--text-secondary)]">Angle: {settings.dawnAngle?.toFixed(2) ?? 9.0}°</span>
+                              <div className="flex gap-2">
+                                <input 
+                                  type="time" 
+                                  value={calibratingTime}
+                                  onChange={(e) => setCalibratingTime(e.target.value)}
+                                  className="flex-1 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-[var(--text-primary)]"
+                                />
+                                <button 
+                                  onClick={handleCalibrateDawn}
+                                  className="bg-[var(--accent)] text-white px-3 py-1 rounded-lg font-bold text-xs"
+                                >
+                                  Calibrate
+                                </button>
+                              </div>
+                              <span className="text-xs text-[var(--text-tertiary)] opacity-70">
+                                Input today's dawn time to calibrate the angle. Preview: {(() => {
+                                  const stc = new SunTimesCalculator(settings.lat, settings.lng);
+                                  const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'astrology' });
+                                  return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                })()}
+                              </span>
                             </div>
-                            <span className="text-xs text-[var(--text-tertiary)] opacity-70">
-                              Input today's dawn time to calibrate the angle. Preview: {(() => {
-                                const stc = new SunTimesCalculator(settings.lat, settings.lng);
-                                const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'astrology' });
-                                return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                              })()}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {settings.dawnMethod === m && m === 'offset' && (
-                          <div className="px-4 py-3 bg-[var(--bg-card-alt)] rounded-2xl flex flex-col gap-2 text-sm">
-                            <div className="flex items-center justify-between">
-                              <span className="text-[var(--text-secondary)]">Minutes before sunrise</span>
-                              <input 
-                                type="number" 
-                                min={20}
-                                max={50}
-                                value={settings.dawnDurationOffset ?? 30}
-                                onChange={(e) => onUpdate({ ...settings, dawnDurationOffset: Number(e.target.value) })}
-                                className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-[var(--text-primary)]"
-                              />
+                          )}
+                          
+                          {settings.dawnMethod === m && m === 'offset' && (
+                            <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-2 text-sm border border-[var(--border-subtle)]">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[var(--text-secondary)]">Minutes before sunrise</span>
+                                <input 
+                                  type="number" 
+                                  min={20}
+                                  max={50}
+                                  value={settings.dawnDurationOffset ?? 30}
+                                  onChange={(e) => onUpdate({ ...settings, dawnDurationOffset: Number(e.target.value) })}
+                                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-[var(--text-primary)]"
+                                />
+                              </div>
+                              <span className="text-xs text-[var(--text-tertiary)] opacity-70">
+                                Preview: {(() => {
+                                  const stc = new SunTimesCalculator(settings.lat, settings.lng);
+                                  const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'offset' });
+                                  return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                })()}
+                              </span>
                             </div>
-                            <span className="text-xs text-[var(--text-tertiary)] opacity-70">
-                              Preview: {(() => {
-                                const stc = new SunTimesCalculator(settings.lat, settings.lng);
-                                const previewDawn = stc.getDawn(new Date(), { ...settings, dawnMethod: 'offset' });
-                                return previewDawn.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                              })()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </section>
 
                 {/* Update Channel */}
-                <section className="space-y-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={RefreshCw}>Update Channel</SectionLabel>
                   <LabeledSelect
                     label="OTA Update Channel"
@@ -564,7 +561,7 @@ export function SettingsModal({
                     ]}
                     selectClassName="text-sm px-4 py-3 font-sans"
                   />
-                  <p className="text-[11px] px-1" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
                     {settings.updateChannel === 'dev' 
                       ? 'Dev channel receives test updates (-dev) before official releases.' 
                       : 'Stable channel receives verified official updates.'}
@@ -572,19 +569,19 @@ export function SettingsModal({
                 </section>
 
                 {/* Legal & About */}
-                <section className="space-y-4">
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={FileText}>{t('settings.legal.title')}</SectionLabel>
                   <button
                     onClick={() => setShowLegal(true)}
-                    className="w-full px-4 py-4 rounded-2xl text-sm font-bold flex items-center justify-between transition-all border"
+                    className="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition-all border"
                     style={{
-                      backgroundColor: 'var(--bg-card-alt)',
+                      backgroundColor: 'var(--bg-card)',
                       borderColor: 'var(--border-subtle)',
                       color: 'var(--text-primary)',
                     }}
                   >
                     <div className="flex items-center gap-3">
-                      <Info size={18} className="text-[var(--accent)]" />
+                      <Info size={16} className="text-[var(--accent)]" />
                       <span>{t('settings.legal.button')}</span>
                     </div>
                     <div className="text-[var(--accent)]">→</div>
@@ -611,10 +608,14 @@ export function SettingsModal({
 
 function SectionLabel({ children, icon: Icon, inline, centered }: { children: React.ReactNode; icon?: React.ComponentType<{ size?: number | string; className?: string; style?: React.CSSProperties }>; inline?: boolean; centered?: boolean }) {
   return (
-    <div className={cn("flex items-center gap-2", centered && "justify-center pt-2")}>
-      {Icon && <Icon size={16} style={{ color: 'var(--accent)' }} />}
+    <div className={cn("flex items-center gap-2 mb-2", centered && "justify-center pt-2")}>
+      {Icon && (
+        <div className="p-1.5 rounded-lg bg-[var(--accent-soft)] flex items-center justify-center shrink-0">
+          <Icon size={15} style={{ color: 'var(--accent)' }} />
+        </div>
+      )}
       <h3
-        className="text-sm font-black uppercase tracking-widest"
+        className="text-xs font-black uppercase tracking-widest"
         style={{ color: 'var(--accent)' }}
       >
         {children}
