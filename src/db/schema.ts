@@ -8,8 +8,34 @@ export const meditationSessionsTable = new Table({
   deleted: column.integer
 });
 
+export const userChantsTable = new Table({
+  title: column.text,
+  name_key: column.text,
+  is_name_pali: column.integer,
+  chant: column.text,
+  total_count: column.integer,
+  last_used: column.integer,
+  is_custom: column.integer,
+  milestone: column.integer,
+  created_at: column.text,
+  updated_at: column.text,
+  deleted: column.integer
+});
+
+export const chantSessionsTable = new Table({
+  chant_id: column.text,
+  count: column.integer,
+  timestamp: column.integer,
+  duration_min: column.integer,
+  created_at: column.text,
+  updated_at: column.text,
+  deleted: column.integer
+});
+
 export const AppSchemaDefinition = new Schema({
-  meditation_sessions: meditationSessionsTable
+  meditation_sessions: meditationSessionsTable,
+  user_chants: userChantsTable,
+  chant_sessions: chantSessionsTable
 });
 
 export type MeditationSessionRecord = {
@@ -20,3 +46,30 @@ export type MeditationSessionRecord = {
   updated_at: string;
   deleted?: number;
 };
+
+export type UserChantRecord = {
+  id: string;
+  title: string;
+  name_key?: string;
+  is_name_pali?: number;
+  chant?: string;
+  total_count: number;
+  last_used?: number;
+  is_custom?: number;
+  milestone?: number;
+  created_at: string;
+  updated_at: string;
+  deleted?: number;
+};
+
+export type ChantSessionRecord = {
+  id: string;
+  chant_id: string;
+  count: number;
+  timestamp: number;
+  duration_min?: number;
+  created_at: string;
+  updated_at: string;
+  deleted?: number;
+};
+

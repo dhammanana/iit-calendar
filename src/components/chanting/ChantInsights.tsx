@@ -105,7 +105,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                   <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-[#7f5700] transition-colors">{item.name}</span>
                 </div>
-                <span className="text-xs font-black font-mono text-slate-400">{item.percent}%</span>
+                <span className="text-xs font-bold text-slate-400">{item.percent}%</span>
               </div>
             ))}
           </div>
@@ -160,34 +160,16 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
         className="rounded-[1.5rem] p-5"
         style={{ backgroundColor: 'var(--bg-card, var(--bg-main))', border: '1px solid var(--border-subtle)' }}
       >
-        <div className="flex items-center gap-2 mb-5">
+        <div className="flex items-center gap-2 mb-2">
           <Award size={16} style={{ color: 'var(--accent)' }} />
           <span className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
             {t('chant.milestones') || 'Milestones'}
           </span>
         </div>
-        <p className="text-xs text-slate-400 mb-8 italic">"Your spiritual journey is blossoming beautifully."</p>
+        <p className="text-xs text-slate-400 mb-6 italic">"Your spiritual journey is blossoming beautifully."</p>
 
-        <div className="space-y-6">
-          {chants.filter(c => c.milestone && c.milestone > 0).map(chant => (
-            <div key={chant.id} className="space-y-2">
-              <div className="flex justify-between items-center text-[0.65rem] font-black uppercase tracking-widest text-slate-500">
-                <span>{getChantTitle(chant, t)} {t('chant.goal')}</span>
-                <span className="text-[#d48820]">{chant.totalCount} / {chant.milestone}</span>
-              </div>
-              <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <motion.div 
-                   initial={{ width: 0 }}
-                   animate={{ width: `${Math.min(100, (chant.totalCount / (chant.milestone || 1)) * 100)}%` }}
-                   className="h-full bg-gradient-to-r from-[#d48820] to-[#7f5700]" 
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        
         {/* Badges/Rankings */}
-        <div className="mt-12 flex justify-center gap-6">
+        <div className="flex justify-center gap-6">
           <Badge type={t('chant.novice')} active={totalChants < 1000} t={t} />
           <Badge type={t('chant.devotee')} active={totalChants >= 1000 && totalChants < 5000} t={t} />
           <Badge type={t('chant.master')} active={totalChants >= 5000} t={t} />

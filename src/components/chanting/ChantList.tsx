@@ -22,6 +22,7 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, paliS
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredChants = chants
+    .filter(c => !c.isDeleted)
     .filter(c => {
       const term = searchTerm.trim();
       if (!term) return true;

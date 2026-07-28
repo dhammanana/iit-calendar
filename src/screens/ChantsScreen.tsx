@@ -47,10 +47,11 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
     const unsub = chantService.subscribeToUserChants((updated) => {
       setChants(updated);
-      if (updated.length > 0) {
+      const activeChants = updated.filter(c => !c.isDeleted);
+      if (activeChants.length > 0) {
         setSelectedChantId(currentId => {
-          if (!currentId || !updated.some(c => c.id.toString() === currentId.toString())) {
-            const defaultChant = updated.find(c => c.id.toString() === '1') || updated[0];
+          if (!currentId || !activeChants.some(c => c.id.toString() === currentId.toString())) {
+            const defaultChant = activeChants.find(c => c.nameKey === 'chant.itipiso' || c.title.toLowerCase().includes('itipiso') || c.id.toString() === '1') || activeChants[0];
             return defaultChant ? defaultChant.id.toString() : null;
           }
           return currentId;
@@ -93,7 +94,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
     };
   }, [chants, sessions]);
 
-  const selectedChant = chants.find(c => c.id.toString() === selectedChantId?.toString());
+  const selectedChant = chants.filter(c => !c.isDeleted).find(c => c.id.toString() === selectedChantId?.toString());
 
   const handleCommitSession = async (durationMin?: number) => {
     if (!selectedChantId || activeSessionCount === 0) return;

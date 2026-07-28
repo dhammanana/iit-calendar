@@ -15,6 +15,7 @@ import { Button } from './Button';
 import SunCalc from 'suncalc';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { meditationDbService } from '../services/MeditationDbService';
+import { chantService } from '../services/ChantService';
 
 export function SettingsModal({ 
   show, 
@@ -49,6 +50,7 @@ export function SettingsModal({
 
   const handleExportData = async () => {
     const meditationDbRecords = await meditationDbService.getAllRecordsForBackup();
+    const chantDbRecords = await chantService.getAllRecordsForBackup();
     const backup = {
       version: 2,
       timestamp: Date.now(),
@@ -56,7 +58,8 @@ export function SettingsModal({
       chants: localStorage.getItem('app_user_chants'),
       chant_sessions: localStorage.getItem('app_chant_sessions'),
       meditation_stats: localStorage.getItem('zen_meditation_stats'),
-      meditation_db_records: meditationDbRecords
+      meditation_db_records: meditationDbRecords,
+      chant_db_records: chantDbRecords
     };
 
     const jsonStr = JSON.stringify(backup, null, 2);
@@ -111,6 +114,9 @@ export function SettingsModal({
           if (backup.meditation_stats) localStorage.setItem('zen_meditation_stats', backup.meditation_stats);
           if (backup.meditation_db_records) {
             await meditationDbService.restoreBackupRecords(backup.meditation_db_records);
+          }
+          if (backup.chant_db_records) {
+            await chantService.restoreBackupRecords(backup.chant_db_records);
           }
           
           alert("Data imported successfully! The application will now reload to apply changes.");

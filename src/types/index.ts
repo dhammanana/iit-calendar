@@ -40,6 +40,7 @@ export interface UserChant extends Chant {
   totalCount: number;
   lastUsed?: number; // timestamp
   isCustom?: boolean;
+  isDeleted?: boolean;
   milestone?: number;
 }
 
