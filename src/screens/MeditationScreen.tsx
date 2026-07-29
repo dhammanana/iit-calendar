@@ -28,7 +28,7 @@ export function MeditationScreen() {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
       if (saved) return JSON.parse(saved);
-    } catch {}
+    } catch { }
     return {
       durationHours: 0,
       durationMinutes: 15,
@@ -152,9 +152,9 @@ export function MeditationScreen() {
 
           {/* Meditation vector icon inside the pill matching jade/emerald theme */}
           <g transform="translate(38, 62) scale(0.0046875, -0.0046875)" fill="currentColor" className="text-emerald-800 dark:text-emerald-300">
-            <path d="M2420 4786 c-147 -32 -246 -84 -354 -187 -147 -140 -216 -290 -224 -491 -6 -147 13 -235 76 -361 37 -76 61 -108 136 -182 74 -74 107 -99 176 -133 124 -60 194 -77 330 -76 136 0 208 17 330 77 69 33 102 58 175 132 149 148 215 305 215 509 0 214 -73 381 -229 529 -86 80 -176 133 -286 167 -90 28 -254 35 -345 16z m263 -161 c197 -41 369 -207 422 -405 8 -30 15 -96 15 -147 0 -123 -31 -223 -100 -321 -224 -320 -696 -320 -920 0 -198 282 -97 678 212 827 126 60 238 75 371 46z"/>
-            <path d="M2340 3235 c-620 -104 -1079 -598 -1142 -1227 -13 -130 -8 -160 32 -189 61 -44 314 -89 506 -89 286 0 531 78 741 236 l84 64 62 -49 c130 -101 275 -171 447 -218 78 -21 125 -26 262 -30 182 -6 271 3 433 43 165 41 175 56 157 232 -63 630 -527 1127 -1147 1227 -108 18 -331 18 -435 0z m420 -160 c434 -71 800 -383 945 -807 24 -69 49 -185 60 -275 l6 -52 -38 -10 c-121 -33 -231 -43 -388 -38 -179 6 -265 24 -398 81 -110 48 -176 90 -274 174 -110 93 -117 93 -220 5 -137 -118 -261 -185 -428 -230 -90 -24 -118 -26 -285 -27 -143 -1 -206 3 -276 17 -50 11 -96 22 -102 26 -15 9 0 135 28 245 116 456 503 813 962 890 113 19 293 19 408 1z"/>
-            <path d="M1265 1625 c-253 -56 -437 -230 -500 -475 -23 -88 -23 -244 0 -335 59 -235 230 -408 465 -471 41 -11 102 -18 165 -18 89 0 112 4 210 38 131 44 356 153 550 266 164 96 188 117 188 161 0 37 -40 79 -76 79 -12 0 -83 -36 -157 -80 -168 -101 -449 -240 -555 -277 -372 -127 -730 201 -640 585 22 93 60 159 134 233 106 107 232 156 366 146 177 -14 524 -186 985 -489 594 -389 966 -592 1195 -650 196 -50 432 19 586 172 128 128 191 282 191 470 0 298 -168 535 -447 627 -67 22 -98 26 -195 27 -106 0 -123 -2 -215 -34 -123 -42 -404 -181 -587 -291 -146 -87 -168 -111 -148 -163 10 -29 47 -56 74 -56 11 0 69 30 130 67 172 104 483 258 590 292 108 35 169 38 264 16 173 -41 303 -161 354 -329 42 -136 24 -300 -48 -422 -35 -60 -135 -151 -198 -180 -77 -35 -190 -57 -255 -50 -167 19 -519 194 -923 459 -622 407 -1016 624 -1238 682 -70 18 -183 18 -265 0z"/>
+            <path d="M2420 4786 c-147 -32 -246 -84 -354 -187 -147 -140 -216 -290 -224 -491 -6 -147 13 -235 76 -361 37 -76 61 -108 136 -182 74 -74 107 -99 176 -133 124 -60 194 -77 330 -76 136 0 208 17 330 77 69 33 102 58 175 132 149 148 215 305 215 509 0 214 -73 381 -229 529 -86 80 -176 133 -286 167 -90 28 -254 35 -345 16z m263 -161 c197 -41 369 -207 422 -405 8 -30 15 -96 15 -147 0 -123 -31 -223 -100 -321 -224 -320 -696 -320 -920 0 -198 282 -97 678 212 827 126 60 238 75 371 46z" />
+            <path d="M2340 3235 c-620 -104 -1079 -598 -1142 -1227 -13 -130 -8 -160 32 -189 61 -44 314 -89 506 -89 286 0 531 78 741 236 l84 64 62 -49 c130 -101 275 -171 447 -218 78 -21 125 -26 262 -30 182 -6 271 3 433 43 165 41 175 56 157 232 -63 630 -527 1127 -1147 1227 -108 18 -331 18 -435 0z m420 -160 c434 -71 800 -383 945 -807 24 -69 49 -185 60 -275 l6 -52 -38 -10 c-121 -33 -231 -43 -388 -38 -179 6 -265 24 -398 81 -110 48 -176 90 -274 174 -110 93 -117 93 -220 5 -137 -118 -261 -185 -428 -230 -90 -24 -118 -26 -285 -27 -143 -1 -206 3 -276 17 -50 11 -96 22 -102 26 -15 9 0 135 28 245 116 456 503 813 962 890 113 19 293 19 408 1z" />
+            <path d="M1265 1625 c-253 -56 -437 -230 -500 -475 -23 -88 -23 -244 0 -335 59 -235 230 -408 465 -471 41 -11 102 -18 165 -18 89 0 112 4 210 38 131 44 356 153 550 266 164 96 188 117 188 161 0 37 -40 79 -76 79 -12 0 -83 -36 -157 -80 -168 -101 -449 -240 -555 -277 -372 -127 -730 201 -640 585 22 93 60 159 134 233 106 107 232 156 366 146 177 -14 524 -186 985 -489 594 -389 966 -592 1195 -650 196 -50 432 19 586 172 128 128 191 282 191 470 0 298 -168 535 -447 627 -67 22 -98 26 -195 27 -106 0 -123 -2 -215 -34 -123 -42 -404 -181 -587 -291 -146 -87 -168 -111 -148 -163 10 -29 47 -56 74 -56 11 0 69 30 130 67 172 104 483 258 590 292 108 35 169 38 264 16 173 -41 303 -161 354 -329 42 -136 24 -300 -48 -422 -35 -60 -135 -151 -198 -180 -77 -35 -190 -57 -255 -50 -167 19 -519 194 -923 459 -622 407 -1016 624 -1238 682 -70 18 -183 18 -265 0z" />
           </g>
         </svg>
       </div>
@@ -364,20 +364,36 @@ export function MeditationScreen() {
                 className="grid grid-cols-1 gap-4 mt-8"
               >
                 {/* Your Journey — 3 stat cards (matching Study Insights style) */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { icon: Award, value: currentStreak, label: t('meditation.currentStreak') || 'Day Streak' },
-                    { icon: Clock, value: Math.floor(weeklyMinutes / 60) > 0 ? `${Math.floor(weeklyMinutes / 60)}h ${weeklyMinutes % 60}m` : `${weeklyMinutes}m`, label: t('meditation.weeklyTime') || 'This Week' },
-                    { icon: Activity, value: weeklySessionCount, label: t('meditation.sessions') || 'Sessions' },
-                  ].map(({ icon: Icon, value, label }) => (
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {(() => {
+                    const hours = Math.floor(weeklyMinutes / 60);
+                    const mins = weeklyMinutes % 60;
+                    const formattedValue = hours > 0
+                      ? (mins > 0 ? `${hours}h ${mins}m` : `${hours}h`)
+                      : `${mins}m`;
+                    return [
+                      { icon: Award, value: String(currentStreak), label: t('meditation.currentStreak') || 'Day Streak' },
+                      {
+                        icon: Clock,
+                        value: formattedValue,
+                        label: t('meditation.weeklyTime') || 'Weekly Time'
+                      },
+                      { icon: Activity, value: String(weeklySessionCount), label: t('meditation.sessions') || 'Sessions' },
+                    ];
+                  })().map(({ icon: Icon, value, label }) => (
                     <div
                       key={label}
-                      className="rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-1"
+                      className="rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 min-w-0"
                       style={{ backgroundColor: 'var(--accent-subtle)', border: '1px solid var(--accent-muted)' }}
                     >
                       <Icon size={20} style={{ color: 'var(--accent)' }} />
-                      <div className="text-2xl font-black" style={{ color: 'var(--accent)' }}>{value}</div>
-                      <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{label}</div>
+                      <div
+                        className={`font-black whitespace-nowrap tracking-tight ${value.length > 5 ? 'text-lg sm:text-xl' : value.length > 3 ? 'text-xl sm:text-2xl' : 'text-2xl'}`}
+                        style={{ color: 'var(--accent)' }}
+                      >
+                        {value}
+                      </div>
+                      <div className="text-[9px] font-bold uppercase tracking-wider truncate w-full" style={{ color: 'var(--text-muted)' }}>{label}</div>
                     </div>
                   ))}
                 </div>

@@ -582,7 +582,7 @@ export function CalendarScreen({
                                 className="px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-widest"
                                 style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
                               >
-                                {t('today')}
+                                {t('common.today')}
                               </div>
                             ) : (
                               <div

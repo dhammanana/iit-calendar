@@ -250,7 +250,7 @@ export function BookScreen({ settings, isActive = true }: { settings: Settings; 
     <div className="flex flex-col min-h-full relative bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 selection:bg-amber-500/20">
 
       {/* Top Header Background Illustration */}
-      <div className="w-full safe-header bg-gradient-to-b from-amber-500/10 via-amber-500/5 to-transparent overflow-hidden sticky top-0 z-10 flex flex-col items-center justify-center">
+      <div className="w-full safe-header bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#261808] dark:via-[#191005] dark:to-[#0d0905] overflow-hidden sticky top-0 z-10 flex flex-col items-center justify-center">
         <svg
           viewBox="0 0 100 100"
           className="absolute w-[160px] h-[160px] sm:w-[190px] sm:h-[190px] md:w-[220px] md:h-[220px] lg:w-[240px] lg:h-[240px] -translate-y-3 text-saffron dark:text-amber-500 transition-all duration-700 hover:scale-105 filter drop-shadow-md"

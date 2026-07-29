@@ -24,7 +24,12 @@ export function StudyInsights({ show, onClose, sessions, inline }: Props) {
 
   // Stats
   const totalMs = sessions.reduce((acc, s) => acc + s.durationMs, 0);
-  const totalHours = (totalMs / 3600000).toFixed(1);
+  const totalMin = Math.floor(totalMs / 60000);
+  const focusHours = Math.floor(totalMin / 60);
+  const focusMins = totalMin % 60;
+  const timeFocusedStr = focusHours > 0 
+    ? (focusMins > 0 ? `${focusHours}h ${focusMins}m` : `${focusHours}h`) 
+    : `${focusMins}m`;
   const uniqueDays = new Set(sessions.map(s => startOfDay(new Date(s.date)).getTime())).size;
 
   let currentStreak = 0;
@@ -49,20 +54,25 @@ export function StudyInsights({ show, onClose, sessions, inline }: Props) {
   const content = (
     <div className="space-y-6">
       {/* Stat cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {[
-          { icon: Clock, value: totalHours, label: t('study.hoursFocused') || 'Hours Focused' },
-          { icon: CalIcon, value: uniqueDays, label: t('study.daysAccessed') || 'Days Active' },
-          { icon: Flame, value: currentStreak, label: t('study.dayStreak') || 'Day Streak' },
+          { icon: Clock, value: timeFocusedStr, label: t('study.timeFocused') || t('study.hoursFocused') || 'Time Focused' },
+          { icon: CalIcon, value: String(uniqueDays), label: t('study.daysAccessed') || 'Days Active' },
+          { icon: Flame, value: String(currentStreak), label: t('study.dayStreak') || 'Day Streak' },
         ].map(({ icon: Icon, value, label }) => (
           <div
             key={label}
-            className="rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-1"
+            className="rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 min-w-0"
             style={{ backgroundColor: 'var(--accent-subtle)', border: '1px solid var(--accent-muted)' }}
           >
             <Icon size={20} style={{ color: 'var(--accent)' }} />
-            <div className="text-2xl font-black" style={{ color: 'var(--accent)' }}>{value}</div>
-            <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{label}</div>
+            <div 
+              className={`font-black whitespace-nowrap tracking-tight ${value.length > 5 ? 'text-lg sm:text-xl' : value.length > 3 ? 'text-xl sm:text-2xl' : 'text-2xl'}`} 
+              style={{ color: 'var(--accent)' }}
+            >
+              {value}
+            </div>
+            <div className="text-[9px] font-bold uppercase tracking-wider truncate w-full" style={{ color: 'var(--text-muted)' }}>{label}</div>
           </div>
         ))}
       </div>

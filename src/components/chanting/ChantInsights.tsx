@@ -47,20 +47,25 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
   return (
     <div className="space-y-6 pb-10">
       {/* Stat cards (3 quick stats) */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {[
-          { icon: Flame, value: stats.streakDays, label: t('chant.dayStreak') || 'Day Streak' },
+          { icon: Flame, value: String(stats.streakDays), label: t('chant.dayStreak') || 'Day Streak' },
           { icon: TrendingUp, value: totalChants.toLocaleString(), label: t('chant.totalChants') || 'Total Chants' },
           { icon: Clock, value: totalTimeHours > 0 ? `${totalTimeHours}h ${totalTimeRemainderMin}m` : `${totalTimeRemainderMin}m`, label: t('chant.totalTime') || 'Total Time' },
         ].map(({ icon: Icon, value, label }) => (
           <div
             key={label}
-            className="rounded-2xl p-4 flex flex-col items-center justify-center text-center gap-1"
+            className="rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 min-w-0"
             style={{ backgroundColor: 'var(--accent-subtle)', border: '1px solid var(--accent-muted)' }}
           >
             <Icon size={20} style={{ color: 'var(--accent)' }} />
-            <div className="text-2xl font-black" style={{ color: 'var(--accent)' }}>{value}</div>
-            <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>{label}</div>
+            <div 
+              className={`font-black whitespace-nowrap tracking-tight ${value.length > 5 ? 'text-lg sm:text-xl' : value.length > 3 ? 'text-xl sm:text-2xl' : 'text-2xl'}`} 
+              style={{ color: 'var(--accent)' }}
+            >
+              {value}
+            </div>
+            <div className="text-[9px] font-bold uppercase tracking-wider truncate w-full" style={{ color: 'var(--text-muted)' }}>{label}</div>
           </div>
         ))}
       </div>

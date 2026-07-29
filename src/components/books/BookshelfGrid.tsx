@@ -28,16 +28,26 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
             >
               {/* 3D Hardcover Book Container */}
               <div
-                className="relative w-full aspect-[3/4.2] rounded-r-2xl rounded-l-md shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between p-3 sm:p-5 border-y border-r border-white/20 text-white"
+                className="relative w-full aspect-[3/4.2] rounded-r-xl rounded-l-sm shadow-xl group-hover:shadow-2xl transition-all duration-300 overflow-hidden flex flex-col justify-between p-3 sm:p-5 border border-black/10 text-white"
                 style={{
                   background: book.coverImage
-                    ? `url(${book.coverImage}) center/cover no-repeat`
+                    ? undefined
                     : (book.coverColor || "linear-gradient(135deg, #78350f 0%, #451a03 55%, #1c1917 100%)")
                 }}
               >
-                {/* Book Left Spine Shadow */}
-                <div className="absolute top-0 bottom-0 left-0 w-4 bg-black/40 border-r border-white/10 z-10 pointer-events-none" />
-                <div className="absolute top-0 bottom-0 left-4 w-1 bg-gradient-to-r from-white/20 to-transparent z-10 pointer-events-none" />
+                {/* Custom Image Cover */}
+                {book.coverImage && (
+                  <img
+                    src={book.coverImage}
+                    alt={bookTitle}
+                    className="absolute inset-0 w-full h-full object-cover z-0"
+                  />
+                )}
+
+                {/* Subtle Book Spine Shadow & Crease */}
+                <div className="absolute top-0 bottom-0 left-0 w-3 bg-gradient-to-r from-black/40 to-transparent z-10 pointer-events-none" />
+                <div className="absolute top-0 bottom-0 left-3 w-[1px] bg-black/20 z-10 pointer-events-none" />
+                <div className="absolute top-0 bottom-0 left-[13px] w-1.5 bg-gradient-to-r from-white/20 to-transparent z-10 pointer-events-none" />
 
                 {!book.coverImage && (
                   <>
@@ -58,12 +68,12 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
                     </div>
 
                     {/* Center Title & Subtitle */}
-                    <div className="relative z-20 my-auto text-center px-1.5 sm:px-2 py-2 sm:py-4 border-y bg-black/25 backdrop-blur-[2px] rounded-lg" style={{ borderColor: `${book.accentColor || '#f59e0b'}40` }}>
-                      <h2 className="font-serif text-base sm:text-2xl font-bold leading-tight text-white drop-shadow-md group-hover:text-amber-200 transition-colors">
+                    <div className="relative z-20 my-auto text-center px-1.5 sm:px-2 py-2 sm:py-3 border-y bg-black/25 backdrop-blur-[2px] rounded-lg" style={{ borderColor: `${book.accentColor || '#f59e0b'}40` }}>
+                      <h2 className="font-serif text-xs sm:text-lg font-bold leading-tight text-white drop-shadow-md group-hover:text-amber-200 transition-colors break-words hyphens-auto [text-wrap:balance]">
                         {bookTitle}
                       </h2>
                       {bookSubtitle && (
-                        <p className="text-[10px] sm:text-xs text-white/80 mt-1 sm:mt-2 font-serif italic line-clamp-2">
+                        <p className="text-[10px] sm:text-xs text-white/80 mt-1 sm:mt-1.5 font-serif italic [text-wrap:pretty]">
                           {bookSubtitle}
                         </p>
                       )}
@@ -83,7 +93,7 @@ export function BookshelfGrid({ books, onSelectBook, t }: BookshelfGridProps) {
                   {bookTitle}
                 </h3>
                 {bookSubtitle && (
-                  <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+                  <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
                     {bookSubtitle}
                   </p>
                 )}
