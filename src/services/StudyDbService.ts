@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { uuidv7 } from 'uuidv7';
 import { initPowerSync, db } from '../db/powersync';
 import { StudySession } from '../components/study/StudyInsights';
 import { StudySessionRecord, StudyTaskRecord } from '../db/schema';
@@ -54,7 +54,7 @@ class StudyDbService {
         const legacySessions: StudySession[] = JSON.parse(savedSessionsStr);
         if (Array.isArray(legacySessions)) {
           for (const session of legacySessions) {
-            const newId = session.id || uuidv4();
+            const newId = session.id || uuidv7();
             const sessionDate = session.date || new Date().toISOString();
             const createdAt = sessionDate;
             const updatedAt = new Date().toISOString();
@@ -76,7 +76,7 @@ class StudyDbService {
         if (Array.isArray(legacyTasks)) {
           const nowIso = new Date().toISOString();
           for (const t of legacyTasks) {
-            const taskId = t.id || uuidv4();
+            const taskId = t.id || uuidv7();
             const isActive = activeTaskId === t.id ? 1 : 0;
             await db.execute(
               `INSERT INTO study_tasks (id, name, est, act, completed, is_active, created_at, updated_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0)`,
@@ -158,7 +158,7 @@ class StudyDbService {
         };
       }
 
-      const id = uuidv4();
+      const id = uuidv7();
 
       const dbExecPromise = db.execute(
         `INSERT INTO study_sessions (id, date, duration_ms, created_at, updated_at, deleted) VALUES (?, ?, ?, ?, ?, 0)`,
@@ -179,7 +179,7 @@ class StudyDbService {
     } catch (dbErr) {
       console.warn('[StudyDbService] SQLite query/execute error or timeout, saving to localStorage:', dbErr);
       const newSession: StudySession = {
-        id: uuidv4(),
+        id: uuidv7(),
         date: sessionDate,
         durationMs
       };
@@ -290,7 +290,7 @@ class StudyDbService {
 
   public async addTask(name: string, est: number): Promise<Task> {
     await this.init();
-    const id = uuidv4();
+    const id = uuidv7();
     const nowIso = new Date().toISOString();
     const newTask: Task = { id, name, est, act: 0, completed: false };
 
@@ -374,7 +374,7 @@ class StudyDbService {
     if (Array.isArray(backupData)) {
       // Backwards compatibility for legacy session array
       for (const record of backupData) {
-        const id = record.id || uuidv4();
+        const id = record.id || uuidv7();
         const date = record.date || new Date().toISOString();
         const durationMs = record.duration_ms || 0;
         const createdAt = record.created_at || date;
@@ -389,7 +389,7 @@ class StudyDbService {
     } else if (backupData && typeof backupData === 'object') {
       if (Array.isArray(backupData.sessions)) {
         for (const record of backupData.sessions) {
-          const id = record.id || uuidv4();
+          const id = record.id || uuidv7();
           const date = record.date || new Date().toISOString();
           const durationMs = record.duration_ms || 0;
           const createdAt = record.created_at || date;
@@ -405,7 +405,7 @@ class StudyDbService {
 
       if (Array.isArray(backupData.tasks)) {
         for (const record of backupData.tasks) {
-          const id = record.id || uuidv4();
+          const id = record.id || uuidv7();
           const name = record.name || '';
           const est = record.est || 1;
           const act = record.act || 0;
