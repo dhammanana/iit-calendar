@@ -45,10 +45,10 @@ export async function POST(request: NextRequest) {
           return false;
         }
 
-        // Temporarily ignore -dev / pre-releases check and allow all channels/dev releases
-        // if (channel === 'stable' && isDevRelease) {
-        //   return false;
-        // }
+        // If client is on stable channel, skip dev / pre-releases
+        if (channel === 'stable' && isDevRelease) {
+          return false;
+        }
 
         return true;
       });
