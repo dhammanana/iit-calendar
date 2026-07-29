@@ -3,6 +3,8 @@ import path from 'path';
 import os from 'os';
 import crypto from 'crypto';
 
+import semver from 'semver';
+
 export interface ReleaseAsset {
   name: string;
   browser_download_url: string;
@@ -20,28 +22,36 @@ export interface GitHubRelease {
 
 export function parseSemVer(version: string) {
   const clean = version.trim().replace(/^v/, '');
-  const parts = clean.split('.');
-  const major = parseInt(parts[0] || '0', 10);
-  const minor = parseInt(parts[1] || '0', 10);
-  const patch = parseInt(parts[2] || '0', 10);
+  const parsed = semver.parse(clean) || semver.coerce(clean);
+  const major = parsed ? parsed.major : 0;
+  const minor = parsed ? parsed.minor : 0;
+  const patch = parsed ? parsed.patch : 0;
   return {
-    major: isNaN(major) ? 0 : major,
-    minor: isNaN(minor) ? 0 : minor,
-    patch: isNaN(patch) ? 0 : patch,
-    clean
+    major,
+    minor,
+    patch,
+    clean: parsed ? parsed.version : clean
   };
 }
 
 export function isNewer(v1: string, v2: string): boolean {
-  const p1 = parseSemVer(v1);
-  const p2 = parseSemVer(v2);
-  if (p1.major !== p2.major) {
-    return p1.major > p2.major;
+  try {
+    const clean1 = parseSemVer(v1).clean;
+    const clean2 = parseSemVer(v2).clean;
+    return semver.gt(clean1, clean2);
+  } catch {
+    return false;
   }
-  if (p1.minor !== p2.minor) {
-    return p1.minor > p2.minor;
+}
+
+export function compareSemVer(v1: string, v2: string): number {
+  try {
+    const clean1 = parseSemVer(v1).clean;
+    const clean2 = parseSemVer(v2).clean;
+    return semver.compare(clean1, clean2);
+  } catch {
+    return 0;
   }
-  return p1.patch > p2.patch;
 }
 
 let cachedReleases: GitHubRelease[] | null = null;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchReleases, parseSemVer, isNewer } from '@/lib/ota';
+import { fetchReleases, parseSemVer, isNewer, compareSemVer } from '@/lib/ota';
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,11 +36,7 @@ export async function GET(request: NextRequest) {
       });
 
     // Sort versions descending (newest first)
-    versions.sort((a, b) => {
-      if (isNewer(a.version, b.version)) return -1;
-      if (isNewer(b.version, a.version)) return 1;
-      return 0;
-    });
+    versions.sort((a, b) => compareSemVer(b.version, a.version));
 
     const baseUrl = request.nextUrl.origin;
     const responseData = versions.map(v => ({

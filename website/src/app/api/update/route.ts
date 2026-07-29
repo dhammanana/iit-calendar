@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchReleases, parseSemVer, isNewer, getZipBundle } from '@/lib/ota';
+import { fetchReleases, parseSemVer, isNewer, compareSemVer, getZipBundle } from '@/lib/ota';
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,11 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Sort matching releases descending by version code
-    matchingReleases.sort((a, b) => {
-      if (isNewer(a.parsedRel.clean, b.parsedRel.clean)) return -1;
-      if (isNewer(b.parsedRel.clean, a.parsedRel.clean)) return 1;
-      return 0;
-    });
+    matchingReleases.sort((a, b) => compareSemVer(b.parsedRel.clean, a.parsedRel.clean));
 
     const latestMatch = matchingReleases[0];
 
