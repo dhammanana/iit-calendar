@@ -37,7 +37,19 @@ export function SettingsModal({
   const [isGettingLocation, setIsGettingLocation] = React.useState(false);
   const [showLegal, setShowLegal] = React.useState(false);
   const [calibratingTime, setCalibratingTime] = React.useState('');
+  const [localFontSize, setLocalFontSize] = React.useState(settings.fontSize);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  React.useEffect(() => {
+    setLocalFontSize(settings.fontSize);
+  }, [settings.fontSize]);
+
+  const handleFontCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
+    const val = parseInt(e.currentTarget.value, 10);
+    if (!isNaN(val) && val !== settings.fontSize) {
+      onUpdate({ ...settings, fontSize: val });
+    }
+  };
 
   const handleCalibrateDawn = () => {
     if (!calibratingTime) return;
@@ -247,7 +259,7 @@ export function SettingsModal({
                   <div className="flex justify-between items-center">
                     <SectionLabel icon={Type}>Font Size</SectionLabel>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[var(--accent-soft)]" style={{ color: 'var(--accent)' }}>
-                      {settings.fontSize}px
+                      {localFontSize}px
                     </span>
                   </div>
                   <div className="pt-1">
@@ -256,8 +268,12 @@ export function SettingsModal({
                       min="8"
                       max="20"
                       step="1"
-                      value={settings.fontSize}
-                      onChange={(e) => onUpdate({ ...settings, fontSize: parseInt(e.target.value) })}
+                      value={localFontSize}
+                      onChange={(e) => setLocalFontSize(parseInt(e.target.value, 10))}
+                      onPointerUp={handleFontCommit}
+                      onMouseUp={handleFontCommit}
+                      onTouchEnd={handleFontCommit}
+                      onKeyUp={handleFontCommit}
                       className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
                       style={{ accentColor: 'var(--accent)', backgroundColor: 'var(--bg-muted)' }}
                     />
