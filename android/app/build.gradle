@@ -36,8 +36,8 @@ android {
         applicationId "com.iitcalendar.applet"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 127
-        versionName "1.1.6"
+        versionCode 147
+        versionName "1.1.7-dev.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
         aaptOptions {
