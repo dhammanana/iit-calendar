@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, RefreshCw, FileText } from 'lucide-react';
+import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, RefreshCw, FileText, Calendar } from 'lucide-react';
 import { Modal } from './Modal';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
@@ -170,9 +170,10 @@ export function SettingsModal({
         show={show}
         onClose={onClose}
         title={t('common.settings')}
-        maxWidth="lg"
+        maxWidth="xl"
+        className="p-4 sm:p-6"
       >
-        <div className="space-y-6 px-1 pr-2">
+        <div className="space-y-6 px-0">
 
                 {/* Backup & Restore Section */}
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
@@ -239,26 +240,6 @@ export function SettingsModal({
                       selectClassName="text-sm px-4 py-3 font-sans"
                     />
                   </div>
-                </section>
-
-                {/* Update Channel */}
-                <section className="space-y-4">
-                  <SectionLabel>Update Channel</SectionLabel>
-                  <LabeledSelect
-                    label="OTA Update Channel"
-                    value={settings.updateChannel || 'stable'}
-                    onChange={(val) => onUpdate({ ...settings, updateChannel: val as 'stable' | 'dev' })}
-                    options={[
-                      { value: 'stable', label: 'Stable (Official Releases)' },
-                      { value: 'dev', label: 'Dev (Development & Pre-releases)' }
-                    ]}
-                    selectClassName="text-sm px-4 py-3 font-sans"
-                  />
-                  <p className="text-[11px] px-1" style={{ color: 'var(--text-secondary)' }}>
-                    {settings.updateChannel === 'dev' 
-                      ? 'Dev channel receives test updates (-dev) before official releases.' 
-                      : 'Stable channel receives verified official updates.'}
-                  </p>
                 </section>
 
                 {/* 1.5 Font Size */}
@@ -483,7 +464,7 @@ export function SettingsModal({
 
                 {/* 4. Tradition */}
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
-                  <SectionLabel icon={Sun}>{t('settings.tradition')}</SectionLabel>
+                  <SectionLabel icon={Calendar}>{t('settings.tradition')}</SectionLabel>
                   <div className="grid grid-cols-2 gap-3">
                     {(['myanmar', 'thai', 'srilanka', 'lunar'] as const).map(type => (
                       <button
@@ -525,7 +506,7 @@ export function SettingsModal({
                           <button
                             key={`dawn-opt-${opt.id}`}
                             onClick={() => onUpdate({ ...settings, dawnMethod: opt.id })}
-                            className="px-4 py-3.5 rounded-2xl text-xs font-bold flex justify-between items-center transition-all border"
+                            className="px-4 py-3.5 rounded-2xl text-xs font-bold flex items-center justify-start gap-3 transition-all border text-left"
                             style={
                               isSelected
                                 ? {
@@ -540,15 +521,13 @@ export function SettingsModal({
                                   }
                             }
                           >
-                            <div className="flex items-center gap-3">
-                              <div className={cn(
-                                "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
-                                isSelected ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--text-tertiary)]"
-                              )}>
-                                {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
-                              </div>
-                              <span>{opt.label}</span>
+                            <div className={cn(
+                              "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all shrink-0",
+                              isSelected ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--text-tertiary)]"
+                            )}>
+                              {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                             </div>
+                            <span className="flex-1 text-left">{opt.label}</span>
                           </button>
                           
                           {isSelected && opt.id === 'astrology' && (
@@ -623,7 +602,7 @@ export function SettingsModal({
                   />
                   <p className="text-[11px]" style={{ color: 'var(--text-secondary)' }}>
                     {settings.updateChannel === 'dev' 
-                      ? 'Dev channel receives test updates (-dev) before official releases.' 
+                      ? 'Dev channel receives test updates before official releases.' 
                       : 'Stable channel receives verified official updates.'}
                   </p>
                 </section>
@@ -647,16 +626,6 @@ export function SettingsModal({
                     <div className="text-[var(--accent)]">→</div>
                   </button>
                 </section>
-
-                <Button
-                  onClick={onClose}
-                  variant="primary"
-                  size="lg"
-                  fullWidth
-                  className="shadow-xl"
-                >
-                  {t('common.confirm')}
-                </Button>
         </div>
       </Modal>
       <LegalModal show={showLegal} onClose={() => setShowLegal(false)} />

@@ -87,6 +87,8 @@ export default function App() {
         .catch(err => console.error('Capgo: Failed to notify app ready', err));
 
       if (settings.updateChannel) {
+        CapacitorUpdater.setChannel({ channel: settings.updateChannel })
+          .catch(err => console.error('Capgo: Failed to set channel', err));
         CapacitorUpdater.setCustomId({ customId: settings.updateChannel })
           .catch(err => console.error('Capgo: Failed to set channel customId', err));
       }
