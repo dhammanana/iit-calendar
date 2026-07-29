@@ -361,7 +361,7 @@ export function MeditationScreen() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="grid grid-cols-1 gap-4 mt-8"
+                className="grid grid-cols-1 gap-4"
               >
                 {/* Your Journey — 3 stat cards (matching Study Insights style) */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -383,17 +383,19 @@ export function MeditationScreen() {
                   })().map(({ icon: Icon, value, label }) => (
                     <div
                       key={label}
-                      className="rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center gap-1 min-w-0"
+                      className="rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-between text-center gap-1 min-w-0"
                       style={{ backgroundColor: 'var(--accent-subtle)', border: '1px solid var(--accent-muted)' }}
                     >
-                      <Icon size={20} style={{ color: 'var(--accent)' }} />
-                      <div
-                        className={`font-black whitespace-nowrap tracking-tight ${value.length > 5 ? 'text-lg sm:text-xl' : value.length > 3 ? 'text-xl sm:text-2xl' : 'text-2xl'}`}
-                        style={{ color: 'var(--accent)' }}
-                      >
-                        {value}
+                      <div className="flex flex-col items-center justify-center flex-1 gap-1">
+                        <Icon size={20} style={{ color: 'var(--accent)' }} />
+                        <div
+                          className={`font-black whitespace-nowrap tracking-tight ${value.length > 5 ? 'text-lg sm:text-xl' : value.length > 3 ? 'text-xl sm:text-2xl' : 'text-2xl'}`}
+                          style={{ color: 'var(--accent)' }}
+                        >
+                          {value}
+                        </div>
                       </div>
-                      <div className="text-[9px] font-bold uppercase tracking-wider truncate w-full" style={{ color: 'var(--text-muted)' }}>{label}</div>
+                      <div className="text-[9px] font-bold uppercase tracking-wider leading-tight text-center w-full h-6 flex items-center justify-center" style={{ color: 'var(--text-muted)' }}>{label}</div>
                     </div>
                   ))}
                 </div>
@@ -497,7 +499,7 @@ export function MeditationScreen() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="grid grid-cols-1 gap-4 mt-8"
+                className="grid grid-cols-1 gap-4"
               >
                 <div
                   className="rounded-[2rem] p-6 relative overflow-hidden"
