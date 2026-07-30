@@ -112,13 +112,13 @@ export function useMeditationTimer(
             if (countdownInterval) clearInterval(countdownInterval);
             const ms = remainingMsRef.current;
             bellSoundService.playBell(settings.soundEnabled, settings.bellType);
-            alarmService.startMeditation(ms, intervalMs);
+            alarmService.startMeditation(ms, intervalMs, settings.soundEnabled, settings.bellType);
             startActualTimer(ms);
           }
         }, 100);
       } else {
         // Start immediately (no delay)
-        alarmService.startMeditation(remainingMsRef.current, intervalMs);
+        alarmService.startMeditation(remainingMsRef.current, intervalMs, settings.soundEnabled, settings.bellType);
         startActualTimer(remainingMsRef.current);
       }
     } else {

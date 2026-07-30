@@ -107,12 +107,29 @@ class AlarmPlugin {
   public async createChannels(): Promise<void> {
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
       try {
-        const baseChannels: { id: string, name: string, importance: Importance, sound: string, visibility: Visibility }[] = [
+        const baseChannels: { id: string, name: string, importance: Importance, sound?: string, visibility: Visibility }[] = [
           { id: 'meditation_v7', name: 'Meditation', importance: 4, sound: 'bell.wav', visibility: 1 },
           { id: 'solar_noon_v7', name: 'Solar Noon', importance: 4, sound: 'bell.wav', visibility: 1 },
           { id: 'dawn_v7',       name: 'Dawn',       importance: 4, sound: 'bell.wav', visibility: 1 },
           { id: 'study_v7',      name: 'Study',      importance: 4, sound: 'bell.wav', visibility: 1 }
         ];
+
+        // Create specific channels for meditation bell sound types
+        const bellTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
+        const meditationChannels = bellTypes.map(type => ({
+          id: `meditation_${type}_v7`,
+          name: `Meditation (${type.charAt(0).toUpperCase() + type.slice(1)})`,
+          importance: 4 as Importance,
+          sound: `bell_${type}.wav`,
+          visibility: 1 as Visibility
+        }));
+
+        const silentMeditationChannel = {
+          id: 'meditation_silent_v7',
+          name: 'Meditation (Silent)',
+          importance: 2 as Importance,
+          visibility: 1 as Visibility
+        };
 
         // Create specific channels for solar noon countdown voices
         const voiceChannels = [5, 4, 3, 2, 1, 0].map(m => ({
@@ -123,7 +140,7 @@ class AlarmPlugin {
           visibility: 1 as Visibility
         }));
 
-        const allChannels = [...baseChannels, ...voiceChannels];
+        const allChannels = [...baseChannels, ...meditationChannels, silentMeditationChannel, ...voiceChannels];
 
         for (const channel of allChannels) {
           await LocalNotifications.createChannel({

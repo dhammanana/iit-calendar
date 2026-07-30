@@ -10,6 +10,21 @@ export interface ActiveMeditation {
   startTime: number;
   durationMs: number;
   intervalMs: number;
+  soundEnabled?: boolean;
+  bellType?: string;
+}
+
+function getMeditationSoundAndChannel(soundEnabled = true, bellType = 'bowl') {
+  if (!soundEnabled) {
+    return { sound: '', channelId: 'meditation_silent_v7' };
+  }
+  const type = (bellType || 'bowl').toLowerCase();
+  const validTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
+  const safeType = validTypes.includes(type) ? type : 'bowl';
+  return {
+    sound: `bell_${safeType}.wav`,
+    channelId: `meditation_${safeType}_v7`
+  };
 }
 
 export interface ActiveStudy {
@@ -116,7 +131,12 @@ class AlarmService {
     await alarmPlugin.schedule(items);
   }
 
-  public async startMeditation(durationMs: number, intervalMs: number): Promise<void> {
+  public async startMeditation(
+    durationMs: number,
+    intervalMs: number,
+    soundEnabled: boolean = true,
+    bellType: string = 'bowl'
+  ): Promise<void> {
     // Cancel existing
     const intervalIds = Array.from({ length: 100 }, (_, i) => AlarmId.MEDITATION_INTERVAL + i);
     await alarmPlugin.cancel([AlarmId.MEDITATION_END, ...intervalIds]);
@@ -124,9 +144,13 @@ class AlarmService {
     const active: ActiveMeditation = {
       startTime: Date.now(),
       durationMs,
-      intervalMs
+      intervalMs,
+      soundEnabled,
+      bellType
     };
     localStorage.setItem('active_meditation', JSON.stringify(active));
+
+    const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, bellType);
 
     const items: AlarmItem[] = [];
     const endTime = new Date(active.startTime + durationMs);
@@ -137,8 +161,8 @@ class AlarmService {
       title: "Meditation Complete",
       body: "Your session has ended. May you be peaceful.",
       at: endTime,
-      sound: 'bell.wav',
-      channelId: 'meditation_v7',
+      sound,
+      channelId,
       allowWhileIdle: true,
       exact: true
     });
@@ -153,8 +177,8 @@ class AlarmService {
           title: "Meditation Interval",
           body: "Interval mark reached.",
           at: new Date(nextInterval),
-          sound: 'bell.wav',
-          channelId: 'meditation_v7',
+          sound,
+          channelId,
           allowWhileIdle: true,
           exact: true
         });
@@ -206,13 +230,17 @@ class AlarmService {
       const items: AlarmItem[] = [];
       const endTime = new Date(now + remaining);
 
+      const soundEnabled = active.soundEnabled ?? true;
+      const bellType = active.bellType ?? 'bowl';
+      const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, bellType);
+
       items.push({
         id: AlarmId.MEDITATION_END,
         title: "Meditation Complete",
         body: "Your session has ended. May you be peaceful.",
         at: endTime,
-        sound: 'bell.wav',
-        channelId: 'meditation_v7',
+        sound,
+        channelId,
         allowWhileIdle: true,
         exact: true
       });
@@ -227,8 +255,8 @@ class AlarmService {
               title: "Meditation Interval",
               body: "Interval mark reached.",
               at: new Date(nextInterval),
-              sound: 'bell.wav',
-              channelId: 'meditation_v7',
+              sound,
+              channelId,
               allowWhileIdle: true,
               exact: true
             });
