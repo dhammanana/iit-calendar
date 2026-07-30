@@ -106,15 +106,25 @@ export default function App() {
     root.style.fontSize = `${settings.fontSize}px`;
 
     // Set theme colors (Tailwind variables)
-    const colors: Record<string, string> = {
+    const lightColors: Record<string, string> = {
       saffron: '#7f5700',
-      indigo: '#6366f1',
-      emerald: '#10b981',
-      rose: '#f43f5e',
+      indigo: '#4f46e5',
+      emerald: '#059669',
+      rose: '#e11d48',
       slate: '#475569'
     };
+    const darkColors: Record<string, string> = {
+      saffron: '#e8ac41',
+      indigo: '#818cf8',
+      emerald: '#34d399',
+      rose: '#fb7185',
+      slate: '#94a3b8'
+    };
 
-    root.style.setProperty('--accent', colors[settings.themeColor]);
+    const colorMap = settings.darkMode ? darkColors : lightColors;
+    const chosenAccent = colorMap[settings.themeColor] || colorMap.saffron;
+    root.style.setProperty('--accent', chosenAccent);
+    root.style.setProperty('--saffron', chosenAccent);
 
     // Refresh notifications when settings change
     alarmService.refreshDawnAndNoon(settings);
@@ -229,7 +239,7 @@ export default function App() {
       />
 
       {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card flex justify-around items-center border-t border-slate-100/50 dark:border-slate-800/50 bg-white/85 dark:bg-slate-950/85 shadow-[0_-8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.25)] backdrop-blur-md overflow-x-auto"
+      <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card flex justify-around items-center border-t border-stone-200/50 dark:border-stone-800/80 bg-white/85 dark:bg-[#181512]/90 shadow-[0_-8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md overflow-x-auto"
         style={{
           paddingTop: '0.65rem',
           paddingBottom: 'calc(0.65rem + env(safe-area-inset-bottom))',
@@ -253,14 +263,14 @@ function NavButton({ icon, label, active, onClick }: { icon: React.ReactNode, la
       <div className={cn(
         "px-5 py-1 rounded-full transition-all duration-300 flex items-center justify-center",
         active
-          ? "bg-[var(--accent-soft)] text-saffron scale-105"
-          : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400"
+          ? "bg-[var(--accent-soft)] text-[var(--accent)] scale-105"
+          : "text-stone-400 dark:text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200"
       )}>
         {icon}
       </div>
       <span className={cn(
         "text-[9px] font-bold mt-1 tracking-wider uppercase transition-colors duration-200",
-        active ? "text-saffron font-extrabold" : "text-slate-400 dark:text-slate-500"
+        active ? "text-[var(--accent)] font-extrabold" : "text-stone-400 dark:text-stone-400"
       )}>{label}</span>
     </button>
   );

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause } from 'lucide-react';
+import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause, Timer, Coffee, Armchair } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
 import { useI18n } from '../hooks/useI18n';
@@ -263,7 +263,7 @@ export function StudyScreen() {
 
       {/* Dynamic/Notch-compatible Vector Illustration Header (Study: ripple/hourglass theme) */}
       <div
-        className="w-full safe-header bg-gradient-to-tr from-indigo-500/20 via-blue-500/25 to-red-500/10 sticky top-0 z-10 flex items-center justify-center"
+        className="w-full safe-header bg-gradient-to-tr from-indigo-500/20 via-blue-500/25 to-red-500/10 dark:from-[#0d122b] dark:via-[#090e1f] dark:to-[#05070e] sticky top-0 z-10 flex items-center justify-center"
       >
         {/* Styled CSS/SVG Zen Concentric Rings Art */}
         <svg className="absolute w-[160px] h-[160px] sm:w-[190px] sm:h-[190px] md:w-[220px] md:h-[220px] lg:w-[240px] lg:h-[240px] -translate-y-3" viewBox="0 0 100 100">
@@ -273,10 +273,14 @@ export function StudyScreen() {
               <feDropShadow dx="0" dy="2.5" stdDeviation="3" floodColor="#1e1b4b" floodOpacity="0.07" />
             </filter>
 
-            {/* Gradient for the circular pill container: soft desaturated warm indigo */}
-            <linearGradient id="study-pill-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+            {/* Gradients for the circular pill container */}
+            <linearGradient id="study-pill-bg-light" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="100%" stopColor="#e0e7ff" />
+            </linearGradient>
+            <linearGradient id="study-pill-bg-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#1e1b38" />
+              <stop offset="100%" stopColor="#111024" />
             </linearGradient>
           </defs>
 
@@ -290,22 +294,29 @@ export function StudyScreen() {
               animation: study-wave-pulse 8s cubic-bezier(0.25, 0, 0.2, 1) infinite;
               transform-origin: 50px 50px;
             }
+            .study-pill-circle {
+              fill: url(#study-pill-bg-light);
+              stroke: rgba(255, 255, 255, 0.8);
+            }
+            .dark .study-pill-circle {
+              fill: url(#study-pill-bg-dark);
+              stroke: rgba(129, 140, 248, 0.4);
+            }
           ` }} />
 
           {/* Ripple waves pulsing outwards from the pill edge (r=18) - 5 waves total */}
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/15" style={{ animationDelay: '0s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/15" style={{ animationDelay: '1.6s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/15" style={{ animationDelay: '3.2s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/15" style={{ animationDelay: '4.8s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/15" style={{ animationDelay: '6.4s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/20" style={{ animationDelay: '0s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/20" style={{ animationDelay: '1.6s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/20" style={{ animationDelay: '3.2s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/20" style={{ animationDelay: '4.8s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="study-ripple text-indigo-500/25 dark:text-indigo-400/20" style={{ animationDelay: '6.4s' }} />
 
           {/* Pill Container (Circle) with Soft Shadow and Indigo Gradient Fill */}
           <circle
             cx="50"
             cy="50"
             r="18"
-            fill="url(#study-pill-bg)"
-            stroke="rgba(255, 255, 255, 0.8)"
+            className="study-pill-circle"
             strokeWidth="0.4"
             filter="url(#study-pill-shadow)"
           />
@@ -330,7 +341,7 @@ export function StudyScreen() {
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             Focus
           </h1>
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
             Pomodoro timer
           </p>
         </div>
@@ -360,42 +371,49 @@ export function StudyScreen() {
               <div className={cn("space-y-6 animate-in fade-in duration-700 p-2 min-h-[70vh] rounded-[2.5rem] transition-colors relative", getModeBg())}>
 
                 {/* Timer Card */}
-                <div className={cn("glass-card rounded-[2.5rem] p-6 sm:p-10 flex flex-col items-center transition-colors shadow-sm", getModeColorClass())}>
+                <div className={cn("glass-card rounded-[2.5rem] px-3 py-6 sm:p-10 flex flex-col items-center transition-colors shadow-sm", getModeColorClass())}>
 
                   {/* Mode Selector */}
-                  <div className="flex gap-1.5 mb-8 bg-[var(--bg-input)] p-1.5 rounded-full border border-[var(--border-subtle)] backdrop-blur-md w-full max-w-[340px] justify-between">
+                  <div className="flex gap-1 mb-8 bg-[var(--bg-input)] p-1.5 rounded-full border border-[var(--border-subtle)] backdrop-blur-md w-full max-w-[360px] justify-between">
                     <button
                       onClick={() => switchMode('pomodoro')}
                       className={cn(
-                        "flex-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center transition-all",
+                        "flex-1 py-2 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-tight flex items-center justify-center gap-1 transition-all min-w-0",
                         mode === 'pomodoro'
-                          ? 'bg-white dark:bg-slate-800 text-[var(--accent)] shadow-sm font-bold'
-                          : 'text-slate-500 dark:text-slate-400 opacity-70 hover:opacity-100'
+                          ? 'bg-white dark:bg-[#2c241c] text-[var(--accent)] shadow-sm font-bold'
+                          : 'text-[var(--text-muted)] opacity-80 hover:opacity-100'
                       )}
                     >
-                      {t('study.pomodoro') || 'Pomodoro'}
+                      <Timer className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{t('study.pomodoro') || 'Pomodoro'}</span>
                     </button>
                     <button
                       onClick={() => switchMode('shortBreak')}
                       className={cn(
-                        "flex-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center transition-all",
+                        "flex-1 py-2 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-tight flex items-center justify-center gap-1 transition-all min-w-0",
                         mode === 'shortBreak'
-                          ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm font-bold'
-                          : 'text-slate-500 dark:text-slate-400 opacity-70 hover:opacity-100'
+                          ? 'bg-white dark:bg-[#2c241c] text-emerald-600 dark:text-emerald-400 shadow-sm font-bold'
+                          : 'text-[var(--text-muted)] opacity-80 hover:opacity-100'
                       )}
                     >
-                      {t('study.shortBreak') || 'Short Break'}
+                      <Coffee className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">
+                        Short<span className="hidden min-[380px]:inline"> Break</span>
+                      </span>
                     </button>
                     <button
                       onClick={() => switchMode('longBreak')}
                       className={cn(
-                        "flex-1 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider text-center transition-all",
+                        "flex-1 py-2 px-1.5 rounded-full text-[10px] sm:text-xs font-semibold tracking-tight flex items-center justify-center gap-1 transition-all min-w-0",
                         mode === 'longBreak'
-                          ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-sm font-bold'
-                          : 'text-slate-500 dark:text-slate-400 opacity-70 hover:opacity-100'
+                          ? 'bg-white dark:bg-[#2c241c] text-indigo-600 dark:text-indigo-400 shadow-sm font-bold'
+                          : 'text-[var(--text-muted)] opacity-80 hover:opacity-100'
                       )}
                     >
-                      {t('study.longBreak') || 'Long Break'}
+                      <Armchair className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">
+                        Long<span className="hidden min-[380px]:inline"> Break</span>
+                      </span>
                     </button>
                   </div>
 

@@ -201,7 +201,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
 
       {/* Dynamic/Notch-compatible Vector Illustration Header (Chants: ripple/lotus theme) */}
       <div
-        className="w-full safe-header bg-gradient-to-tr from-rose-500/20 via-lotus-base/20 to-amber-500/10 sticky top-0 z-10 flex items-center justify-center"
+        className="w-full safe-header bg-gradient-to-tr from-rose-500/20 via-lotus-base/20 to-amber-500/10 dark:from-[#260a15] dark:via-[#18050d] dark:to-[#0a0206] sticky top-0 z-10 flex items-center justify-center"
       >
         {/* Styled CSS/SVG Zen Concentric Rings Art */}
         <svg className="absolute w-[160px] h-[160px] sm:w-[190px] sm:h-[190px] md:w-[220px] md:h-[220px] lg:w-[240px] lg:h-[240px] -translate-y-3" viewBox="0 0 100 100">
@@ -211,10 +211,14 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
               <feDropShadow dx="0" dy="2.5" stdDeviation="3" floodColor="#4c0519" floodOpacity="0.07" />
             </filter>
 
-            {/* Gradient for the circular pill container: soft desaturated rose/lotus */}
-            <linearGradient id="chant-pill-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+            {/* Gradients for the circular pill container */}
+            <linearGradient id="chant-pill-bg-light" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="100%" stopColor="#ffe4e6" />
+            </linearGradient>
+            <linearGradient id="chant-pill-bg-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#2b121a" />
+              <stop offset="100%" stopColor="#18090f" />
             </linearGradient>
           </defs>
 
@@ -228,22 +232,29 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
               animation: chant-wave-pulse 8s cubic-bezier(0.25, 0, 0.2, 1) infinite;
               transform-origin: 50px 50px;
             }
+            .chant-pill-circle {
+              fill: url(#chant-pill-bg-light);
+              stroke: rgba(255, 255, 255, 0.8);
+            }
+            .dark .chant-pill-circle {
+              fill: url(#chant-pill-bg-dark);
+              stroke: rgba(251, 113, 133, 0.4);
+            }
           ` }} />
 
           {/* Ripple waves pulsing outwards from the pill edge (r=18) - 5 waves total */}
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/15" style={{ animationDelay: '0s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/15" style={{ animationDelay: '1.6s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/15" style={{ animationDelay: '3.2s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/15" style={{ animationDelay: '4.8s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/15" style={{ animationDelay: '6.4s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/20" style={{ animationDelay: '0s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/20" style={{ animationDelay: '1.6s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/20" style={{ animationDelay: '3.2s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/20" style={{ animationDelay: '4.8s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="chant-ripple text-rose-500/25 dark:text-rose-400/20" style={{ animationDelay: '6.4s' }} />
 
           {/* Pill Container (Circle) with Soft Shadow and Rose Gradient Fill */}
           <circle
             cx="50"
             cy="50"
             r="18"
-            fill="url(#chant-pill-bg)"
-            stroke="rgba(255, 255, 255, 0.8)"
+            className="chant-pill-circle"
             strokeWidth="0.4"
             filter="url(#chant-pill-shadow)"
           />

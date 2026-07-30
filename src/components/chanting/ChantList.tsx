@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'motion/react';
 import { Search, Plus } from 'lucide-react';
 import { ChantCard } from './ChantCard';
 import { UserChant } from '../../types';
@@ -51,7 +52,7 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, onEdi
   return (
     <div className="space-y-6">
       <div className="relative group">
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-[#7f5700] transition-colors">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-faint)] group-focus-within:text-[var(--accent)] transition-colors">
           <Search size={18} />
         </div>
         <input
@@ -59,7 +60,7 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, onEdi
           placeholder={t('chant.searchChants')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-4 rounded-2xl focus:outline-none focus:ring-1 focus:ring-[#7f5700]/20 transition-all border border-slate-100 dark:border-slate-700"
+          className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[var(--bg-input)] text-[var(--text-primary)] placeholder-[var(--text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 focus:border-[var(--accent)]/40 transition-all border border-[var(--border-subtle)] text-sm font-medium"
         />
       </div>
 
@@ -83,13 +84,17 @@ export function ChantList({ chants, selectedChantId, onSelect, onAddChant, onEdi
           />
         ))}
         
-        <button
+        <motion.button
+          whileHover={{ scale: 1.005, y: -1 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onAddChant}
-          className="w-full p-5 rounded-[1.5rem] border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-[#7f5700]/30 transition-all flex items-center justify-center gap-3 font-bold uppercase tracking-widest text-xs"
+          className="w-full p-4 rounded-[1.2rem] border border-dashed border-[var(--accent)]/40 hover:border-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)]/15 text-[var(--accent)] transition-all duration-300 flex items-center justify-center gap-2.5 font-bold uppercase tracking-wider text-xs shadow-sm hover:shadow-md hover:shadow-[var(--accent)]/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)] group"
         >
-          <Plus size={16} />
-          {t('chant.createCustomChant')}
-        </button>
+          <div className="p-1 rounded-lg bg-[var(--accent)]/15 text-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-[var(--bg-main)] transition-colors duration-300">
+            <Plus size={16} strokeWidth={2.5} />
+          </div>
+          <span>{t('chant.createCustomChant')}</span>
+        </motion.button>
       </div>
     </div>
   );

@@ -250,16 +250,20 @@ export function BookScreen({ settings, isActive = true }: { settings: Settings; 
     <div className="flex flex-col min-h-full relative bg-[var(--bg-main)] text-slate-800 dark:text-slate-100 selection:bg-amber-500/20">
 
       {/* Top Header Background Illustration */}
-      <div className="w-full safe-header bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#261808] dark:via-[#191005] dark:to-[#0d0905] overflow-hidden sticky top-0 z-10 flex flex-col items-center justify-center">
+      <div className="w-full safe-header bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#2a1a0a] dark:via-[#191006] dark:to-[#0d0905] overflow-hidden sticky top-0 z-10 flex flex-col items-center justify-center">
         <svg
           viewBox="0 0 100 100"
           className="absolute w-[160px] h-[160px] sm:w-[190px] sm:h-[190px] md:w-[220px] md:h-[220px] lg:w-[240px] lg:h-[240px] -translate-y-3 text-saffron dark:text-amber-500 transition-all duration-700 hover:scale-105 filter drop-shadow-md"
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id="book-pill-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="book-pill-bg-light" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#fff8e7" stopOpacity="0.95" />
               <stop offset="100%" stopColor="#ffeed0" stopOpacity="0.8" />
+            </linearGradient>
+            <linearGradient id="book-pill-bg-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#2e2114" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#1a120b" stopOpacity="0.9" />
             </linearGradient>
             <filter id="book-pill-shadow" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#d97706" floodOpacity="0.15" />
@@ -276,24 +280,31 @@ export function BookScreen({ settings, isActive = true }: { settings: Settings; 
               animation: book-wave-pulse 8s cubic-bezier(0.25, 0, 0.2, 1) infinite;
               transform-origin: 50px 50px;
             }
+            .book-pill-circle {
+              fill: url(#book-pill-bg-light);
+              stroke: rgba(255, 255, 255, 0.8);
+            }
+            .dark .book-pill-circle {
+              fill: url(#book-pill-bg-dark);
+              stroke: rgba(232, 172, 65, 0.4);
+            }
           ` }} />
 
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/15" style={{ animationDelay: '0s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/15" style={{ animationDelay: '1.6s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/15" style={{ animationDelay: '3.2s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/20" style={{ animationDelay: '0s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/20" style={{ animationDelay: '1.6s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="book-ripple text-yellow-600/25 dark:text-amber-500/20" style={{ animationDelay: '3.2s' }} />
 
           <circle
             cx="50"
             cy="50"
             r="18"
-            fill="url(#book-pill-bg)"
-            stroke="rgba(255, 255, 255, 0.8)"
+            className="book-pill-circle"
             strokeWidth="0.4"
             filter="url(#book-pill-shadow)"
           />
 
           {/* Scripture vector icon inside the pill matching amber theme */}
-          <g transform="translate(36, 64) scale(0.002734375, -0.002734375)" fill="currentColor" className="text-amber-800 dark:text-amber-300">
+          <g transform="translate(36, 64) scale(0.002734375, -0.002734375)" fill="currentColor" className="text-amber-900 dark:text-amber-300">
             <path d="M4826 6879 c-15 -12 -32 -33 -37 -47 l-10 -25 -462 7 c-254 4 -682
 11 -952 16 -269 5 -805 10 -1191 10 -788 0 -773 1 -837 -69 -65 -72 -81 -159
 -98 -524 l-11 -248 -33 -49 c-35 -52 -55 -122 -55 -193 0 -23 -7 -82 -15 -132

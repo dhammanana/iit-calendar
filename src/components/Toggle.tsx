@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
+import { cn } from '../lib/utils';
 
 export interface ToggleProps {
   /** Accepts boolean for value or checked state */
@@ -43,17 +44,19 @@ export function Toggle({
       aria-label={ariaLabel}
       disabled={disabled}
       onClick={handleClick}
-      className={`w-12 h-6 rounded-full relative transition-colors flex-shrink-0 cursor-pointer focus:outline-none ${
-        disabled ? 'opacity-50 cursor-not-allowed' : ''
-      } ${className}`}
-      style={{
-        backgroundColor: isChecked ? 'var(--accent)' : 'var(--bg-muted)',
-      }}
+      className={cn(
+        "w-11 h-6 rounded-full p-0.5 flex items-center transition-all duration-200 border flex-shrink-0 cursor-pointer focus:outline-none select-none",
+        disabled && "opacity-40 cursor-not-allowed",
+        isChecked
+          ? "bg-[var(--accent)] border-[var(--accent)] shadow-sm"
+          : "bg-stone-300 dark:bg-stone-700/80 border-stone-400/50 dark:border-stone-600/70",
+        className
+      )}
     >
       <motion.div
-        animate={{ x: isChecked ? 28 : 4 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-        className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm"
+        animate={{ x: isChecked ? 20 : 0 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 32 }}
+        className="w-5 h-5 rounded-full bg-white shadow-md flex-shrink-0"
       />
     </button>
   );

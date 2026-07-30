@@ -14,6 +14,7 @@ import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
 import { cn } from '../lib/utils';
 import { alarmService } from '../services/alarm/AlarmService';
+import { Toggle } from './Toggle';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
 
@@ -426,43 +427,23 @@ export function SunDetails({
                   </span>
                 </div>
               </div>
-              <button 
-                onClick={toggleNoonBell}
-                className={cn(
-                  "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-sm active:scale-95",
-                  settings.solarNoonBell 
-                    ? "bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-700 dark:hover:bg-slate-600" 
-                    : "bg-saffron text-white hover:bg-saffron/90"
-                )}
-              >
-                {settings.solarNoonBell ? 'Disable' : 'Enable'}
-              </button>
+              <Toggle value={settings.solarNoonBell} onToggle={toggleNoonBell} />
             </div>
 
             {/* Dawn Alert Row */}
             <div className="col-span-2 sm:col-span-1 mt-2 flex items-center justify-between p-4 rounded-2xl bg-saffron/5 border border-saffron/20">
               <div className="flex items-center gap-3">
-                <div className={cn("p-2 rounded-xl transition-colors", settings.dawnBell ? "bg-saffron text-white" : "bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500")}>
+                <div className={cn("p-2 rounded-xl transition-colors", settings.dawnBell ? "bg-saffron text-white" : "bg-stone-300 dark:bg-stone-700 text-stone-500 dark:text-stone-400")}>
                   {settings.dawnBell ? <Bell size={18} /> : <BellOff size={18} />}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">Dawn Alert</span>
-                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-[var(--text-muted)]">Dawn Alert</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)]">
                     {settings.dawnBell ? 'Active' : 'Inactive'}
                   </span>
                 </div>
               </div>
-              <button 
-                onClick={toggleDawnBell}
-                className={cn(
-                  "px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-sm active:scale-95",
-                  settings.dawnBell 
-                    ? "bg-slate-800 dark:bg-slate-700 text-white hover:bg-slate-700 dark:hover:bg-slate-600" 
-                    : "bg-saffron text-white hover:bg-saffron/90"
-                )}
-              >
-                {settings.dawnBell ? 'Disable' : 'Enable'}
-              </button>
+              <Toggle value={settings.dawnBell} onToggle={toggleDawnBell} />
             </div>
             <DetailRow label={t('sun.civilTwilight')} value={`${safeFormat(times.dawn, 'HH:mm')} - ${safeFormat(times.sunrise, 'HH:mm')}`} />
             <DetailRow label={t('sun.astroTwilight')} value={`${safeFormat(times.nightEnd, 'HH:mm')} - ${safeFormat(times.nauticalDawn, 'HH:mm')}`} />

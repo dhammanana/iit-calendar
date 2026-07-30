@@ -69,48 +69,48 @@
   /* ── Dark mode tokens ────────────────────────────────────── */
   .dark {
     /* Surfaces */
-    --bg-main:        #020617;
-    --bg-header:      rgba(15, 23, 42, 0.7);
-    --bg-card:        #111827;
-    --bg-card-alt:    #1c2333;
-    --bg-input:       #1e293b;
-    --bg-muted:       #1e293b;
+    --bg-main:        #0c0a09;   /* warm dark obsidian / stone-950 */
+    --bg-header:      rgba(26, 20, 14, 0.85);
+    --bg-card:        #1a1612;   /* warm dark card surface */
+    --bg-card-alt:    #241f19;   /* warm dark card section alt */
+    --bg-input:       #241f19;
+    --bg-muted:       #3c342b;   /* distinct track & toggle off-state */
 
     /* Text */
-    --text-primary:   #f5f5f4;   /* stone-100 */
-    --text-secondary: #d6d3d1;   /* stone-300 */
-    --text-muted:     #a8a29e;   /* stone-400 */
-    --text-faint:     #78716c;   /* stone-500 */
+    --text-primary:   #faf4e8;   /* crisp warm off-white */
+    --text-secondary: #e2d5c3;   /* high contrast warm light stone */
+    --text-muted:     #b5a48e;   /* clear readable muted gold/sand */
+    --text-faint:     #82725e;   /* stone-500 equivalent */
 
     /* Borders */
-    --border-base:    #3f3f46;   /* zinc-700 */
-    --border-subtle:  #292524;   /* stone-800 */
+    --border-base:    #504436;   /* warm subtle border */
+    --border-subtle:  #322a22;   /* warm subtle divider */
 
     /* Accent (gold in dark) */
     --accent:         #e8ac41;
-    --accent-soft:    rgba(232, 172, 65, 0.08);
-    --accent-ring:    rgba(232, 172, 65, 0.15);
+    --accent-soft:    rgba(232, 172, 65, 0.15);
+    --accent-ring:    rgba(232, 172, 65, 0.25);
 
     /* Card / surface aliases used by CalendarScreen */
-    --surface:        rgba(24, 17, 8, 0.95);
-    --surface-hover:  rgba(232, 172, 65, 0.06);
-    --border:         rgb(60, 45, 22);
-    --accent-subtle:  rgba(232, 172, 65, 0.08);
-    --accent-muted:   rgba(232, 172, 65, 0.15);
-    --accent-shadow:  rgba(232, 172, 65, 0.25);
-    --text-disabled:  rgb(80, 65, 40);
-    --text-secondary: rgb(180, 150, 100);
+    --surface:        rgba(26, 22, 18, 0.95);
+    --surface-hover:  rgba(232, 172, 65, 0.10);
+    --border:         rgba(80, 68, 54, 0.60);
+    --accent-subtle:  rgba(232, 172, 65, 0.12);
+    --accent-muted:   rgba(232, 172, 65, 0.18);
+    --accent-shadow:  rgba(232, 172, 65, 0.30);
+    --text-disabled:  rgb(130, 114, 94);
+    --text-secondary: rgb(226, 213, 195);
 
-    /* Uposatha accent — gold-toned (no pink) */
+    /* Uposatha accent — gold-toned */
     --lotus:          rgb(232, 172, 65);
-    --lotus-muted:    rgba(232, 172, 65, 0.12);
-    --lotus-shadow:   rgba(232, 172, 65, 0.08);
+    --lotus-muted:    rgba(232, 172, 65, 0.15);
+    --lotus-shadow:   rgba(232, 172, 65, 0.10);
 
     /* Today indicator */
-    --today-dot:      rgba(232, 172, 65, 0.35);
+    --today-dot:      rgba(232, 172, 65, 0.40);
 
     /* Legacy tokens */
-    --btn-header-bg:  #1e293b;
+    --btn-header-bg:  #241f19;
     --btn-header-text:#ffffff;
     --saffron:        #e8ac41;
   }
@@ -318,5 +318,33 @@
     .safe-header {
       min-height: calc(200px + var(--safe-header-top));
     }
+  }
+
+  /* ── Custom Range Input Slider Track & Thumb ───────────────────────────── */
+  input[type="range"] {
+    @apply appearance-none bg-stone-300 dark:bg-stone-700/90 rounded-full h-2 outline-none cursor-pointer border border-stone-400/40 dark:border-stone-600/70 transition-all select-none;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: transparent;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none w-5 h-5 rounded-full bg-white shadow-md border-2 cursor-pointer transition-transform duration-150 active:scale-110;
+    border-color: var(--accent, #e8ac41);
+    margin-top: -6px;
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 0.5rem;
+    border-radius: 9999px;
+    background: transparent;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    @apply w-5 h-5 rounded-full bg-white shadow-md border-2 cursor-pointer transition-transform duration-150 active:scale-110;
+    border-color: var(--accent, #e8ac41);
   }
 }

@@ -103,7 +103,7 @@ export function MeditationScreen() {
 
       {/* Dynamic/Notch-compatible Vector Illustration Header (Stillness: ripple/lotus theme) */}
       <div
-        className="w-full safe-header bg-gradient-to-tr from-teal-500/20 via-emerald-500/20 to-cyan-500/10 sticky top-0 z-10 flex items-center justify-center"
+        className="w-full safe-header bg-gradient-to-tr from-teal-500/20 via-emerald-500/20 to-cyan-500/10 dark:from-[#092119] dark:via-[#05140f] dark:to-[#020a07] sticky top-0 z-10 flex items-center justify-center"
       >
         {/* Styled CSS/SVG Zen Concentric Rings Art */}
         <svg className="absolute w-[160px] h-[160px] sm:w-[190px] sm:h-[190px] md:w-[220px] md:h-[220px] lg:w-[240px] lg:h-[240px] -translate-y-3" viewBox="0 0 100 100">
@@ -113,10 +113,14 @@ export function MeditationScreen() {
               <feDropShadow dx="0" dy="2.5" stdDeviation="3" floodColor="#042017" floodOpacity="0.07" />
             </filter>
 
-            {/* Gradient for the circular pill container: soft desaturated mint green */}
-            <linearGradient id="pill-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+            {/* Gradients for the circular pill container */}
+            <linearGradient id="pill-bg-light" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="100%" stopColor="#d2ede2" />
+            </linearGradient>
+            <linearGradient id="pill-bg-dark" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#10261f" />
+              <stop offset="100%" stopColor="#091712" />
             </linearGradient>
           </defs>
 
@@ -130,22 +134,29 @@ export function MeditationScreen() {
               animation: zen-wave-pulse 8s cubic-bezier(0.25, 0, 0.2, 1) infinite;
               transform-origin: 50px 50px;
             }
+            .zen-pill-circle {
+              fill: url(#pill-bg-light);
+              stroke: rgba(255, 255, 255, 0.8);
+            }
+            .dark .zen-pill-circle {
+              fill: url(#pill-bg-dark);
+              stroke: rgba(52, 211, 153, 0.4);
+            }
           ` }} />
 
           {/* Ripple waves pulsing outwards from the pill edge (r=18) - 5 waves total */}
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/15" style={{ animationDelay: '0s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/15" style={{ animationDelay: '1.6s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/15" style={{ animationDelay: '3.2s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/15" style={{ animationDelay: '4.8s' }} />
-          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/15" style={{ animationDelay: '6.4s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/20" style={{ animationDelay: '0s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/20" style={{ animationDelay: '1.6s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/20" style={{ animationDelay: '3.2s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/20" style={{ animationDelay: '4.8s' }} />
+          <circle cx="50" cy="50" r="0" stroke="currentColor" strokeWidth="0.8" fill="none" opacity="0" className="zen-ripple text-emerald-500/25 dark:text-emerald-400/20" style={{ animationDelay: '6.4s' }} />
 
           {/* Pill Container (Circle) with Soft Shadow and Jade Gradient Fill */}
           <circle
             cx="50"
             cy="50"
             r="18"
-            fill="url(#pill-bg)"
-            stroke="rgba(255, 255, 255, 0.8)"
+            className="zen-pill-circle"
             strokeWidth="0.4"
             filter="url(#pill-shadow)"
           />

@@ -233,7 +233,7 @@ export function CalendarScreen({
 
       {/* Dynamic/Notch-compatible Vector Illustration Header */}
       <div
-        className="w-full safe-header-calendar bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#0d0905] dark:via-[#1a1005] dark:to-[#0d0905] sticky top-0 z-10 flex items-center justify-center"
+        className="w-full safe-header-calendar bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#2a1a0a] dark:via-[#191006] dark:to-[#0d0905] sticky top-0 z-10 flex items-center justify-center"
       >
         {/* Center alignment wrapper for orbits & logo, shifted up to prevent clipping on mobile */}
         <div className="relative w-[260px] h-[260px] flex items-center justify-center -translate-y-3">
@@ -276,15 +276,15 @@ export function CalendarScreen({
             {/* ── Chanting beads — full circle (Mālā) slowly rotating ────── */}
             <g className="animate-[spin_180s_linear_infinite]" style={{ transformOrigin: '50% 50%' }}>
               <circle cx="50" cy="50" r="40"
-                stroke="#7a5c3a" strokeWidth="2"
+                stroke="currentColor" strokeWidth="2"
                 strokeDasharray="0.1 3.5" strokeLinecap="round"
-                fill="none" opacity="0.18" />
+                fill="none" className="text-[#7a5c3a] dark:text-[#e8ac41] opacity-25 dark:opacity-35" />
             </g>
 
             {/* ── Sumeru orbit ring ───────────────────────────────────────── */}
             <circle cx="50" cy="50" r="40"
-              stroke="#7a5c3a" strokeWidth="0.4"
-              fill="none" opacity="0.12" />
+              stroke="currentColor" strokeWidth="0.4"
+              fill="none" className="text-[#7a5c3a] dark:text-[#e8ac41] opacity-20 dark:opacity-30" />
 
             {/* ── Sun & Moon orbit Sumeru clockwise together ────────────────
                  Both are in the same rotating group so they remain 180° apart.
@@ -345,12 +345,12 @@ export function CalendarScreen({
             aria-label="Settings"
             className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
           />
-          <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-tight text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-tight text-center">
             <span>{settings.calendarType === 'srilanka' ? t('calendar.srilanka') : settings.calendarType}</span>
             {settings.address && (
               <>
                 <span className="hidden sm:inline" aria-hidden="true">·</span>
-                <span className="normal-case font-medium text-slate-400 dark:text-slate-500 max-w-[280px] sm:max-w-[360px] break-words text-center">{settings.address}</span>
+                <span className="normal-case font-medium text-[var(--text-muted)] opacity-80 max-w-[280px] sm:max-w-[360px] break-words text-center">{settings.address}</span>
               </>
             )}
           </div>
@@ -380,9 +380,9 @@ export function CalendarScreen({
             <div className="flex items-center gap-2 self-end sm:self-auto">
               <button
                 onClick={goToToday}
-                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border transition-all active:scale-95 shadow-2xs cursor-pointer"
+                className="px-3.5 h-[36px] flex items-center justify-center text-xs font-bold uppercase tracking-wider rounded-full border transition-all hover:bg-[var(--surface-hover)] active:scale-95 shadow-2xs cursor-pointer"
                 style={{
-                  background: 'var(--accent-subtle)',
+                  background: 'var(--surface)',
                   borderColor: 'var(--border)',
                   color: 'var(--accent)'
                 }}

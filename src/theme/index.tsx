@@ -52,29 +52,29 @@ const COLOR_TOKENS = {
 
   // ─────────────────────────────────────────────────────────────────────────
   // DARK MODE
-  // near-black + saffron-gold
+  // rich warm obsidian + vibrant golden-saffron
   // ─────────────────────────────────────────────────────────────────────────
 
   // Backgrounds
-  darkBg:              'rgb(14 10 6)',
-  darkSurface:         'rgb(24 17 8 / 0.95)',
-  darkSurfaceHover:    'rgb(212 136 32 / 0.06)',
-  darkCardBg:          'rgb(30 22 12 / 0.90)',
-  darkSelectBg:        'rgb(24 17 8)',
-  darkOverlay:         'rgb(0 0 0 / 0.55)',
+  darkBg:              'rgb(12 10 9)',
+  darkSurface:         'rgb(26 22 18 / 0.95)',
+  darkSurfaceHover:    'rgb(232 172 65 / 0.10)',
+  darkCardBg:          'rgb(34 29 24 / 0.90)',
+  darkSelectBg:        'rgb(26 22 18)',
+  darkOverlay:         'rgb(0 0 0 / 0.70)',
 
   // Borders
-  darkBorder:          'rgb(60 45 22)',
-  darkInputBorder:     'rgb(60 45 22)',
+  darkBorder:          'rgb(80 68 54 / 0.60)',
+  darkInputBorder:     'rgb(80 68 54)',
 
   // Text
-  darkTextPrimary:     'rgb(250 240 220)',
-  darkTextSecondary:   'rgb(180 150 100)',
-  darkTextMuted:       'rgb(120 100 65)',
-  darkTextDisabled:    'rgb(80 65 40)',
+  darkTextPrimary:     'rgb(250 244 232)',
+  darkTextSecondary:   'rgb(226 213 195)',
+  darkTextMuted:       'rgb(181 164 142)',
+  darkTextDisabled:    'rgb(130 114 94)',
 
   // Indicators
-  darkTodayDot:        'rgb(212 136 32 / 0.35)',
+  darkTodayDot:        'rgb(232 172 65 / 0.40)',
 };
 
 const CSS_VARS = `

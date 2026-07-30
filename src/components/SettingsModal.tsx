@@ -275,8 +275,7 @@ export function SettingsModal({
                       onMouseUp={handleFontCommit}
                       onTouchEnd={handleFontCommit}
                       onKeyUp={handleFontCommit}
-                      className="w-full h-1.5 rounded-lg appearance-none cursor-pointer"
-                      style={{ accentColor: 'var(--accent)', backgroundColor: 'var(--bg-muted)' }}
+                      className="w-full"
                     />
                     <div
                       className="flex justify-between mt-2 text-[10px] font-black uppercase tracking-widest"
@@ -492,8 +491,7 @@ export function SettingsModal({
                             step="1"
                             value={settings.noonSafeOffset || 0}
                             onChange={(e) => onUpdate({ ...settings, noonSafeOffset: parseInt(e.target.value) })}
-                            className="w-full h-1 rounded-lg appearance-none cursor-pointer"
-                            style={{ accentColor: 'var(--accent)', backgroundColor: 'var(--bg-muted)' }}
+                            className="w-full"
                           />
                         </div>
                       </motion.div>

@@ -102,7 +102,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <Award className="text-[#7f5700]/20" size={32} />
+              <Award className="text-[var(--accent)] opacity-40" size={32} />
             </div>
           </div>
           <div className="flex-1 space-y-4 w-full">
@@ -110,9 +110,9 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
               <div key={item.name} className="flex justify-between items-center group">
                 <div className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300 group-hover:text-[#7f5700] transition-colors">{item.name}</span>
+                  <span className="text-xs font-bold text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors">{item.name}</span>
                 </div>
-                <span className="text-xs font-bold text-slate-400">{item.percent}%</span>
+                <span className="text-xs font-bold text-[var(--text-muted)]">{item.percent}%</span>
               </div>
             ))}
           </div>
@@ -133,10 +133,10 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
         
         <div className="grid grid-cols-7 gap-2">
           {gridDays.map((day, i) => {
-            const opacity = day.total === 0 ? 'bg-slate-100 dark:bg-slate-800' : 
-                            day.total < 10 ? 'bg-[#7f5700]/20' :
-                            day.total < 50 ? 'bg-[#7f5700]/50' :
-                            day.total < 100 ? 'bg-[#7f5700]/80' : 'bg-[#7f5700]';
+            const opacity = day.total === 0 ? 'bg-[var(--bg-muted)]/50' : 
+                            day.total < 10 ? 'bg-[var(--accent)]/20' :
+                            day.total < 50 ? 'bg-[var(--accent)]/50' :
+                            day.total < 100 ? 'bg-[var(--accent)]/80' : 'bg-[var(--accent)]';
             return (
               <motion.div
                 key={i}
@@ -149,14 +149,14 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
             );
           })}
         </div>
-        <div className="flex justify-between mt-4 text-[0.6rem] font-black uppercase tracking-widest text-slate-400 px-1">
+        <div className="flex justify-between mt-4 text-[0.6rem] font-black uppercase tracking-widest text-[var(--text-muted)] px-1">
           <span>{t('chant.less')}</span>
           <div className="flex gap-1">
-            <div className="w-2 h-2 rounded-sm bg-slate-100 dark:bg-slate-800" />
-            <div className="w-2 h-2 rounded-sm bg-[#7f5700]/20" />
-            <div className="w-2 h-2 rounded-sm bg-[#7f5700]/50" />
-            <div className="w-2 h-2 rounded-sm bg-[#7f5700]/80" />
-            <div className="w-2 h-2 rounded-sm bg-[#7f5700]" />
+            <div className="w-2 h-2 rounded-sm bg-[var(--bg-muted)]/50" />
+            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/20" />
+            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/50" />
+            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/80" />
+            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]" />
           </div>
           <span>{t('chant.more')}</span>
         </div>
@@ -173,7 +173,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
             {t('chant.milestones') || 'Milestones'}
           </span>
         </div>
-        <p className="text-xs text-slate-400 mb-6 italic">"Your spiritual journey is blossoming beautifully."</p>
+        <p className="text-xs text-[var(--text-muted)] mb-6 italic">"Your spiritual journey is blossoming beautifully."</p>
 
         {/* Badges/Rankings */}
         <div className="flex justify-center gap-6">
@@ -194,13 +194,13 @@ function Badge({ type, active, t }: { type: string, active: boolean, t: any }) {
     )}>
       <div className={cn(
         "w-16 h-16 rounded-full flex items-center justify-center border-2",
-        active ? "border-[#7f5700] bg-white dark:bg-slate-800 shadow-lg" : "border-slate-200 dark:border-slate-800"
+        active ? "border-[var(--accent)] bg-[var(--bg-card-alt)] shadow-lg shadow-[var(--accent)]/10" : "border-[var(--border-subtle)] bg-[var(--bg-muted)]/30"
       )}>
-        <Award size={24} className={active ? "text-[#7f5700]" : "text-slate-300"} />
+        <Award size={24} className={active ? "text-[var(--accent)]" : "text-[var(--text-faint)]"} />
       </div>
       <span className={cn(
         "text-[0.65rem] font-black uppercase tracking-widest",
-        active ? "text-[#7f5700]" : "text-slate-400"
+        active ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
       )}>{type}</span>
     </div>
   );
