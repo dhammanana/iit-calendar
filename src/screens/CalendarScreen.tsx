@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
   Calendar as CalendarIcon,
   BookOpen,
   ChevronDown,
@@ -40,7 +42,6 @@ import { Edit2, Settings as SettingsIcon } from 'lucide-react';
 import { Button } from '../components/Button';
 import { useUI } from '../UIContext';
 import { PaliText } from '../components/PaliText';
-import packageJson from '../../package.json';
 
 const DAYS_OF_WEEK = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -357,67 +358,84 @@ export function CalendarScreen({
 
         {/* ── Calendar Grid Section ─────────────────────────────────────────── */}
         <section
-          className="card-lg relative overflow-hidden"
+          className="card-lg relative overflow-hidden p-4 sm:p-6"
           style={{
             background: 'color-mix(in srgb, var(--surface) 100%, transparent)',
             borderColor: 'var(--border)',
           }}
         >
-          <header className="flex flex-col gap-4 mt-4 mb-8 px-2 relative z-10">
-            <div className="flex justify-between items-center w-full">
+          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 px-1 relative z-10">
+            <div className="flex items-baseline gap-2.5">
               <h2
-                className="font-serif text-3xl sm:text-4xl font-bold leading-none flex items-baseline gap-3"
+                className="font-serif text-3xl sm:text-4xl font-bold leading-none flex items-baseline gap-2.5"
                 style={{ color: 'var(--accent)' }}
               >
-                {format(currentDate, 'MMMM')}
-                <span
-                  className="italic text-xl sm:text-2xl"
-                  style={{ color: 'var(--accent)' }}
-                >
+                <span>{format(currentDate, 'MMMM')}</span>
+                <span className="font-normal text-2xl sm:text-3xl opacity-80">
                   {format(currentDate, 'yyyy')}
                 </span>
               </h2>
-              <Button
-                onClick={goToToday}
-                variant="outline"
-                size="sm"
-                className="h-9"
-              >
-                {t('common.today')}
-              </Button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div
-                className="flex items-center p-1 rounded-2xl shadow-sm"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              <button
+                onClick={goToToday}
+                className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border transition-all active:scale-95 shadow-2xs cursor-pointer"
+                style={{
+                  background: 'var(--accent-subtle)',
+                  borderColor: 'var(--border)',
+                  color: 'var(--accent)'
+                }}
               >
-                <NavBtn onClick={prevYear} small title="Previous Year"><ChevronLeft size="1.2em" className="stroke-[3px]" /></NavBtn>
-                <span className="px-1 text-xs font-bold tracking-wider" style={{ color: 'var(--accent)' }}>
-                  {format(currentDate, 'yyyy')}
-                </span>
-                <NavBtn onClick={nextYear} small title="Next Year"><ChevronRight size="1.2em" className="stroke-[3px]" /></NavBtn>
-              </div>
+                {t('common.today')}
+              </button>
 
               <div
-                className="flex items-center p-1 rounded-2xl shadow-sm"
-                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+                className="flex items-center p-0.5 rounded-full border shadow-2xs"
+                style={{ background: 'var(--surface)', borderColor: 'var(--border)' }}
               >
-                <NavBtn onClick={prevMonth} small title="Previous Month"><ChevronLeft size="1.2em" className="stroke-[3px]" /></NavBtn>
-                <span className="px-1 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--accent)' }}>
-                  {format(currentDate, 'MMM')}
-                </span>
-                <NavBtn onClick={nextMonth} small title="Next Month"><ChevronRight size="1.2em" className="stroke-[3px]" /></NavBtn>
+                <button
+                  onClick={prevYear}
+                  title="Previous Year"
+                  className="p-1.5 rounded-full transition-colors opacity-60 hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  <ChevronsLeft size={16} />
+                </button>
+                <button
+                  onClick={prevMonth}
+                  title="Previous Month"
+                  className="p-1.5 rounded-full transition-colors hover:bg-[var(--surface-hover)] cursor-pointer"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  onClick={nextMonth}
+                  title="Next Month"
+                  className="p-1.5 rounded-full transition-colors hover:bg-[var(--surface-hover)] cursor-pointer"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  <ChevronRight size={18} />
+                </button>
+                <button
+                  onClick={nextYear}
+                  title="Next Year"
+                  className="p-1.5 rounded-full transition-colors opacity-60 hover:opacity-100 cursor-pointer"
+                  style={{ color: 'var(--accent)' }}
+                >
+                  <ChevronsRight size={16} />
+                </button>
               </div>
             </div>
           </header>
 
           <div className="relative z-10 px-1">
-            <div className="grid grid-cols-7 mb-6">
+            <div className="grid grid-cols-7 mb-2 py-1 border-b border-[var(--border-subtle)] opacity-70">
               {DAYS_OF_WEEK.map(day => (
                 <span
                   key={`header-${day}`}
-                  className="text-xs sm:text-sm font-bold text-center tracking-tight sm:tracking-wider truncate px-0.5"
+                  className="text-[11px] font-bold text-center tracking-widest uppercase truncate"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   {t(`calendar.days.${day.toLowerCase()}`)}
@@ -425,9 +443,9 @@ export function CalendarScreen({
               ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-y-3">
+            <div className="grid grid-cols-7 gap-y-1 gap-x-1 sm:gap-x-2 py-2">
               {Array.from({ length: getDay(startOfMonth(currentDate)) }).map((_, i) => (
-                <div key={`month-pad-${i}`} className="h-12 w-full" />
+                <div key={`month-pad-${i}`} className="aspect-square w-full" />
               ))}
 
               {monthDays.map((date) => {
@@ -459,70 +477,77 @@ export function CalendarScreen({
 
                 const hasEvents = filteredEvents.some(check);
 
-                let dateColor: string;
-                if (isSelected) dateColor = 'rgb(255 255 255)';
-                else if (isTodayDate) dateColor = 'var(--accent)';
-                else if (!isCurrentMonth) dateColor = 'var(--text-disabled)';
-                else dateColor = 'var(--accent)';
-
                 return (
-                  <div key={`cell-${date.toISOString()}`} className="flex justify-center relative">
+                  <div key={`cell-${date.toISOString()}`} className="flex justify-center items-center relative aspect-square p-0.5">
                     <button
                       onClick={() => setSelectedDate(date)}
-                      className="h-12 w-12 rounded-2xl flex flex-col items-center justify-center transition-all relative group"
-                      style={isSelected
-                        ? { background: 'var(--accent)', boxShadow: `0 8px 24px var(--accent-shadow)`, transform: 'scale(1.1)' }
-                        : { background: 'transparent' }
-                      }
-                      onMouseEnter={e => { if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-hover)'; }}
-                      onMouseLeave={e => { if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+                      className={cn(
+                        "relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex flex-col items-center justify-center transition-all duration-150 group cursor-pointer",
+                        isTodayDate && !isSelected && "ring-1.5 ring-[var(--accent)] bg-[var(--accent-subtle)]"
+                      )}
+                      onMouseEnter={e => {
+                        if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = 'var(--surface-hover)';
+                      }}
+                      onMouseLeave={e => {
+                        if (!isSelected) (e.currentTarget as HTMLButtonElement).style.background = isTodayDate ? 'var(--accent-subtle)' : 'transparent';
+                      }}
                     >
+                      {isSelected && (
+                        <motion.div
+                          layoutId="active-date-pill"
+                          className="absolute inset-0 rounded-full -z-0"
+                          style={{
+                            background: 'var(--accent)'
+                          }}
+                          transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                        />
+                      )}
+
                       <span
-                        className="relative text-base font-semibold z-10"
-                        style={{ color: dateColor, fontWeight: isSelected ? 700 : 600 }}
+                        className="relative font-serif text-sm sm:text-base font-semibold z-10 transition-colors"
+                        style={{
+                          color: isSelected
+                            ? '#ffffff'
+                            : !isCurrentMonth
+                            ? 'var(--text-disabled)'
+                            : isTodayDate
+                            ? 'var(--accent)'
+                            : 'var(--text-primary)'
+                        }}
                       >
                         {format(date, 'd')}
                       </span>
 
                       {dateInfo.isUposatha && (
                         <div
-                          className="absolute -top-1 -right-1 z-20 transition-transform"
-                          style={{ color: isSelected ? 'rgb(255 255 255)' : 'var(--lotus)' }}
+                          className="absolute top-0.5 right-0.5 z-20 pointer-events-none"
+                          style={{ color: isSelected ? '#ffffff' : 'var(--lotus)' }}
+                          title={dateInfo.moonPhase}
                         >
                           {dateInfo.moonPhase === 'full' ? (
-                            <Circle size={10} fill="currentColor" />
+                            <Circle size={8} fill="currentColor" />
                           ) : dateInfo.moonPhase === 'new' ? (
-                            <Moon size={10} fill="currentColor" />
+                            <Moon size={8} fill="currentColor" />
                           ) : (
                             <div
-                              className="w-2.5 h-2.5 rounded-full"
-                              style={{ background: 'var(--lotus-muted)' }}
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ background: 'currentColor' }}
                             />
                           )}
                         </div>
                       )}
 
-                      {isTodayDate && (
-                        <div
-                          className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
-                          style={{ background: 'var(--today-dot)' }}
-                        />
-                      )}
-
-                      {hasEvents && !isTodayDate && (
-                        <div
-                          className="absolute bottom-1 left-1/2 -translate-x-1/2 w-3 h-0.5 rounded-full opacity-40"
-                          style={{ background: isSelected ? 'white' : 'var(--accent)' }}
-                        />
-                      )}
-
-                      {isSelected && (
-                        <motion.div
-                          layoutId="sel"
-                          className="absolute inset-0 rounded-2xl -z-0"
-                          style={{ background: 'var(--accent)', boxShadow: `0 8px 20px var(--accent-shadow)` }}
-                        />
-                      )}
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-0.5 z-10">
+                        {isTodayDate && isSelected && (
+                          <div className="w-1 h-1 rounded-full bg-white" />
+                        )}
+                        {hasEvents && (
+                          <div
+                            className="w-1 h-1 rounded-full opacity-80"
+                            style={{ background: isSelected ? 'white' : 'var(--accent)' }}
+                          />
+                        )}
+                      </div>
                     </button>
                   </div>
                 );
@@ -966,7 +991,7 @@ export function CalendarScreen({
                       <HtmlWithPali
                         html={reflection.quote}
                         script={settings.paliScript}
-                        className="font-serif text-xl italic leading-relaxed text-center"
+                        className="font-serif text-xl leading-relaxed text-center"
                         style={{ color: 'var(--accent)' }}
                       />
                       <div className="flex flex-col items-center gap-1">
@@ -1023,18 +1048,12 @@ export function CalendarScreen({
               <Button
                 onClick={() => setShowOrderModal(true)}
                 variant="outline"
-                size="lg"
+                size="sm"
                 icon={Edit2}
+                className="text-xs h-8 opacity-75 hover:opacity-100"
               >
                 {t('common.edit')}
               </Button>
-            </div>
-
-            {/* App Version */}
-            <div className="flex justify-center mt-6 mb-2">
-              <span className="text-[10px] tracking-wider opacity-40 font-mono" style={{ color: 'var(--text-muted)' }}>
-                v{packageJson.version}
-              </span>
             </div>
           </motion.div>
         </AnimatePresence>

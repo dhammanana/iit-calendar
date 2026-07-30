@@ -194,6 +194,9 @@ const CSS_VARS = `
   .PT[script=br],.tab-content[script=br],.book-container[script=br] { font-family: 'brahmi'; }
   .PT[script=tb],.tab-content[script=tb],.book-container[script=tb] { font-family: 'tibetan'; }
   .PT[script=cy],.tab-content[script=cy],.book-container[script=cy] { font-family: 'cyrillic'; }
+
+  .PT .english { font-style: italic; }
+  .PT .pali { font-style: normal; }
 `;
 
 export {COLOR_TOKENS, CSS_VARS}

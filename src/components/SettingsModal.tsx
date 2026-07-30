@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, RefreshCw, FileText, Calendar } from 'lucide-react';
+import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, Moon, Bell, GraduationCap, RefreshCw, FileText, Calendar } from 'lucide-react';
 import { Modal } from './Modal';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
@@ -17,6 +17,7 @@ import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { meditationDbService } from '../services/MeditationDbService';
 import { chantService } from '../services/ChantService';
 import { studyDbService } from '../services/StudyDbService';
+import packageJson from '../../package.json';
 
 export function SettingsModal({ 
   show, 
@@ -358,6 +359,88 @@ export function SettingsModal({
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={Palette}>{t('common.appearance')}</SectionLabel>
                   <div className="flex flex-col gap-4">
+                    {/* Dark/Light segmented switch */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+                        Theme Mode
+                      </span>
+                      <div 
+                        className="grid grid-cols-2 gap-1.5 p-1 rounded-2xl border"
+                        style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => onUpdate({ ...settings, darkMode: false })}
+                          className={cn(
+                            "py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all border",
+                            !settings.darkMode
+                              ? "bg-[var(--accent)] text-white border-[var(--accent)] shadow-sm"
+                              : "bg-transparent text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)]"
+                          )}
+                        >
+                          <Sun size={15} />
+                          <span>Light</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onUpdate({ ...settings, darkMode: true })}
+                          className={cn(
+                            "py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all border",
+                            settings.darkMode
+                              ? "bg-[var(--accent)] text-white border-[var(--accent)] shadow-sm"
+                              : "bg-transparent text-[var(--text-secondary)] border-transparent hover:text-[var(--text-primary)]"
+                          )}
+                        >
+                          <Moon size={15} />
+                          <span>Dark</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Color Accent Picker */}
+                    <div className="space-y-2 pt-1">
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+                        Color Theme
+                      </span>
+                      <div className="flex items-center justify-between p-3 rounded-2xl border bg-[var(--bg-card)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                        <div className="flex gap-2.5">
+                          {(['saffron', 'indigo', 'emerald', 'rose', 'slate'] as const).map(color => (
+                            <button
+                              key={`theme-opt-${color}`}
+                              onClick={() => onUpdate({ ...settings, themeColor: color })}
+                              style={{
+                                transform: settings.themeColor === color ? 'scale(1.15)' : 'scale(1)',
+                              }}
+                              className={cn(
+                                "w-7 h-7 rounded-full transition-all flex items-center justify-center",
+                                color === 'saffron'  && "bg-[#7f5700]",
+                                color === 'indigo'   && "bg-indigo-500",
+                                color === 'emerald'  && "bg-emerald-500",
+                                color === 'rose'     && "bg-rose-500",
+                                color === 'slate'    && "bg-slate-700",
+                                settings.themeColor === color
+                                  ? "ring-2 ring-offset-2 ring-[var(--accent)] shadow-md"
+                                  : "ring-1 ring-black/10 dark:ring-white/10 hover:scale-105"
+                              )}
+                            >
+                              {settings.themeColor === color && (
+                                <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                        <span className="text-xs font-bold capitalize" style={{ color: 'var(--accent)' }}>
+                          {settings.themeColor}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* 3.5 Alerts & Notifications */}
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <SectionLabel icon={Bell}>Alerts & Notifications</SectionLabel>
+                  <div className="flex flex-col gap-4">
                     <div className="flex justify-between items-center w-full">
                       <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                         Solar Noon Alert
@@ -425,56 +508,25 @@ export function SettingsModal({
                         onToggle={() => onUpdate({ ...settings, dawnBell: !settings.dawnBell })}
                       />
                     </div>
+                  </div>
+                </section>
 
-                    <div className="flex justify-between items-center w-full">
-                      <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
+                {/* 3.6 IIT Student Mode */}
+                <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                  <SectionLabel icon={GraduationCap}>IIT Student Mode</SectionLabel>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <div className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
                         {t('settings.iitStudent')}
-                      </span>
-                      <Toggle
-                        value={settings.isIITStudent !== false}
-                        onToggle={() => onUpdate({ ...settings, isIITStudent: settings.isIITStudent === false ? true : false })}
-                      />
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-1">
-                      {/* Theme color swatches */}
-                      <div className="flex gap-2">
-                        {(['saffron', 'indigo', 'emerald', 'rose', 'slate'] as const).map(color => (
-                          <button
-                            key={`theme-opt-${color}`}
-                            onClick={() => onUpdate({ ...settings, themeColor: color })}
-                            style={{
-                              transform: settings.themeColor === color ? 'scale(1.12)' : 'scale(1)',
-                            }}
-                            className={cn(
-                              "w-7 h-7 rounded-full transition-all",
-                              color === 'saffron'  && "bg-[#7f5700]",
-                              color === 'indigo'   && "bg-indigo-500",
-                              color === 'emerald'  && "bg-emerald-500",
-                              color === 'rose'     && "bg-rose-500",
-                              color === 'slate'    && "bg-slate-700",
-                              settings.themeColor === color
-                                ? "ring-2 ring-offset-1 ring-[var(--text-primary)]"
-                                : "ring-2 ring-[var(--border-subtle)]"
-                            )}
-                          />
-                        ))}
                       </div>
-
-                      {/* Dark/Light toggle */}
-                      <button
-                        onClick={() => onUpdate({ ...settings, darkMode: !settings.darkMode })}
-                        className="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95"
-                        style={{
-                          backgroundColor: 'var(--text-primary)',
-                          color: 'var(--bg-main)',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                        onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                      >
-                        {settings.darkMode ? "☀ Light Mode" : "☾ Dark Mode"}
-                      </button>
+                      <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                        Enables student-specific event details, schedules, and custom features for IIT students.
+                      </p>
                     </div>
+                    <Toggle
+                      value={settings.isIITStudent !== false}
+                      onToggle={() => onUpdate({ ...settings, isIITStudent: settings.isIITStudent === false ? true : false })}
+                    />
                   </div>
                 </section>
 
@@ -612,7 +664,7 @@ export function SettingsModal({
                     onChange={(val) => onUpdate({ ...settings, updateChannel: val as 'stable' | 'dev' })}
                     options={[
                       { value: 'stable', label: 'Stable (Official Releases)' },
-                      { value: 'dev', label: 'Dev (Development & Pre-releases)' }
+                      { value: 'dev', label: 'Dev (Pre-releases)' }
                     ]}
                     selectClassName="text-sm px-4 py-3 font-sans"
                   />
@@ -642,6 +694,13 @@ export function SettingsModal({
                     <div className="text-[var(--accent)]">→</div>
                   </button>
                 </section>
+
+                {/* App Version */}
+                <div className="flex justify-center pt-2 pb-1">
+                  <span className="text-[11px] tracking-wider opacity-40 font-mono" style={{ color: 'var(--text-muted)' }}>
+                    v{packageJson.version}
+                  </span>
+                </div>
         </div>
       </Modal>
       <LegalModal show={showLegal} onClose={() => setShowLegal(false)} />
