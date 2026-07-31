@@ -51,7 +51,7 @@ export function Modal({
   }, [show, inline, onClose]);
 
   if (inline) {
-    return <div className="w-full pb-6">{children}</div>;
+    return <div className="w-full">{children}</div>;
   }
 
   return createPortal(

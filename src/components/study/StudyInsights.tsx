@@ -141,7 +141,7 @@ export function StudyInsights({ show, onClose, sessions, inline }: Props) {
   );
 
   if (inline) {
-    return <div className="w-full pb-6">{content}</div>;
+    return <div className="w-full">{content}</div>;
   }
 
   return (

@@ -45,7 +45,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
   });
 
   return (
-    <div className="space-y-6 pb-10">
+    <div className="space-y-6">
       {/* Stat cards (3 quick stats) */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {[

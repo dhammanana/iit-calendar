@@ -235,8 +235,8 @@ export function CalendarScreen({
       <div
         className="w-full safe-header-calendar bg-gradient-to-b from-[#f8f2e4] via-[#ede0c0] to-[#ddc898] dark:from-[#2a1a0a] dark:via-[#191006] dark:to-[#0d0905] sticky top-0 z-10 flex items-center justify-center"
       >
-        {/* Center alignment wrapper for orbits & logo, shifted up to prevent clipping on mobile */}
-        <div className="relative w-[260px] h-[260px] flex items-center justify-center -translate-y-3">
+        {/* Center alignment wrapper for orbits & logo */}
+        <div className="relative w-[190px] h-[190px] sm:w-[250px] sm:h-[250px] flex items-center justify-center">
           {/* Styled CSS/SVG — Sun & Moon orbit Mount Sumeru (Theravāda cosmology) */}
           <svg className="absolute inset-0 w-full h-full pointer-events-none select-none" viewBox="0 0 100 100">
             <style dangerouslySetInnerHTML={{
@@ -324,7 +324,7 @@ export function CalendarScreen({
           <img
             src="/logo.png"
             alt="IIT Logo"
-            className="relative z-10 w-28 h-28 object-contain drop-shadow-lg select-none pointer-events-none"
+            className="relative z-10 w-20 h-20 sm:w-28 sm:h-28 object-contain drop-shadow-lg select-none pointer-events-none"
           />
         </div>
 

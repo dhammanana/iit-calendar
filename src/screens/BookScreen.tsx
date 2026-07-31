@@ -496,7 +496,7 @@ m6663 23 l112 -38 185 3 c102 2 279 7 393 12 194 8 212 10 260 34 28 14 53 24
           </h1>
           {!selectedBook ? (
             <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mb-1">
-              Dhamma texts and chanting books
+              {t('common.booksSubtitle') || 'Dhamma Books & Texts'}
             </p>
           ) : (
             <nav className="flex items-center justify-center flex-wrap gap-1.5 text-xs text-[var(--text-muted)] font-medium max-w-3xl mx-auto px-2 text-center mt-1">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause, Timer, Coffee, Armchair } from 'lucide-react';
+import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause, Timer, Coffee, Armchair, Plus } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
 import { useI18n } from '../hooks/useI18n';
@@ -339,10 +339,10 @@ export function StudyScreen() {
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
-            Focus
+            {t('common.study') || 'Study'}
           </h1>
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
-            Pomodoro timer
+            {t('study.subtitle') || 'Timed Focus & Rest'}
           </p>
         </div>
 
@@ -385,7 +385,7 @@ export function StudyScreen() {
                       )}
                     >
                       <Timer className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">{t('study.pomodoro') || 'Pomodoro'}</span>
+                      <span className="truncate">{t('study.pomodoro') || 'Work'}</span>
                     </button>
                     <button
                       onClick={() => switchMode('shortBreak')}
@@ -397,9 +397,7 @@ export function StudyScreen() {
                       )}
                     >
                       <Coffee className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">
-                        Short<span className="hidden min-[380px]:inline"> Break</span>
-                      </span>
+                      <span className="truncate">{t('study.shortBreak') || 'Break'}</span>
                     </button>
                     <button
                       onClick={() => switchMode('longBreak')}
@@ -411,9 +409,7 @@ export function StudyScreen() {
                       )}
                     >
                       <Armchair className="w-3.5 h-3.5 shrink-0" />
-                      <span className="truncate">
-                        Long<span className="hidden min-[380px]:inline"> Break</span>
-                      </span>
+                      <span className="truncate">{t('study.longBreak') || 'Rest'}</span>
                     </button>
                   </div>
 
@@ -449,59 +445,84 @@ export function StudyScreen() {
 
                 {/* Task Section */}
                 <div className="max-w-md mx-auto mt-8 w-full px-2 pb-4">
-                  <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800/80 pb-3">
-                    <h2 className="font-serif text-2xl font-bold text-slate-800 dark:text-slate-200">{t('study.tasks') || 'Tasks'}</h2>
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center gap-2">
+                      <h2 className="font-serif text-2xl font-bold text-[var(--text-primary)]">{t('study.tasks') || 'Tasks'}</h2>
+                      {tasks.length > 0 && (
+                        <span className="px-2 py-0.5 text-xs font-bold rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+                          {tasks.filter(t => t.completed).length}/{tasks.length}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Task List */}
-                  <div className="space-y-3 mb-6">
-                    {tasks.map(task => (
-                      <div
-                        key={task.id}
-                        onClick={() => setActiveTaskId(task.id)}
-                        className={cn(
-                          "glass-card p-4 rounded-2xl flex items-center justify-between cursor-pointer border-l-4 transition-all",
-                          activeTaskId === task.id ? 'border-l-saffron' : 'border-l-transparent',
-                          task.completed ? 'opacity-60' : ''
-                        )}
-                      >
-                        <div className="flex items-center gap-3 overflow-hidden">
-                          <button onClick={(e) => toggleTaskCompletion(task.id, e)} className="flex-shrink-0 text-saffron">
-                            {task.completed ? <CheckCircle2 size={24} className="text-saffron" /> : <Circle size={24} className="text-slate-300 dark:text-slate-600" />}
-                          </button>
-                          <span className={cn("font-medium truncate", task.completed && "line-through text-slate-500")}>
-                            {task.name}
-                          </span>
+                  <div className="space-y-2.5 mb-6">
+                    {tasks.map(task => {
+                      const isActive = activeTaskId === task.id;
+                      return (
+                        <div
+                          key={task.id}
+                          onClick={() => setActiveTaskId(task.id)}
+                          className={cn(
+                            "p-4 rounded-2xl flex items-center justify-between cursor-pointer transition-all duration-200 border",
+                            isActive
+                              ? "bg-[var(--accent-soft)] border-[var(--accent)] shadow-sm"
+                              : "glass-card border-[var(--border-subtle)] hover:border-[var(--accent)]/40",
+                            task.completed && "opacity-60"
+                          )}
+                        >
+                          <div className="flex items-center gap-3 overflow-hidden min-w-0">
+                            <button
+                              onClick={(e) => toggleTaskCompletion(task.id, e)}
+                              className="flex-shrink-0 text-[var(--accent)] transition-transform active:scale-95"
+                            >
+                              {task.completed ? (
+                                <CheckCircle2 size={22} className="text-[var(--accent)]" />
+                              ) : (
+                                <Circle size={22} className="text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors" />
+                              )}
+                            </button>
+                            <span className={cn(
+                              "font-medium text-sm text-[var(--text-primary)] truncate",
+                              task.completed && "line-through text-[var(--text-muted)] font-normal"
+                            )}>
+                              {task.name}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-3 flex-shrink-0">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-[var(--bg-card)] border border-[var(--border-subtle)] text-[var(--text-muted)]">
+                              {task.act} / {task.est}
+                            </span>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); editTask(task); }}
+                              className="p-1.5 rounded-full text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--bg-card)] transition-all"
+                              aria-label="Edit task"
+                            >
+                              <Edit2 size={15} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-4 flex-shrink-0">
-                          <span className="text-slate-500 dark:text-slate-400 text-sm font-bold">
-                            {task.act} / {task.est}
-                          </span>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); editTask(task); }}
-                            className="p-2 border border-[var(--border-subtle)] rounded-lg bg-[var(--bg-card)] text-[var(--text-muted)] hover:bg-[var(--bg-card-alt)] transition-colors"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   {/* Add Task Form / Button */}
                   {showTaskForm ? (
-                    <div className="glass-card p-5 rounded-[2rem] shadow-lg animate-in slide-in-from-top-4">
+                    <div className="glass-card p-5 rounded-[2rem] shadow-xl border border-[var(--border-subtle)] animate-in fade-in slide-in-from-top-3 duration-200">
                       <input
                         type="text"
                         placeholder={t('study.taskName') || "What are you working on?"}
                         value={taskForm.name}
                         onChange={(e) => setTaskForm({ ...taskForm, name: e.target.value })}
                         autoFocus
-                        className="w-full text-lg font-medium bg-transparent outline-none border-b-2 border-[var(--border-subtle)] focus:border-[var(--accent)] pb-2 mb-4 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors"
+                        className="w-full text-base font-medium bg-transparent outline-none border-b border-[var(--border-subtle)] focus:border-[var(--accent)] pb-2 mb-4 text-[var(--text-primary)] placeholder:text-[var(--text-muted)] transition-colors"
                       />
 
                       <div className="mb-6">
-                        <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">{t('study.estPomodoros') || 'Est Pomodoros'}</label>
+                        <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider block mb-2">
+                          {t('study.estPomodoros') || 'Est Sessions'}
+                        </label>
                         <div className="flex items-center gap-3">
                           <input
                             type="number"
@@ -510,13 +531,13 @@ export function StudyScreen() {
                             onChange={(e) => setTaskForm({ ...taskForm, est: Math.max(1, parseInt(e.target.value) || 1) })}
                             className="w-20 bg-[var(--bg-card-alt)] px-3 py-2 rounded-xl text-center font-bold text-[var(--text-primary)] outline-none border border-[var(--border-subtle)] focus:border-[var(--accent)] transition-colors"
                           />
-                          <div className="flex gap-2">
+                          <div className="flex gap-1.5">
                             <Button
                               variant="secondary"
                               size="sm"
                               isIconOnly
                               onClick={() => setTaskForm(prev => ({ ...prev, est: prev.est + 1 }))}
-                              aria-label="Increase estimated pomodoros"
+                              aria-label="Increase estimated sessions"
                             >
                               +
                             </Button>
@@ -525,7 +546,7 @@ export function StudyScreen() {
                               size="sm"
                               isIconOnly
                               onClick={() => setTaskForm(prev => ({ ...prev, est: Math.max(1, prev.est - 1) }))}
-                              aria-label="Decrease estimated pomodoros"
+                              aria-label="Decrease estimated sessions"
                             >
                               -
                             </Button>
@@ -533,13 +554,13 @@ export function StudyScreen() {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center pt-4 bg-[var(--bg-card-alt)] border-t border-[var(--border-subtle)] -mx-5 -mb-5 px-5 py-4 rounded-b-[2rem]">
+                      <div className="flex justify-between items-center pt-4 bg-[var(--bg-card-alt)] border-t border-[var(--border-subtle)] -mx-5 -mb-5 px-5 py-3.5 rounded-b-[2rem]">
                         {editingTaskId ? (
                           <Button variant="danger" size="sm" onClick={() => deleteTask(editingTaskId)}>
                             {t('study.delete') || 'Delete'}
                           </Button>
                         ) : <div />}
-                        <div className="flex gap-3">
+                        <div className="flex gap-2.5">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -558,15 +579,17 @@ export function StudyScreen() {
                       </div>
                     </div>
                   ) : (
-                    <Button
-                      variant="outline"
-                      fullWidth
-                      size="lg"
-                      icon={PlusCircle}
+                    <motion.button
+                      whileHover={{ scale: 1.005, y: -1 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => { setTaskForm({ name: '', est: 1 }); setShowTaskForm(true); }}
+                      className="w-full p-4 rounded-[1.2rem] border border-dashed border-[var(--accent)]/40 hover:border-[var(--accent)] bg-[var(--accent-soft)] hover:bg-[var(--accent)]/15 text-[var(--accent)] transition-all duration-300 flex items-center justify-center gap-2.5 font-bold uppercase tracking-wider text-xs shadow-sm hover:shadow-md hover:shadow-[var(--accent)]/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)] group"
                     >
-                      {t('study.addTask') || 'Add Task'}
-                    </Button>
+                      <div className="p-1 rounded-lg bg-[var(--accent)]/15 text-[var(--accent)] group-hover:bg-[var(--accent)] group-hover:text-[var(--bg-main)] transition-colors duration-300">
+                        <Plus size={16} strokeWidth={2.5} />
+                      </div>
+                      <span>{t('study.addTask') || 'Add Task'}</span>
+                    </motion.button>
                   )}
                 </div>
 
@@ -580,7 +603,6 @@ export function StudyScreen() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="pb-10"
             >
               <StudyInsights
                 show={true}
@@ -597,7 +619,6 @@ export function StudyScreen() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="pb-10"
             >
               <StudySettings
                 show={true}

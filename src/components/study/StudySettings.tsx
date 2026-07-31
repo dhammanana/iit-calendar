@@ -52,11 +52,11 @@ export function StudySettings({ show, onClose, settings, onUpdate, inline }: Pro
         </div>
 
         <div className="space-y-6">
-          {/* Pomodoro / Short Break / Long Break selectors */}
+          {/* Work / Break / Rest duration selectors */}
           {([
-            { key: 'pomodoro', label: t('study.pomodoro') || 'Pomodoro' },
-            { key: 'shortBreak', label: t('study.shortBreak') || 'Short Break' },
-            { key: 'longBreak', label: t('study.longBreak') || 'Long Break' },
+            { key: 'pomodoro', label: t('study.pomodoro') || 'Work' },
+            { key: 'shortBreak', label: t('study.shortBreak') || 'Break' },
+            { key: 'longBreak', label: t('study.longBreak') || 'Rest' },
           ] as { key: 'pomodoro' | 'shortBreak' | 'longBreak'; label: string }[]).map(({ key, label }) => (
             <LabeledSelect
               key={key}
@@ -73,20 +73,20 @@ export function StudySettings({ show, onClose, settings, onUpdate, inline }: Pro
 
           {/* Long break interval */}
           <LabeledSelect
-            label={t('study.longBreakInterval') || 'Long Break Every'}
+            label={t('study.longBreakInterval') || 'Rest Every'}
             value={settings.longBreakInterval}
             onChange={(val) => handleChange('longBreakInterval', Math.max(1, parseInt(val) || 1))}
             options={[2, 3, 4, 5, 6, 7, 8].map(n => ({
               value: n,
               label: n
             }))}
-            badgeLabel="pomodoros"
+            badgeLabel="sessions"
           />
 
           {/* Auto-start toggles */}
           {([
             { key: 'autoStartBreaks', label: t('study.autoStartBreaks') || 'Auto Start Breaks' },
-            { key: 'autoStartPomodoros', label: t('study.autoStartPomodoros') || 'Auto Start Pomodoros' },
+            { key: 'autoStartPomodoros', label: t('study.autoStartPomodoros') || 'Auto Start Work' },
           ] as { key: keyof StudySettingsData; label: string }[]).map(({ key, label }) => (
             <div key={String(key)} className="flex items-center justify-between py-1">
               <span className="text-sm font-bold" style={{ color: 'var(--sm-text-primary)' }}>{label}</span>

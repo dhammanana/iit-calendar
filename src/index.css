@@ -297,9 +297,10 @@
 
   .safe-header-calendar {
     --safe-header-top: env(safe-area-inset-top, 0px);
-    height: calc(32vh + var(--safe-header-top));
-    min-height: calc(220px + var(--safe-header-top));
+    height: calc(34vh + var(--safe-header-top));
+    min-height: calc(250px + var(--safe-header-top));
     padding-top: var(--safe-header-top);
+    padding-bottom: 2.5rem;
   }
 
   @media (min-width: 640px) {
