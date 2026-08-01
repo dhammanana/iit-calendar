@@ -1,121 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@drawable/widget_bg"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="6dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My Stats"
-        android:textStyle="bold"
-        android:textColor="#212121"
-        android:textSize="16sp"
-        android:layout_marginBottom="4dp"/>
-
-    <!-- Meditation -->
+    <!-- Meditation Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_card_bg"
         android:orientation="vertical"
-        android:layout_marginBottom="4dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Meditation"
-            android:textColor="#1976D2"
-            android:textStyle="bold"
-            android:textSize="12sp"/>
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
+        android:layout_marginBottom="5dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/widget_circle_meditation"
+                android:layout_marginEnd="5dp">
+
+                <ImageView
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_meditation"
+                    android:contentDescription="Meditation"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Meditation"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:src="@drawable/ic_flame"
+                android:contentDescription="Streak"
+                android:layout_marginEnd="3dp"/>
+
             <TextView
                 android:id="@+id/tvMedStreak"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 days streak"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0d"
+                android:textColor="@color/widget_text_primary"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
             <TextView
                 android:id="@+id/tvMedMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 min month"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0m"
+                android:textColor="@color/widget_meditation_accent"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Chanting -->
+    <!-- Chanting Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_card_bg"
         android:orientation="vertical"
-        android:layout_marginBottom="8dp">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Chanting"
-            android:textColor="#388E3C"
-            android:textStyle="bold"
-            android:textSize="12sp"/>
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
+        android:layout_marginBottom="5dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/widget_circle_chanting"
+                android:layout_marginEnd="5dp">
+
+                <ImageView
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_chanting"
+                    android:contentDescription="Chanting"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chanting"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:src="@drawable/ic_flame"
+                android:contentDescription="Streak"
+                android:layout_marginEnd="3dp"/>
+
             <TextView
                 android:id="@+id/tvChantStreak"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 days streak"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0d"
+                android:textColor="@color/widget_text_primary"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
             <TextView
                 android:id="@+id/tvChantMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 sessions month"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0s"
+                android:textColor="@color/widget_chanting_accent"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Study -->
+    <!-- Study Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Studying"
-            android:textColor="#F57C00"
-            android:textStyle="bold"
-            android:textSize="12sp"/>
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_card_bg"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:background="@drawable/widget_circle_study"
+                android:layout_marginEnd="5dp">
+
+                <ImageView
+                    android:layout_width="11dp"
+                    android:layout_height="11dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_study"
+                    android:contentDescription="Studying"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Studying"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <ImageView
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:src="@drawable/ic_flame"
+                android:contentDescription="Streak"
+                android:layout_marginEnd="3dp"/>
+
             <TextView
                 android:id="@+id/tvStudyStreak"
-                android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 days streak"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0d"
+                android:textColor="@color/widget_text_primary"
+                android:textStyle="bold"
+                android:textSize="15sp"/>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
+
             <TextView
                 android:id="@+id/tvStudyMonth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0 min month"
-                android:textColor="#424242"
-                android:textSize="12sp"/>
+                android:text="0m"
+                android:textColor="@color/widget_study_accent"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
         </LinearLayout>
     </LinearLayout>
 

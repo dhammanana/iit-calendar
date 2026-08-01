@@ -18,6 +18,16 @@ allprojects {
         google()
         mavenCentral()
     }
+    buildscript {
+        configurations.all {
+            resolutionStrategy {
+                // Force all subprojects (including capgo-capacitor-updater which declares 8.13.0)
+                // to use the root AGP version. This prevents the 'Type T not present' error
+                // caused by AGP version mismatch at Gradle configuration time.
+                force 'com.android.tools.build:gradle:8.9.1'
+            }
+        }
+    }
 }
 
 // Modern registration syntax to avoid "task already exists" failures

@@ -3,6 +3,7 @@ package com.iitcalendar.applet;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -25,42 +26,74 @@ public class StatsWidgetProvider extends AppWidgetProvider {
             String studyStatsRaw = prefs.getString("study_stats", "{}");
             if (studyStatsRaw == null) studyStatsRaw = "{}";
 
-            Log.d(TAG, "Raw med stats: " + medStatsRaw);
-            Log.d(TAG, "Raw chant stats: " + chantStatsRaw);
-            Log.d(TAG, "Raw study stats: " + studyStatsRaw);
+            int medStreakVal = 0;
+            int medMonthMin = 0;
+            try {
+                JSONObject obj = new JSONObject(medStatsRaw);
+                medStreakVal = obj.optInt("streak", 0);
+                medMonthMin = obj.optInt("monthMinutes", 0);
+            } catch (Exception e) { Log.e(TAG, "medStats parse error", e); }
 
-            String medStreak = "0";
-            try { medStreak = new JSONObject(medStatsRaw).optString("streak", "0"); } catch (Exception e) { Log.e(TAG, "medStreak error", e); }
-            String medMonth = "0";
-            try { medMonth = new JSONObject(medStatsRaw).optString("monthMinutes", "0"); } catch (Exception e) { Log.e(TAG, "medMonth error", e); }
+            int chantStreakVal = 0;
+            int chantMonthSessions = 0;
+            try {
+                JSONObject obj = new JSONObject(chantStatsRaw);
+                chantStreakVal = obj.optInt("streak", 0);
+                chantMonthSessions = obj.optInt("monthSessions", 0);
+            } catch (Exception e) { Log.e(TAG, "chantStats parse error", e); }
 
-            String chantStreak = "0";
-            try { chantStreak = new JSONObject(chantStatsRaw).optString("streak", "0"); } catch (Exception e) { Log.e(TAG, "chantStreak error", e); }
-            String chantMonth = "0";
-            try { chantMonth = new JSONObject(chantStatsRaw).optString("monthSessions", "0"); } catch (Exception e) { Log.e(TAG, "chantMonth error", e); }
+            int studyStreakVal = 0;
+            int studyMonthMin = 0;
+            try {
+                JSONObject obj = new JSONObject(studyStatsRaw);
+                studyStreakVal = obj.optInt("streak", 0);
+                studyMonthMin = obj.optInt("monthMinutes", 0);
+            } catch (Exception e) { Log.e(TAG, "studyStats parse error", e); }
 
-            String studyStreak = "0";
-            try { studyStreak = new JSONObject(studyStatsRaw).optString("streak", "0"); } catch (Exception e) { Log.e(TAG, "studyStreak error", e); }
-            String studyMonth = "0";
-            try { studyMonth = new JSONObject(studyStatsRaw).optString("monthMinutes", "0"); } catch (Exception e) { Log.e(TAG, "studyMonth error", e); }
+            Intent launchIntent = context.getPackageName() != null ?
+                context.getPackageManager().getLaunchIntentForPackage(context.getPackageName()) : null;
+            android.app.PendingIntent pendingIntent = null;
+            if (launchIntent != null) {
+                pendingIntent = android.app.PendingIntent.getActivity(
+                    context, 0, launchIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+                );
+            }
 
             for (int appWidgetId : appWidgetIds) {
                 Log.d(TAG, "Updating widget id: " + appWidgetId);
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_stats);
 
-                views.setTextViewText(R.id.tvMedStreak, medStreak + " days streak");
-                views.setTextViewText(R.id.tvMedMonth, medMonth + " min month");
+                views.setTextViewText(R.id.tvMedStreak, medStreakVal + "d");
+                views.setTextViewText(R.id.tvMedMonth, formatDuration(medMonthMin));
 
-                views.setTextViewText(R.id.tvChantStreak, chantStreak + " days streak");
-                views.setTextViewText(R.id.tvChantMonth, chantMonth + " sessions month");
+                views.setTextViewText(R.id.tvChantStreak, chantStreakVal + "d");
+                views.setTextViewText(R.id.tvChantMonth, formatSessions(chantMonthSessions));
 
-                views.setTextViewText(R.id.tvStudyStreak, studyStreak + " days streak");
-                views.setTextViewText(R.id.tvStudyMonth, studyMonth + " min month");
+                views.setTextViewText(R.id.tvStudyStreak, studyStreakVal + "d");
+                views.setTextViewText(R.id.tvStudyMonth, formatDuration(studyMonthMin));
+
+                if (pendingIntent != null) {
+                    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
+                }
 
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error in onUpdate", e);
         }
+    }
+
+    private static String formatDuration(int minutes) {
+        if (minutes <= 0) return "0m";
+        int h = minutes / 60;
+        int m = minutes % 60;
+        if (h > 0) {
+            return m > 0 ? h + "h " + m + "m" : h + "h";
+        }
+        return m + "m";
+    }
+
+    private static String formatSessions(int count) {
+        return count + " ses";
     }
 }

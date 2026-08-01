@@ -1,63 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@drawable/widget_bg"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="6dp">
 
-<!--     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Daily Times"
-        android:textStyle="bold"
-        android:textColor="#212121"
-        android:textSize="16sp"
-        android:layout_marginBottom="8dp"/>
- -->
+    <!-- Dawn Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_card_bg"
+        android:orientation="vertical"
         android:gravity="center_vertical"
-        android:layout_marginBottom="8dp">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp"
+        android:layout_marginBottom="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Dawn"
-            android:textColor="#757575"
-            android:textSize="14sp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/widget_circle_dawn"
+                android:layout_marginEnd="6dp">
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sun_dawn"
+                    android:contentDescription="Dawn"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dawn"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvDawnTime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#000000"
+            android:textColor="@color/widget_text_primary"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="16sp"
+            android:layout_marginTop="3dp"/>
     </LinearLayout>
 
+    <!-- Noon Card -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/widget_card_bg"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Noon"
-            android:textColor="#757575"
-            android:textSize="14sp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <FrameLayout
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/widget_circle_noon"
+                android:layout_marginEnd="6dp">
+
+                <ImageView
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sun_noon"
+                    android:contentDescription="Noon"/>
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Noon"
+                android:textColor="@color/widget_text_secondary"
+                android:textSize="11sp"/>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvNoonTime"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="--:--"
-            android:textColor="#000000"
+            android:textColor="@color/widget_text_primary"
             android:textStyle="bold"
-            android:textSize="14sp"/>
+            android:textSize="16sp"
+            android:layout_marginTop="3dp"/>
     </LinearLayout>
 
 </LinearLayout>

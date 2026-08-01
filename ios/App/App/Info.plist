@@ -51,5 +51,16 @@
     <string>We need your location for app features.</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>We need your location for app features.</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+      <dict>
+        <key>CFBundleURLName</key>
+        <string>com.iitcalendar.applet</string>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>iitcalendar</string>
+        </array>
+      </dict>
+    </array>
   </dict>
 </plist>

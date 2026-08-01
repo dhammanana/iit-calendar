@@ -69,31 +69,73 @@ struct IITDailyTimesWidgetView: View {
     var entry: DailyTimesProvider.Entry
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Dawn
+        VStack(alignment: .leading, spacing: 6) {
+            // Dawn Card
             VStack(alignment: .leading, spacing: 2) {
-                Text("Dawn")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(.secondary)
+                HStack(spacing: 5) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.orange.opacity(0.15))
+                            .frame(width: 20, height: 20)
+                        Image(systemName: "sun.horizon.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.orange)
+                    }
+                    Text("Dawn")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+
                 Text(entry.dawnTime)
-                    .font(.system(size: 17, weight: .bold))
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
                     .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
-            
-            Divider()
-            
-            // Noon
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .cornerRadius(12)
+
+            // Noon Card
             VStack(alignment: .leading, spacing: 2) {
-                Text("Noon")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundColor(.secondary)
+                HStack(spacing: 5) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.amberAccent.opacity(0.15))
+                            .frame(width: 20, height: 20)
+                        Image(systemName: "sun.max.fill")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(Color.amberAccent)
+                    }
+                    Text("Noon")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundColor(.secondary)
+                    Spacer()
+                }
+
                 Text(entry.noonTime)
-                    .font(.system(size: 17, weight: .bold))
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
                     .foregroundColor(.primary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Color(uiColor: .secondarySystemGroupedBackground))
+            .cornerRadius(12)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(0)
+        .widgetURL(URL(string: "iitcalendar://"))
+    }
+}
+
+private extension Color {
+    static var amberAccent: Color {
+        Color(red: 234/255, green: 179/255, blue: 8/255)
     }
 }
 
@@ -104,10 +146,10 @@ struct IITDailyTimesWidget: Widget {
         StaticConfiguration(kind: kind, provider: DailyTimesProvider()) { entry in
             if #available(iOS 17.0, *) {
                 IITDailyTimesWidgetView(entry: entry)
-                    .containerBackground(Color(uiColor: .systemBackground), for: .widget)
+                    .containerBackground(Color(uiColor: .systemGroupedBackground), for: .widget)
             } else {
                 IITDailyTimesWidgetView(entry: entry)
-                    .background(Color(uiColor: .systemBackground))
+                    .background(Color(uiColor: .systemGroupedBackground))
             }
         }
         .configurationDisplayName("Daily Times")

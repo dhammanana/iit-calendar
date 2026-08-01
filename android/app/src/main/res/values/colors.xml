@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Widget Color Tokens - Light Theme (iOS parity) -->
+    <color name="widget_bg">#F2F2F7</color>
+    <color name="widget_card_bg">#FFFFFF</color>
+    <color name="widget_text_primary">#000000</color>
+    <color name="widget_text_secondary">#8E8E93</color>
+    <color name="widget_border">#E5E5EA</color>
+    <color name="widget_header">#000000</color>
+
+    <color name="widget_dawn_accent">#FF9500</color>
+    <color name="widget_noon_accent">#FFCC00</color>
+
+    <color name="widget_meditation_accent">#059669</color>
+    <color name="widget_chanting_accent">#E11D48</color>
+    <color name="widget_study_accent">#4F46E5</color>
+    <color name="widget_flame_accent">#FF9500</color>
+</resources>

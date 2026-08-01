@@ -3,6 +3,7 @@ package com.iitcalendar.applet;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -60,11 +61,22 @@ public class DailyTimesWidgetProvider extends AppWidgetProvider {
                 Log.e(TAG, "Error parsing JSON array", e);
             }
 
+            Intent launchIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+            android.app.PendingIntent pendingIntent = null;
+            if (launchIntent != null) {
+                pendingIntent = android.app.PendingIntent.getActivity(
+                    context, 0, launchIntent, android.app.PendingIntent.FLAG_UPDATE_CURRENT | android.app.PendingIntent.FLAG_IMMUTABLE
+                );
+            }
+
             for (int appWidgetId : appWidgetIds) {
                 Log.d(TAG, "Updating widget id: " + appWidgetId);
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_daily_times);
                 views.setTextViewText(R.id.tvDawnTime, dawnText);
                 views.setTextViewText(R.id.tvNoonTime, noonText);
+                if (pendingIntent != null) {
+                    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
+                }
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
         } catch (Exception e) {
