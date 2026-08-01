@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { format } from 'date-fns';
 import { 
   Clock, 
@@ -7,7 +7,8 @@ import {
   ChevronDown, 
   Sunrise, 
   Sun, 
-  Sunset
+  Sunset,
+  X
 } from 'lucide-react';
 import { SunTimesCalculator } from '../lib/calendar/SunTimesCalculator';
 import { Settings } from '../types';
@@ -56,20 +57,39 @@ function Marker({ label, time, align }: { label: string, time: string, align: 's
   );
 }
 
-function LegendItem({ color, label }: { color: string, label: string }) {
+function LegendItem({ 
+  color, 
+  label, 
+  active, 
+  onClick 
+}: { 
+  color: string; 
+  label: string; 
+  active?: boolean; 
+  onClick?: () => void; 
+}) {
   return (
-    <div className="flex items-center gap-1.5">
-      <div className={cn("w-2 h-2 rounded-full", color)} />
-      <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{label}</span>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-[11px] font-bold uppercase tracking-wider cursor-pointer select-none",
+        active 
+          ? "border-[var(--accent)] bg-[var(--accent-subtle)] text-[var(--text-primary)] shadow-xs scale-105" 
+          : "border-[var(--border-subtle)] bg-[var(--bg-card-alt)]/60 text-[var(--text-muted)] hover:bg-[var(--accent-subtle)] hover:text-[var(--text-primary)]"
+      )}
+    >
+      <div className={cn("w-2.5 h-2.5 rounded-full shadow-xs shrink-0", color)} />
+      <span>{label}</span>
+    </button>
   );
 }
 
 function DetailRow({ label, value }: { label: string, value: string }) {
   return (
-    <div className="space-y-1">
-      <span className="text-sm font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">{label}</span>
-      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{value}</span>
+    <div className="flex flex-col justify-between h-full space-y-1">
+      <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block whitespace-nowrap overflow-hidden text-ellipsis">{label}</span>
+      <span className="text-sm font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">{value}</span>
     </div>
   );
 }
@@ -197,12 +217,23 @@ export function SunDetails({
     return format(d, fmt);
   };
 
+  const startOfDay = new Date(date).setHours(0,0,0,0);
+
   const getPercent = (d: Date | number | undefined) => {
     if (!d) return 0;
     const jsDate = typeof d === 'number' ? new Date(d) : d;
     if (isNaN(jsDate.getTime())) return 0;
+    const msFromStart = jsDate.getTime() - startOfDay;
+    if (msFromStart >= 24 * 3600000) return 100;
+    if (msFromStart <= 0) return 0;
     const val = jsDate.getHours() * 3600000 + jsDate.getMinutes() * 60000 + jsDate.getSeconds() * 1000;
     return (val / (24 * 3600000)) * 100;
+  };
+
+  const formatPhaseTime = (d: Date | number) => {
+    const jsDate = typeof d === 'number' ? new Date(d) : d;
+    if (jsDate.getTime() >= startOfDay + 24 * 3600000) return '24:00';
+    return format(jsDate, 'HH:mm');
   };
 
   const getSunPosition = () => {
@@ -232,20 +263,27 @@ export function SunDetails({
 
   const sunPos = getSunPosition();
 
-  const startOfDay = new Date(date).setHours(0,0,0,0);
-
   const getTime = (d: Date | undefined) => d ? d.getTime() : startOfDay;
 
+  const formatDuration = (startMs: number, endMs: number) => {
+    const diffMinutes = Math.max(0, Math.round((endMs - startMs) / 60000));
+    const h = Math.floor(diffMinutes / 60);
+    const m = diffMinutes % 60;
+    if (h > 0 && m > 0) return `${h}h ${m}m`;
+    if (h > 0) return `${h}h`;
+    return `${m}m`;
+  };
+
   const phases = [
-    { label: t('sun.night'), color: 'bg-black', start: startOfDay, end: getTime(times.nightEnd) },
-    { label: 'Astro', color: 'bg-slate-900', start: getTime(times.nightEnd), end: getTime(times.nauticalDawn) },
-    { label: 'Nautical', color: 'bg-slate-800', start: getTime(times.nauticalDawn), end: getTime(times.dawn) },
-    { label: 'Civil', color: 'bg-sky-900', start: getTime(times.dawn), end: getTime(times.sunrise) },
-    { label: t('sun.daylight'), color: 'bg-sky-400', start: getTime(times.sunrise), end: getTime(times.sunset) },
-    { label: 'Civil', color: 'bg-sky-900', start: getTime(times.sunset), end: getTime(times.dusk) },
-    { label: 'Nautical', color: 'bg-slate-800', start: getTime(times.dusk), end: getTime(times.nauticalDusk) },
-    { label: 'Astro', color: 'bg-slate-900', start: getTime(times.nauticalDusk), end: getTime(times.night) },
-    { label: t('sun.night'), color: 'bg-black', start: getTime(times.night), end: startOfDay + 24 * 60 * 60 * 1000 },
+    { category: 'night', label: t('sun.night'), color: 'bg-slate-950 dark:bg-black', dotColor: 'bg-slate-950 border border-slate-700', start: startOfDay, end: getTime(times.nightEnd) },
+    { category: 'twilight', label: 'Astro Twilight', color: 'bg-indigo-950 dark:bg-indigo-950', dotColor: 'bg-indigo-950', start: getTime(times.nightEnd), end: getTime(times.nauticalDawn) },
+    { category: 'twilight', label: 'Nautical Twilight', color: 'bg-indigo-600 dark:bg-indigo-700', dotColor: 'bg-indigo-600', start: getTime(times.nauticalDawn), end: getTime(times.dawn) },
+    { category: 'twilight', label: 'Civil Twilight', color: 'bg-orange-500 dark:bg-orange-500', dotColor: 'bg-orange-500', start: getTime(times.dawn), end: getTime(times.sunrise) },
+    { category: 'daylight', label: t('sun.daylight'), color: 'bg-amber-400 dark:bg-amber-400', dotColor: 'bg-amber-400', start: getTime(times.sunrise), end: getTime(times.sunset) },
+    { category: 'twilight', label: 'Civil Twilight', color: 'bg-orange-500 dark:bg-orange-500', dotColor: 'bg-orange-500', start: getTime(times.sunset), end: getTime(times.dusk) },
+    { category: 'twilight', label: 'Nautical Twilight', color: 'bg-indigo-600 dark:bg-indigo-700', dotColor: 'bg-indigo-600', start: getTime(times.dusk), end: getTime(times.nauticalDusk) },
+    { category: 'twilight', label: 'Astro Twilight', color: 'bg-indigo-950 dark:bg-indigo-950', dotColor: 'bg-indigo-950', start: getTime(times.nauticalDusk), end: getTime(times.night) },
+    { category: 'night', label: t('sun.night'), color: 'bg-slate-950 dark:bg-black', dotColor: 'bg-slate-950 border border-slate-700', start: getTime(times.night), end: startOfDay + 24 * 60 * 60 * 1000 },
   ];
 
   return (
@@ -293,7 +331,7 @@ export function SunDetails({
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
-          className="mt-8 pt-6 border-t border-slate-200/50 overflow-hidden space-y-8"
+          className="mt-8 pt-6 border-t border-slate-200/50 dark:border-stone-800/60 overflow-hidden space-y-8"
         >
           {/* Solar Arc Graphic */}
           <div className="w-full max-w-xl mx-auto px-2 pt-2">
@@ -363,50 +401,135 @@ export function SunDetails({
           </div>
 
           {/* Horizontal Bar Graph */}
-          <div className="pt-6 space-y-4">
-            <div className="flex justify-between items-center mb-2 px-1">
-              <div className="flex flex-col gap-0.5">
-                <h5 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t('sun.dayNightCycle')}</h5>
-                {selectedPhase !== null && (
-                  <motion.span 
-                    initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }}
-                    className="text-xs font-bold text-saffron flex items-center gap-1.5"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-saffron" />
-                    {phases[selectedPhase].label}: {format(phases[selectedPhase].start, 'HH:mm')} - {format(phases[selectedPhase].end, 'HH:mm')}
-                  </motion.span>
-                )}
-              </div>
-              <span className="text-xs font-bold text-slate-500">{t('sun.timeline')}</span>
+          <div className="pt-6 space-y-3">
+            <div className="flex justify-between items-center px-1 mb-1">
+              <h5 className="text-[11px] font-black uppercase tracking-widest text-[var(--text-muted)]">
+                {t('sun.dayNightCycle')}
+              </h5>
+              <span className="text-[10px] font-bold text-[var(--text-faint)] uppercase tracking-wider">
+                {t('sun.timeline')}
+              </span>
             </div>
-            <div className="h-8 w-full rounded-xl overflow-hidden flex bg-black shadow-inner border border-white/10 ring-4 ring-black/5 cursor-pointer">
+
+            <div className="h-9 sm:h-10 w-full rounded-2xl overflow-hidden flex bg-slate-950 dark:bg-stone-950 border border-amber-500/20 dark:border-amber-400/20 shadow-inner p-0.5 cursor-pointer relative">
               {phases.map((p, i) => {
                 const width = Math.max(0, getPercent(p.end) - getPercent(p.start));
                 if (width <= 0) return null;
+                const isSelected = selectedPhase === i;
                 return (
                   <div 
-                    key={i} onClick={() => setSelectedPhase(selectedPhase === i ? null : i)}
+                    key={i} 
+                    onClick={() => setSelectedPhase(isSelected ? null : i)}
                     className={cn(
-                      "h-full relative group border-r border-white/5 last:border-0 transition-all", 
+                      "h-full relative group transition-all duration-200 first:rounded-l-xl last:rounded-r-xl border-r border-white/10 last:border-0", 
                       p.color,
-                      selectedPhase === i ? "opacity-100 ring-2 ring-inset ring-white/30" : "opacity-80 hover:opacity-100"
+                      isSelected 
+                        ? "opacity-100 ring-2 ring-amber-400 dark:ring-amber-400 z-10 scale-[1.02] shadow-[0_0_12px_rgba(232,172,65,0.4)]" 
+                        : selectedPhase !== null
+                          ? "opacity-40 hover:opacity-85"
+                          : "opacity-90 hover:opacity-100"
                     )} 
                     style={{ width: `${width}%` }}
+                    title={`${p.label}: ${formatPhaseTime(p.start)} - ${formatPhaseTime(p.end)}`}
                   >
                     <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white transition-opacity" />
                   </div>
                 );
               })}
             </div>
-            <div className="flex justify-between w-full text-xs font-black text-slate-400 dark:text-slate-500 px-2 uppercase tracking-tighter">
-              <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span>
+
+            <div className="relative w-full pt-1 px-1">
+              <div className="flex justify-between w-full text-[10px] font-semibold text-[var(--text-faint)] uppercase tracking-wider">
+                <span>00:00</span>
+                <span>06:00</span>
+                <span>12:00</span>
+                <span>18:00</span>
+                <span>24:00</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 justify-center">
-            <LegendItem color="bg-black" label={t('sun.night')} />
-            <LegendItem color="bg-slate-800" label={t('sun.twilight')} />
-            <LegendItem color="bg-sky-400" label={t('sun.daylight')} />
+          {/* Selected Phase Info Panel (between visual and legend) */}
+          <div className="min-h-[38px] flex items-center justify-center pt-1">
+            <AnimatePresence mode="wait">
+              {selectedPhase !== null ? (
+                <motion.div
+                  key={selectedPhase}
+                  initial={{ opacity: 0, y: 4, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -4, scale: 0.96 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[var(--accent-subtle)] border border-[var(--border)] text-xs font-bold text-[var(--text-primary)] shadow-xs"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
+                  <span>{phases[selectedPhase].label}:</span>
+                  <span className="font-bold tracking-tight text-[var(--accent)]">{formatPhaseTime(phases[selectedPhase].start)} – {formatPhaseTime(phases[selectedPhase].end)}</span>
+                  <span className="text-[11px] font-medium text-[var(--text-muted)]">
+                    ({formatDuration(phases[selectedPhase].start, phases[selectedPhase].end)})
+                  </span>
+                  <button
+                    onClick={() => setSelectedPhase(null)}
+                    className="ml-1 p-0.5 rounded-full hover:bg-[var(--accent)]/15 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                    title="Clear selection"
+                  >
+                    <X size={13} />
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="hint"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="text-[11px] font-medium text-[var(--text-faint)] italic tracking-wide"
+                >
+                  Tap a segment or legend item to inspect timing
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="flex flex-wrap gap-2.5 justify-center pt-1">
+            <LegendItem 
+              color="bg-slate-950 border border-slate-700" 
+              label={t('sun.night')} 
+              active={selectedPhase !== null && phases[selectedPhase]?.category === 'night'}
+              onClick={() => {
+                const nightIndices = phases.reduce((acc: number[], p, idx) => p.category === 'night' ? [...acc, idx] : acc, []);
+                if (selectedPhase === null || !nightIndices.includes(selectedPhase)) {
+                  setSelectedPhase(nightIndices[0] ?? null);
+                } else {
+                  const nextPos = (nightIndices.indexOf(selectedPhase) + 1) % (nightIndices.length + 1);
+                  setSelectedPhase(nextPos < nightIndices.length ? nightIndices[nextPos] : null);
+                }
+              }}
+            />
+            <LegendItem 
+              color="bg-indigo-600 dark:bg-indigo-600" 
+              label={t('sun.twilight')} 
+              active={selectedPhase !== null && phases[selectedPhase]?.category === 'twilight'}
+              onClick={() => {
+                const twilightIndices = phases.reduce((acc: number[], p, idx) => p.category === 'twilight' ? [...acc, idx] : acc, []);
+                if (selectedPhase === null || !twilightIndices.includes(selectedPhase)) {
+                  setSelectedPhase(twilightIndices[0] ?? null);
+                } else {
+                  const nextPos = (twilightIndices.indexOf(selectedPhase) + 1) % (twilightIndices.length + 1);
+                  setSelectedPhase(nextPos < twilightIndices.length ? twilightIndices[nextPos] : null);
+                }
+              }}
+            />
+            <LegendItem 
+              color="bg-amber-400 dark:bg-amber-400" 
+              label={t('sun.daylight')} 
+              active={selectedPhase !== null && phases[selectedPhase]?.category === 'daylight'}
+              onClick={() => {
+                const daylightIdx = phases.findIndex(p => p.category === 'daylight');
+                if (daylightIdx !== -1) {
+                  setSelectedPhase(selectedPhase === daylightIdx ? null : daylightIdx);
+                }
+              }}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-y-6 gap-x-8 p-6 rounded-[2rem]" style={{ background: 'var(--accent-subtle)', border: '1px solid var(--border)' }}>

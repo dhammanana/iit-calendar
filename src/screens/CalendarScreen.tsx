@@ -1123,8 +1123,8 @@ function MetaCell({
 
 function DetailRow({ label, value, script }: { label: string; value: string; script: string }) {
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-sm font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{label}</span>
+    <div className="flex flex-col justify-between h-full gap-1">
+      <span className="text-xs font-black uppercase tracking-wider block whitespace-nowrap overflow-hidden text-ellipsis" style={{ color: 'var(--text-muted)' }}>{label}</span>
       <PaliText text={value} script={script} className="text-base font-bold" style={{ color: 'var(--accent)' } as React.CSSProperties} />
     </div>
   );
