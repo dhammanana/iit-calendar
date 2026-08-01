@@ -450,26 +450,28 @@ export function SunDetails({
           </div>
 
           {/* Selected Phase Info Panel (between visual and legend) */}
-          <div className="min-h-[38px] flex items-center justify-center pt-1">
+          <div className="h-8 flex items-center justify-center pt-1">
             <AnimatePresence mode="wait">
               {selectedPhase !== null ? (
                 <motion.div
                   key={selectedPhase}
-                  initial={{ opacity: 0, y: 4, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                  transition={{ duration: 0.18 }}
-                  className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[var(--accent-subtle)] border border-[var(--border)] text-xs font-bold text-[var(--text-primary)] shadow-xs"
+                  initial={{ opacity: 0, y: 3 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -3 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs font-semibold text-[var(--text-primary)] whitespace-nowrap px-2 py-1 rounded-lg bg-[var(--accent-subtle)]/50 border border-[var(--border-subtle)] shadow-2xs"
                 >
                   <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse shrink-0" />
-                  <span>{phases[selectedPhase].label}:</span>
-                  <span className="font-bold tracking-tight text-[var(--accent)]">{formatPhaseTime(phases[selectedPhase].start)} – {formatPhaseTime(phases[selectedPhase].end)}</span>
-                  <span className="text-[11px] font-medium text-[var(--text-muted)]">
+                  <span className="font-bold text-[var(--text-primary)] shrink-0">{phases[selectedPhase].label}:</span>
+                  <span className="font-bold tracking-tight text-[var(--accent)] shrink-0">
+                    {formatPhaseTime(phases[selectedPhase].start)} – {formatPhaseTime(phases[selectedPhase].end)}
+                  </span>
+                  <span className="text-[11px] text-[var(--text-muted)] shrink-0">
                     ({formatDuration(phases[selectedPhase].start, phases[selectedPhase].end)})
                   </span>
                   <button
                     onClick={() => setSelectedPhase(null)}
-                    className="ml-1 p-0.5 rounded-full hover:bg-[var(--accent)]/15 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                    className="ml-0.5 p-0.5 rounded-full hover:bg-[var(--accent)]/15 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer shrink-0"
                     title="Clear selection"
                   >
                     <X size={13} />
@@ -482,7 +484,7 @@ export function SunDetails({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.15 }}
-                  className="text-[11px] font-medium text-[var(--text-faint)] italic tracking-wide"
+                  className="text-[11px] font-medium text-[var(--text-faint)] italic tracking-wide whitespace-nowrap"
                 >
                   Tap a segment or legend item to inspect timing
                 </motion.div>
