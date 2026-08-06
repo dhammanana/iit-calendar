@@ -12,6 +12,12 @@ export interface MeditationTimerSettings {
   keepScreenOn?: boolean;
 }
 
+/** Context passed from toggleTimer/init to the isRunning useEffect via ref. */
+interface StartContext {
+  isRestore: boolean;
+  firstIntervalDelayMs?: number;
+}
+
 export function useMeditationTimer(
   totalDurationMs: number,
   intervalMs: number,
@@ -36,6 +42,13 @@ export function useMeditationTimer(
 
   const lastTickRef = useRef<number>(0);
 
+  // Always-current settings ref so long-lived callbacks see latest values (#2)
+  const settingsRef = useRef(settings);
+  useEffect(() => { settingsRef.current = settings; }, [settings]);
+
+  // Communication channel from toggleTimer/init to the isRunning useEffect (#1, #4)
+  const startContextRef = useRef<StartContext>({ isRestore: false });
+
   const acquireWakeLock = async () => {
     if (!('wakeLock' in navigator) || wakeLockRef.current) return;
     try {
@@ -54,12 +67,10 @@ export function useMeditationTimer(
   const toggleWakeLock = async (forceState?: boolean) => {
     if (!('wakeLock' in navigator)) return;
     try {
-      const shouldEnable = forceState !== undefined ? forceState : !wakeLock;
+      const shouldEnable = forceState !== undefined ? forceState : !wakeLockRef.current;
       if (!shouldEnable) {
-        if (wakeLock) {
-          await wakeLock.release();
-          wakeLockRef.current = null;
-          setWakeLock(null);
+        if (wakeLockRef.current) {
+          await wakeLockRef.current.release();
         }
       } else {
         await acquireWakeLock();
@@ -80,7 +91,24 @@ export function useMeditationTimer(
         const active: ActiveMeditation = JSON.parse(savedActive);
         const elapsed = Date.now() - active.startTime;
         if (elapsed < active.durationMs) {
-          setRemainingMs(active.durationMs - elapsed);
+          const remaining = active.durationMs - elapsed;
+          setRemainingMs(remaining);
+          remainingMsRef.current = remaining;
+
+          // Calculate interval alignment for the foreground worker on restore (#1)
+          const activeIntervalMs = active.intervalMs || 0;
+          let firstIntervalForWorker: number | undefined;
+          if (activeIntervalMs > 0) {
+            const firstDelay = active.firstIntervalDelayMs ?? activeIntervalMs;
+            if (elapsed < firstDelay) {
+              firstIntervalForWorker = firstDelay - elapsed;
+            } else {
+              const sinceFirst = elapsed - firstDelay;
+              firstIntervalForWorker = activeIntervalMs - (sinceFirst % activeIntervalMs);
+            }
+          }
+          startContextRef.current = { isRestore: true, firstIntervalDelayMs: firstIntervalForWorker };
+
           setIsRunning(true);
         } else {
           // Stale session from a previous run — recheckMeditation already completed it if needed
@@ -105,6 +133,20 @@ export function useMeditationTimer(
     let countdownInterval: number | null = null;
 
     if (isRunning) {
+      const ctx = startContextRef.current;
+      startContextRef.current = { isRestore: false }; // Reset after reading
+
+      // Schedule native alarms — skip on restore since recheckMeditation already did it (#4)
+      if (!ctx.isRestore) {
+        const delayMs = countdown > 0 ? countdown * 1000 : 0;
+        const totalSessionMs = remainingMsRef.current + delayMs;
+        alarmService.startMeditation(
+          totalSessionMs, intervalMs,
+          settingsRef.current.soundEnabled, settingsRef.current.bellType,
+          ctx.firstIntervalDelayMs
+        );
+      }
+
       if (countdown > 0) {
         countdownValueRef.current = countdown;
         lastTickRef.current = Date.now();
@@ -119,16 +161,13 @@ export function useMeditationTimer(
 
           if (next <= 0) {
             if (countdownInterval) clearInterval(countdownInterval);
-            const ms = remainingMsRef.current;
-            bellSoundService.playBell(settings.soundEnabled, settings.bellType);
-            alarmService.startMeditation(ms, intervalMs, settings.soundEnabled, settings.bellType);
-            startActualTimer(ms);
+            bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+            startActualTimer(totalDurationMs); // #8: Use totalDurationMs directly, not ref
           }
         }, 100);
       } else {
         // Start immediately (no delay)
-        alarmService.startMeditation(remainingMsRef.current, intervalMs, settings.soundEnabled, settings.bellType);
-        startActualTimer(remainingMsRef.current);
+        startActualTimer(remainingMsRef.current, ctx.firstIntervalDelayMs);
       }
     } else {
       alarmService.stopForegroundTimer();
@@ -140,7 +179,7 @@ export function useMeditationTimer(
     };
   }, [isRunning]); // intentionally omit countdown — the branch is captured at start time
 
-  const startActualTimer = (ms: number) => {
+  const startActualTimer = (ms: number, firstIntervalDelayMs?: number) => {
     alarmService.startForegroundTimer(
       ms,
       rem => setRemainingMs(rem),
@@ -151,14 +190,17 @@ export function useMeditationTimer(
         if (wakeLockRef.current) wakeLockRef.current.release();
       },
       intervalMs,
-      () => bellSoundService.playBell(settings.soundEnabled, settings.bellType)
+      () => bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType),
+      firstIntervalDelayMs
     );
   };
 
   const handleComplete = async () => {
     setIsRunning(false);
     setIsFinished(true);
-    bellSoundService.playBell(settings.soundEnabled, settings.bellType);
+    // Cancel native notifications immediately to prevent double bell (#3)
+    await alarmService.cancelMeditationNotifications();
+    bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
     await alarmService.completeActiveMeditation(totalDurationMs);
   };
 
@@ -169,13 +211,15 @@ export function useMeditationTimer(
     setIsFinished(false);
     setRemainingMs(totalDurationMs);
     setCountdown(0);
-    if (wakeLock) wakeLock.release();
+    if (wakeLockRef.current) wakeLockRef.current.release();
   };
 
   const handleStop = async () => {
+    // Stop foreground worker immediately before state change (#7)
+    alarmService.stopForegroundTimer();
     setIsRunning(false);
     setIsPaused(false);
-    if (wakeLock) wakeLock.release();
+    if (wakeLockRef.current) wakeLockRef.current.release();
 
     const elapsedMs = totalDurationMs - remainingMsRef.current;
     const elapsedMin = Math.floor(elapsedMs / 60000);
@@ -214,6 +258,7 @@ export function useMeditationTimer(
       } else {
         bellSoundService.playBell(settings.soundEnabled, settings.bellType);
       }
+      startContextRef.current = { isRestore: false };
       setIsRunning(true);
       setIsPaused(false);
     } else if (isRunning) {
@@ -228,6 +273,13 @@ export function useMeditationTimer(
       if (settings.keepScreenOn) {
         await acquireWakeLock();
       }
+
+      // Calculate interval alignment for resume (#1)
+      const elapsedMs = totalDurationMs - remainingMsRef.current;
+      const intervalElapsed = intervalMs > 0 ? elapsedMs % intervalMs : 0;
+      const firstDelay = intervalMs > 0 ? intervalMs - intervalElapsed : undefined;
+      startContextRef.current = { isRestore: false, firstIntervalDelayMs: firstDelay };
+
       setIsRunning(true);
       setIsPaused(false);
     }

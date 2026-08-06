@@ -12,6 +12,7 @@ export interface ActiveMeditation {
   intervalMs: number;
   soundEnabled?: boolean;
   bellType?: string;
+  firstIntervalDelayMs?: number;
 }
 
 function getMeditationSoundAndChannel(soundEnabled = true, bellType = 'bowl') {
@@ -139,7 +140,8 @@ class AlarmService {
     durationMs: number,
     intervalMs: number,
     soundEnabled: boolean = true,
-    bellType: string = 'bowl'
+    bellType: string = 'bowl',
+    firstIntervalDelayMs?: number
   ): Promise<void> {
     // Cancel existing
     const intervalIds = Array.from({ length: 100 }, (_, i) => AlarmId.MEDITATION_INTERVAL + i);
@@ -150,7 +152,8 @@ class AlarmService {
       durationMs,
       intervalMs,
       soundEnabled,
-      bellType
+      bellType,
+      firstIntervalDelayMs
     };
     localStorage.setItem('active_meditation', JSON.stringify(active));
 
@@ -173,7 +176,8 @@ class AlarmService {
 
     // Intervals
     if (intervalMs > 0) {
-      let nextInterval = active.startTime + intervalMs;
+      const firstDelay = firstIntervalDelayMs ?? intervalMs;
+      let nextInterval = active.startTime + firstDelay;
       let count = 0;
       while (nextInterval < endTime.getTime() && count < 100) {
         items.push({
@@ -196,6 +200,11 @@ class AlarmService {
 
   public async stopMeditation(): Promise<void> {
     localStorage.removeItem('active_meditation');
+    await this.cancelMeditationNotifications();
+  }
+
+  /** Cancel pending meditation notifications without touching localStorage (#3). */
+  public async cancelMeditationNotifications(): Promise<void> {
     const intervalIds = Array.from({ length: 100 }, (_, i) => AlarmId.MEDITATION_INTERVAL + i);
     await alarmPlugin.cancel([AlarmId.MEDITATION_END, ...intervalIds]);
   }
@@ -250,7 +259,8 @@ class AlarmService {
       });
 
       if (active.intervalMs > 0) {
-        let nextInterval = active.startTime + active.intervalMs;
+        const firstDelay = active.firstIntervalDelayMs ?? active.intervalMs;
+        let nextInterval = active.startTime + firstDelay;
         let count = 0;
         while (nextInterval < endTime.getTime() && count < 100) {
           if (nextInterval > now) {
@@ -338,7 +348,8 @@ class AlarmService {
     onTick: (remainingMs: number) => void,
     onComplete: () => void,
     intervalMs?: number,
-    onInterval?: () => void
+    onInterval?: () => void,
+    firstIntervalDelayMs?: number
   ): void {
     if (this.worker) this.worker.terminate();
 
@@ -353,7 +364,7 @@ class AlarmService {
       }
     };
 
-    this.worker.postMessage({ type: 'start', durationMs, intervalMs });
+    this.worker.postMessage({ type: 'start', durationMs, intervalMs, firstIntervalDelayMs: firstIntervalDelayMs ?? intervalMs });
   }
 
   public stopForegroundTimer(): void {

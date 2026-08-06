@@ -13,6 +13,9 @@ export interface AlarmItem {
 }
 
 class AlarmPlugin {
+  private channelsCreated = false;
+  private webTimeouts = new Map<number, ReturnType<typeof setTimeout>>();
+
   public async requestPermission(): Promise<void> {
     if (Capacitor.isNativePlatform()) {
       try {
@@ -58,6 +61,9 @@ class AlarmPlugin {
   public async schedule(items: AlarmItem[]): Promise<void> {
     if (Capacitor.isNativePlatform()) {
       try {
+        if (Capacitor.getPlatform() === 'android') {
+          await this.createChannels();
+        }
         await LocalNotifications.schedule({
           notifications: items.map(item => {
             let sound = item.sound;
@@ -82,11 +88,20 @@ class AlarmPlugin {
       }
     } else {
       items.forEach(item => {
+        // Clear any existing timeout for this ID before re-scheduling (#9)
+        const existingTimeout = this.webTimeouts.get(item.id);
+        if (existingTimeout !== undefined) {
+          clearTimeout(existingTimeout);
+        }
         const delay = item.at.getTime() - Date.now();
         if (delay > 0) {
-          setTimeout(() => {
+          const timeoutId = setTimeout(() => {
+            this.webTimeouts.delete(item.id);
             this.showWebNotification(item.title, item.body, item.sound);
           }, delay);
+          this.webTimeouts.set(item.id, timeoutId);
+        } else {
+          this.webTimeouts.delete(item.id);
         }
       });
     }
@@ -111,10 +126,20 @@ class AlarmPlugin {
       } catch (e) {
         console.error("AlarmPlugin: Cancel error", e);
       }
+    } else {
+      // Clear tracked web timeouts (#9)
+      ids.forEach(id => {
+        const timeoutId = this.webTimeouts.get(id);
+        if (timeoutId !== undefined) {
+          clearTimeout(timeoutId);
+          this.webTimeouts.delete(id);
+        }
+      });
     }
   }
 
   public async createChannels(): Promise<void> {
+    if (this.channelsCreated) return;
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
       try {
         const baseChannels: { id: string, name: string, importance: Importance, sound?: string, visibility: Visibility }[] = [
@@ -137,7 +162,7 @@ class AlarmPlugin {
         const silentMeditationChannel = {
           id: 'meditation_silent_v8',
           name: 'Meditation (Silent)',
-          importance: 2 as Importance,
+          importance: 3 as Importance,  // DEFAULT — shows heads-up notification without sound (#6)
           visibility: 1 as Visibility
         };
 
@@ -158,6 +183,7 @@ class AlarmPlugin {
             description: `${channel.name} alerts`
           });
         }
+        this.channelsCreated = true;
       } catch (e) {
         console.error("AlarmPlugin: Channel creation error", e);
       }

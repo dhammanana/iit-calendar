@@ -3,7 +3,7 @@ let timer: number | null = null;
 let startTime: number = 0;
 let durationMs: number = 0;
 let intervalMs: number = 0;
-let lastIntervalIndex: number = 0;
+let nextIntervalAt: number = 0;
 
 self.onmessage = (e: MessageEvent) => {
   const { type } = e.data;
@@ -12,7 +12,10 @@ self.onmessage = (e: MessageEvent) => {
     startTime = Date.now();
     durationMs = e.data.durationMs;
     intervalMs = e.data.intervalMs || 0;
-    lastIntervalIndex = 0;
+    const firstIntervalDelayMs = e.data.firstIntervalDelayMs ?? intervalMs;
+
+    // Set the absolute time for the first interval (#1: supports resume offset)
+    nextIntervalAt = intervalMs > 0 ? startTime + firstIntervalDelayMs : 0;
 
     if (timer) clearInterval(timer);
     
@@ -23,11 +26,11 @@ self.onmessage = (e: MessageEvent) => {
 
       self.postMessage({ type: 'tick', remaining });
 
-      if (intervalMs > 0) {
-        const currentIntervalIndex = Math.floor(elapsed / intervalMs);
-        if (currentIntervalIndex > lastIntervalIndex && remaining > 0) {
+      // Handle interval crossings — while loop catches multiple in one tick (#5)
+      if (intervalMs > 0 && remaining > 0) {
+        while (nextIntervalAt > 0 && now >= nextIntervalAt) {
           self.postMessage({ type: 'interval' });
-          lastIntervalIndex = currentIntervalIndex;
+          nextIntervalAt += intervalMs;
         }
       }
 
