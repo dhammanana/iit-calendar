@@ -22,15 +22,9 @@ class AlarmPlugin {
           await LocalNotifications.requestPermissions();
         }
 
-        // On Android 12+, we may need to check for exact alarm permission
+        // On Android 12+, check for exact alarm permission
         if (Capacitor.getPlatform() === 'android') {
-          const exactStatus = await LocalNotifications.checkExactNotificationSetting();
-          if (exactStatus.exact_alarm !== 'granted') {
-            console.warn("AlarmPlugin: Exact alarm permission not granted. Alarms may be delayed.");
-            // We could call changeExactNotificationSetting() here, but it's better
-            // to do it when the user explicitly enables an alarm or via a UI hint.
-            // For now, let's just log it.
-          }
+          await this.ensureExactAlarmPermission();
         }
       } catch (e) {
         console.error("AlarmPlugin: Permission error", e);
@@ -44,9 +38,25 @@ class AlarmPlugin {
     }
   }
 
+  public async ensureExactAlarmPermission(): Promise<boolean> {
+    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
+      try {
+        const exactStatus = await LocalNotifications.checkExactNotificationSetting();
+        if (exactStatus.exact_alarm !== 'granted') {
+          console.warn("AlarmPlugin: Exact alarm permission not granted. Requesting setting change.");
+          await LocalNotifications.changeExactNotificationSetting();
+          return false;
+        }
+        return true;
+      } catch (e) {
+        console.error("AlarmPlugin: check/change exact alarm error", e);
+      }
+    }
+    return true;
+  }
+
   public async schedule(items: AlarmItem[]): Promise<void> {
     if (Capacitor.isNativePlatform()) {
-      const platform = Capacitor.getPlatform();
       try {
         await LocalNotifications.schedule({
           notifications: items.map(item => {
@@ -108,24 +118,24 @@ class AlarmPlugin {
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
       try {
         const baseChannels: { id: string, name: string, importance: Importance, sound?: string, visibility: Visibility }[] = [
-          { id: 'meditation_v7', name: 'Meditation', importance: 4, sound: 'bell.wav', visibility: 1 },
-          { id: 'solar_noon_v7', name: 'Solar Noon', importance: 4, sound: 'bell.wav', visibility: 1 },
-          { id: 'dawn_v7',       name: 'Dawn',       importance: 4, sound: 'bell.wav', visibility: 1 },
-          { id: 'study_v7',      name: 'Study',      importance: 4, sound: 'bell.wav', visibility: 1 }
+          { id: 'meditation_v8', name: 'Meditation', importance: 5, sound: 'bell.wav', visibility: 1 },
+          { id: 'solar_noon_v8', name: 'Solar Noon', importance: 5, sound: 'bell.wav', visibility: 1 },
+          { id: 'dawn_v8',       name: 'Dawn',       importance: 5, sound: 'bell.wav', visibility: 1 },
+          { id: 'study_v8',      name: 'Study',      importance: 5, sound: 'bell.wav', visibility: 1 }
         ];
 
         // Create specific channels for meditation bell sound types
         const bellTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
         const meditationChannels = bellTypes.map(type => ({
-          id: `meditation_${type}_v7`,
+          id: `meditation_${type}_v8`,
           name: `Meditation (${type.charAt(0).toUpperCase() + type.slice(1)})`,
-          importance: 4 as Importance,
+          importance: 5 as Importance,
           sound: `bell_${type}.wav`,
           visibility: 1 as Visibility
         }));
 
         const silentMeditationChannel = {
-          id: 'meditation_silent_v7',
+          id: 'meditation_silent_v8',
           name: 'Meditation (Silent)',
           importance: 2 as Importance,
           visibility: 1 as Visibility
@@ -133,9 +143,9 @@ class AlarmPlugin {
 
         // Create specific channels for solar noon countdown voices
         const voiceChannels = [5, 4, 3, 2, 1, 0].map(m => ({
-          id: `solar_noon_v7_${m}`,
+          id: `solar_noon_v8_${m}`,
           name: `Solar Noon ${m}m`,
-          importance: 4 as Importance,
+          importance: 5 as Importance,
           sound: `noon_${m}.wav`,
           visibility: 1 as Visibility
         }));

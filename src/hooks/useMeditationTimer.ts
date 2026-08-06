@@ -9,6 +9,7 @@ export interface MeditationTimerSettings {
   delaySeconds: number;
   bellType: string;
   soundEnabled: boolean;
+  keepScreenOn?: boolean;
 }
 
 export function useMeditationTimer(
@@ -35,21 +36,33 @@ export function useMeditationTimer(
 
   const lastTickRef = useRef<number>(0);
 
-  const toggleWakeLock = async () => {
-    if (!('wakeLock' in navigator)) return;
+  const acquireWakeLock = async () => {
+    if (!('wakeLock' in navigator) || wakeLockRef.current) return;
     try {
-      if (wakeLock) {
-        await wakeLock.release();
+      const lock = await navigator.wakeLock.request('screen');
+      wakeLockRef.current = lock;
+      setWakeLock(lock);
+      lock.addEventListener('release', () => {
         wakeLockRef.current = null;
         setWakeLock(null);
-      } else {
-        const lock = await navigator.wakeLock.request('screen');
-        wakeLockRef.current = lock;
-        setWakeLock(lock);
-        lock.addEventListener('release', () => {
+      });
+    } catch (err) {
+      console.error('Wake Lock failed:', err);
+    }
+  };
+
+  const toggleWakeLock = async (forceState?: boolean) => {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      const shouldEnable = forceState !== undefined ? forceState : !wakeLock;
+      if (!shouldEnable) {
+        if (wakeLock) {
+          await wakeLock.release();
           wakeLockRef.current = null;
           setWakeLock(null);
-        });
+        }
+      } else {
+        await acquireWakeLock();
       }
     } catch (err) {
       console.error('Wake Lock failed:', err);
@@ -93,10 +106,6 @@ export function useMeditationTimer(
 
     if (isRunning) {
       if (countdown > 0) {
-        // Delay countdown before starting.
-        // Side effects (bell, alarm, timer start) are kept outside the state updater
-        // to maintain updater purity and avoid issues with React Strict Mode or
-        // future concurrent rendering.
         countdownValueRef.current = countdown;
         lastTickRef.current = Date.now();
         countdownInterval = window.setInterval(() => {
@@ -190,6 +199,12 @@ export function useMeditationTimer(
     bellSoundService.initAudio();
 
     if (!isRunning && !isPaused && (remainingMs === totalDurationMs || isFinished)) {
+      // Prompt for exact alarm permission on Android if missing
+      await alarmService.checkAndPromptExactAlarm();
+      if (settings.keepScreenOn) {
+        await acquireWakeLock();
+      }
+
       // Fresh start or restart after finish
       setIsFinished(false);
       setRemainingMs(totalDurationMs);
@@ -209,6 +224,10 @@ export function useMeditationTimer(
       await alarmService.stopMeditation();
     } else if (isPaused) {
       // Resume
+      await alarmService.checkAndPromptExactAlarm();
+      if (settings.keepScreenOn) {
+        await acquireWakeLock();
+      }
       setIsRunning(true);
       setIsPaused(false);
     }

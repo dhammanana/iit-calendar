@@ -16,14 +16,14 @@ export interface ActiveMeditation {
 
 function getMeditationSoundAndChannel(soundEnabled = true, bellType = 'bowl') {
   if (!soundEnabled) {
-    return { sound: '', channelId: 'meditation_silent_v7' };
+    return { sound: '', channelId: 'meditation_silent_v8' };
   }
   const type = (bellType || 'bowl').toLowerCase();
   const validTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
   const safeType = validTypes.includes(type) ? type : 'bowl';
   return {
     sound: `bell_${safeType}.wav`,
-    channelId: `meditation_${safeType}_v7`
+    channelId: `meditation_${safeType}_v8`
   };
 }
 
@@ -49,6 +49,10 @@ class AlarmService {
   public async requestPermission(): Promise<void> {
     await alarmPlugin.requestPermission();
     await alarmPlugin.createChannels();
+  }
+
+  public async checkAndPromptExactAlarm(): Promise<boolean> {
+    return await alarmPlugin.ensureExactAlarmPermission();
   }
 
   public async refreshDawnAndNoon(settings: Settings): Promise<void> {
@@ -84,7 +88,7 @@ class AlarmService {
             
             if (bellTime > now) {
               const soundFile = settings.noonVoiceAlert ? `noon_${m}.wav` : 'bell.wav';
-              const channelId = settings.noonVoiceAlert ? `solar_noon_v7_${m}` : 'solar_noon_v7';
+              const channelId = settings.noonVoiceAlert ? `solar_noon_v8_${m}` : 'solar_noon_v8';
               const body = safeOffset > 0 
                 ? `Solar noon is in ${m} minutes (+${safeOffset}m safe).`
                 : `Solar noon is in ${m} minutes.`;
@@ -114,7 +118,7 @@ class AlarmService {
             body: "Dawn has arrived.",
             at: dawn,
             sound: 'bell.wav',
-            channelId: 'dawn_v7',
+            channelId: 'dawn_v8',
             allowWhileIdle: true,
             exact: true
           });
@@ -287,7 +291,7 @@ class AlarmService {
       body: `${label} finished.`,
       at: new Date(active.startTime + durationMs),
       sound: 'bell.wav',
-      channelId: 'study_v7',
+      channelId: 'study_v8',
       allowWhileIdle: true,
       exact: true
     }]);
@@ -322,7 +326,7 @@ class AlarmService {
         body: `${active.label} finished.`,
         at: new Date(now + remaining),
         sound: 'bell.wav',
-        channelId: 'study_v7',
+        channelId: 'study_v8',
         allowWhileIdle: true,
         exact: true
       }]);

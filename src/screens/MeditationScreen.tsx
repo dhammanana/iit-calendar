@@ -37,6 +37,7 @@ export function MeditationScreen() {
       soundEnabled: true,
       delaySeconds: 5,
       bellType: 'bowl',
+      keepScreenOn: false,
     };
   });
 
@@ -323,20 +324,24 @@ export function MeditationScreen() {
                   <div className="flex items-center justify-center gap-3 mt-6">
                     {/* Keep Screen On button */}
                     <button
-                      onClick={toggleWakeLock}
+                      onClick={() => {
+                        const next = !settings.keepScreenOn;
+                        setSettings(s => ({ ...s, keepScreenOn: next }));
+                        toggleWakeLock(next);
+                      }}
                       className={cn(
                         "flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border",
-                        wakeLock
+                        (wakeLock || settings.keepScreenOn)
                           ? "text-[var(--accent)]"
                           : "text-[var(--text-muted)]"
                       )}
                       style={{
-                        backgroundColor: wakeLock ? 'var(--accent-subtle)' : 'var(--surface)',
-                        borderColor: wakeLock ? 'var(--accent-muted)' : 'var(--border)'
+                        backgroundColor: (wakeLock || settings.keepScreenOn) ? 'var(--accent-subtle)' : 'var(--surface)',
+                        borderColor: (wakeLock || settings.keepScreenOn) ? 'var(--accent-muted)' : 'var(--border)'
                       }}
                     >
-                      <Sun size={12} className={cn(wakeLock && "animate-pulse")} style={{ color: wakeLock ? 'var(--accent)' : undefined }} />
-                      {wakeLock ? 'Screen Always On' : 'Keep Screen On'}
+                      <Sun size={12} className={cn((wakeLock || settings.keepScreenOn) && "animate-pulse")} style={{ color: (wakeLock || settings.keepScreenOn) ? 'var(--accent)' : undefined }} />
+                      {(wakeLock || settings.keepScreenOn) ? 'Screen Always On' : 'Keep Screen On'}
                     </button>
 
                     {/* Mute/Sound toggle button */}
