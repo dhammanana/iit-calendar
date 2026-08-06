@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Calendar as CalendarIcon,
@@ -95,12 +95,18 @@ export default function App() {
     }
   }, [settings.updateChannel]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     localStorage.setItem('iit_settings', JSON.stringify(settings));
 
     // Apply theme
     const root = document.documentElement;
     root.classList.toggle('dark', settings.darkMode);
+
+    // Update meta theme-color tag
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', settings.darkMode ? '#0c0a09' : '#fffffd');
+    }
 
     // Apply font size
     root.style.fontSize = `${settings.fontSize}px`;

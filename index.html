@@ -3,10 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#fffffd" />
     <title>IIT Calendar</title>
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('iit_settings');
+          if (saved) {
+            var parsed = JSON.parse(saved);
+            if (parsed) {
+              if (parsed.darkMode) {
+                document.documentElement.classList.add('dark');
+                document.documentElement.style.backgroundColor = '#0c0a09';
+                document.documentElement.style.colorScheme = 'dark';
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', '#0c0a09');
+              } else {
+                document.documentElement.style.backgroundColor = '#fffffd';
+              }
+              if (parsed.fontSize) {
+                document.documentElement.style.fontSize = parsed.fontSize + 'px';
+              }
+              if (parsed.themeColor) {
+                var darkColors = { saffron: '#e8ac41', indigo: '#818cf8', emerald: '#34d399', rose: '#fb7185', slate: '#94a3b8' };
+                var lightColors = { saffron: '#7f5700', indigo: '#4f46e5', emerald: '#059669', rose: '#e11d48', slate: '#475569' };
+                var colorMap = parsed.darkMode ? darkColors : lightColors;
+                var chosenAccent = colorMap[parsed.themeColor] || colorMap.saffron;
+                document.documentElement.style.setProperty('--accent', chosenAccent);
+                document.documentElement.style.setProperty('--saffron', chosenAccent);
+              }
+            }
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
