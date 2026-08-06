@@ -59,7 +59,7 @@ jobs:
           path: web-build.zip
 
   build-android:
-    if: github.event_name == 'push' || github.event.inputs.build_android == 'true'
+    if: github.event.inputs.build_android == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
   build-desktop:
-    if: github.event_name == 'push' || github.event.inputs.build_desktop == 'true'
+    if: github.event.inputs.build_desktop == 'true'
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
