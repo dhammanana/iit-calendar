@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, ChevronLeft, ChevronRight, BarChart2 } from 'lucide-react';
+import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { meditationDbService } from '../services/MeditationDbService';
 import { bellSoundService } from '../services/BellSoundService';
 import { useI18n } from '../hooks/useI18n';
+import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { LabeledSelect } from '../components/LabeledSelect';
 import { Button } from '../components/Button';
@@ -18,6 +19,7 @@ const SETTINGS_KEY = 'meditation_settings';
 
 export function MeditationScreen() {
   const { t } = useI18n();
+  const { setShowSettings } = useUI();
 
   const [stats, setStats] = useState<{ sessions: MeditationSession[] }>({ sessions: [] });
   const [view, setView] = useState<'timer' | 'insights' | 'config'>('timer');
@@ -175,10 +177,19 @@ export function MeditationScreen() {
       <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex flex-col gap-6">
 
         {/* Title & Tagline info inside the card */}
-        <div className="px-2 text-center">
+        <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold leading-none mb-1.5" style={{ color: 'var(--text-primary)' }}>
             {t('common.stillness') || 'Stillness'}
           </h1>
+          {!isDistractionFree && (
+            <Button
+              onClick={() => setShowSettings(true)}
+              variant="outline"
+              icon={SettingsIcon}
+              aria-label="Settings"
+              className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            />
+          )}
           <p className="text-[10px] font-semibold uppercase tracking-wider leading-none" style={{ color: 'var(--text-muted)' }}>
             Practice mindfulness
           </p>

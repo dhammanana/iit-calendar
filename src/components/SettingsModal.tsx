@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, Moon, Bell, GraduationCap, RefreshCw, FileText, Calendar } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { MapPin, Search, Loader2, Download, Upload, Info, Database, Globe, Type, Palette, Sun, Moon, Bell, GraduationCap, RefreshCw, FileText, Calendar, Heart } from 'lucide-react';
 import { Modal } from './Modal';
 import { Settings } from '../types';
 import { useI18n } from '../hooks/useI18n';
@@ -37,6 +37,7 @@ export function SettingsModal({
   const [isSearching, setIsSearching] = React.useState(false);
   const [isGettingLocation, setIsGettingLocation] = React.useState(false);
   const [showLegal, setShowLegal] = React.useState(false);
+  const [showAbout, setShowAbout] = React.useState(false);
   const [calibratingTime, setCalibratingTime] = React.useState('');
   const [localFontSize, setLocalFontSize] = React.useState(settings.fontSize);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -626,17 +627,47 @@ export function SettingsModal({
                           )}
                           
                           {isSelected && opt.id === 'offset' && (
-                            <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-2 text-sm border border-[var(--border-subtle)]">
+                            <div className="px-4 py-3 bg-[var(--bg-card)] rounded-2xl flex flex-col gap-3 text-sm border border-[var(--border-subtle)]">
+                              {/* Common method presets */}
+                              <div className="flex gap-2">
+                                {[
+                                  { id: 'nauyana', minutes: 30, label: t('settings.dawnMethods.nauyana') },
+                                  { id: 'pa-auk', minutes: 40, label: t('settings.dawnMethods.pa-auk') },
+                                ].map(preset => {
+                                  const isPresetActive = (settings.dawnDurationOffset ?? 30) === preset.minutes;
+                                  return (
+                                    <button
+                                      key={`dawn-preset-${preset.id}`}
+                                      onClick={() => onUpdate({ ...settings, dawnDurationOffset: preset.minutes })}
+                                      aria-pressed={isPresetActive}
+                                      className={cn(
+                                        "flex-1 px-3 py-2.5 rounded-xl text-[11px] font-bold transition-all border active:scale-95",
+                                        isPresetActive
+                                          ? "bg-[var(--accent-soft)] text-[var(--accent)] border-[var(--accent)]"
+                                          : "bg-[var(--bg-base)] text-[var(--text-secondary)] border-[var(--border-subtle)] hover:text-[var(--text-primary)]"
+                                      )}
+                                    >
+                                      {preset.label}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                              {/* Custom time shift input */}
                               <div className="flex items-center justify-between">
-                                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Minutes before sunrise</span>
-                                <input 
-                                  type="number" 
-                                  min={20}
-                                  max={50}
-                                  value={settings.dawnDurationOffset ?? 30}
-                                  onChange={(e) => onUpdate({ ...settings, dawnDurationOffset: Number(e.target.value) })}
-                                  className="w-16 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-xs font-bold text-[var(--text-primary)]"
-                                />
+                                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                                  Custom minutes before sunrise
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <input 
+                                    type="number" 
+                                    min={0}
+                                    max={120}
+                                    value={settings.dawnDurationOffset ?? 30}
+                                    onChange={(e) => onUpdate({ ...settings, dawnDurationOffset: Number(e.target.value) })}
+                                    className="w-20 bg-[var(--bg-base)] border border-[var(--border-subtle)] rounded-lg px-2 py-1 text-center text-xs font-bold text-[var(--text-primary)]"
+                                  />
+                                  <span className="text-[11px] font-bold" style={{ color: 'var(--text-tertiary)' }}>min</span>
+                                </div>
                               </div>
                               <span className="text-[11px] text-[var(--text-tertiary)] opacity-80 leading-relaxed">
                                 Preview: <strong>{(() => {
@@ -676,6 +707,66 @@ export function SettingsModal({
                 {/* Legal & About */}
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>
                   <SectionLabel icon={FileText}>{t('settings.legal.title')}</SectionLabel>
+
+                  {/* About the app (expandable) */}
+                  <button
+                    onClick={() => setShowAbout(!showAbout)}
+                    aria-expanded={showAbout}
+                    className="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition-all border"
+                    style={{
+                      backgroundColor: showAbout ? 'var(--accent-soft)' : 'var(--bg-card)',
+                      borderColor: showAbout ? 'var(--accent)' : 'var(--border-subtle)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Heart size={16} className="text-[var(--accent)]" />
+                      <span>{t('settings.legal.aboutApp')}</span>
+                    </div>
+                    <div
+                      className="text-[var(--accent)] transition-transform duration-300"
+                      style={{ transform: showAbout ? 'rotate(90deg)' : 'none' }}
+                    >
+                      →
+                    </div>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {showAbout && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div
+                          className="px-5 py-4 rounded-2xl border border-dashed space-y-3"
+                          style={{ backgroundColor: 'var(--bg-card)', borderColor: 'var(--border-subtle)' }}
+                        >
+                          <h4 className="font-serif text-base font-bold" style={{ color: 'var(--accent)' }}>
+                            About IIT Calendar
+                          </h4>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                            IIT Calendar has been developed by Chathura, a devoted supporter of the Dhamma, under the
+                            kind guidance, advice, and encouragement of Venerable Lokuswami Devananda Bhante.
+                          </p>
+                          <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                            We offer our heartfelt gratitude to Venerable Devananda Bhante for his compassionate
+                            guidance and valuable support, and to Chathura for his dedicated efforts in bringing this
+                            application to life.
+                          </p>
+                          <p
+                            className="font-serif italic text-[13px] leading-relaxed pt-3 border-t"
+                            style={{ color: 'var(--accent)', borderColor: 'var(--border-subtle)' }}
+                          >
+                            May this small offering be of benefit to all who use it in their practice and daily lives.
+                          </p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <button
                     onClick={() => setShowLegal(true)}
                     className="w-full px-4 py-3 rounded-2xl text-xs font-bold flex items-center justify-between transition-all border"

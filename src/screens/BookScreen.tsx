@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Settings as SettingsIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useI18n } from '../hooks/useI18n';
+import { useUI } from '../UIContext';
 import { Settings } from '../types';
+import { Button } from '../components/Button';
 import { BookItem, SearchResultItem } from '../types/book';
 import {
   booksList,
@@ -27,6 +29,7 @@ export type { BookItem, SearchResultItem };
 
 export function BookScreen({ settings, isActive = true }: { settings: Settings; isActive?: boolean }) {
   const { t, tFor, language } = useI18n();
+  const { setShowSettings } = useUI();
 
   // Multi-level navigation state:
   // Level 0: selectedBookId == null => Bookshelf Grid
@@ -490,10 +493,17 @@ m6663 23 l112 -38 185 3 c102 2 279 7 393 12 194 8 212 10 260 34 28 14 53 24
       <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex-1 flex flex-col gap-4">
 
         {/* Header & Interactive Breadcrumbs */}
-        <div className="px-2 text-center relative flex flex-col items-center">
+        <div className="px-2 text-center relative flex flex-col items-center w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             {t('common.books') || t('common.book') || 'Books'}
           </h1>
+          <Button
+            onClick={() => setShowSettings(true)}
+            variant="outline"
+            icon={SettingsIcon}
+            aria-label="Settings"
+            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+          />
           {!selectedBook ? (
             <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mb-1">
               {t('common.booksSubtitle') || 'Dhamma Books & Texts'}

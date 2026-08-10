@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause, Timer, Coffee, Armchair, Plus } from 'lucide-react';
+import { Settings2, PlusCircle, CheckCircle2, Circle, Edit2, BarChart2, Clock, Play, Pause, Timer, Coffee, Armchair, Plus, Settings as SettingsIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useUI } from '../UIContext';
 import { useI18n } from '../hooks/useI18n';
@@ -337,10 +337,17 @@ export function StudyScreen() {
       <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex flex-col gap-6">
 
         {/* Title & Tagline info inside the card */}
-        <div className="px-2 text-center">
+        <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             {t('common.study') || 'Study'}
           </h1>
+          <Button
+            onClick={() => setShowGlobalSettings(true)}
+            variant="outline"
+            icon={SettingsIcon}
+            aria-label="Settings"
+            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+          />
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
             {t('study.subtitle') || 'Timed Focus & Rest'}
           </p>

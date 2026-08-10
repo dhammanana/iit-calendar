@@ -114,7 +114,7 @@ export class BuddhistCalendar {
     const bYear = (time < vesakNextDay.getTime()) ? (y + 543) : (y + 544);
     // Buddhist year changes on the day AFTER Vesak.
     // Example: Vesak Day        -> last day of old Buddhist year
-    //          Day after Vesak  -> first day of new Buddhist year  
+    //          Day after Vesak  -> first day of new Buddhist year
     // Therefore vesakNextDay is used as the year boundary.
     // Vesak dates bracketing the current BE year
     const lastCEYear = (time < vesakNextDay.getTime()) ? y - 1 : y;
@@ -218,7 +218,7 @@ export class BuddhistCalendar {
 
       // Elapsed years, months, and days
       atikkantaY: bYear - 1,
-      atikkantaM: bM - 1,
+      atikkantaM: bM,
       atikkantaD: correctedTithi - 1,
       avasitthaY: 5000 - bYear,
       avasitthaM: Math.max(0, totM - bM),

@@ -775,7 +775,7 @@ export function CalendarScreen({
                         <div className="flex justify-between items-center">
                           <span className="label-eyebrow text-[9px]">BE 1</span>
                           <span className="text-[9px] font-black" style={{ color: 'var(--accent)' }}>
-                            {(elapsed.bYear / 5000 * 100).toFixed(2)}%
+                            {(elapsed.bYear / 5000 * 100).toFixed(3)}%
                           </span>
                           <span className="label-eyebrow text-[9px]">BE 5000</span>
                         </div>
