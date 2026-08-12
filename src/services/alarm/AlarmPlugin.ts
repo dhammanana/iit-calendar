@@ -67,6 +67,9 @@ class AlarmPlugin {
         await LocalNotifications.schedule({
           notifications: items.map(item => {
             let sound = item.sound;
+            if (Capacitor.getPlatform() === 'android' && sound.endsWith('.wav')) {
+              sound = sound.replace(/\.wav$/, '');
+            }
             
             return {
               id: item.id,
@@ -142,25 +145,26 @@ class AlarmPlugin {
     if (this.channelsCreated) return;
     if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'android') {
       try {
+        const isAndroid = Capacitor.getPlatform() === 'android';
         const baseChannels: { id: string, name: string, importance: Importance, sound?: string, visibility: Visibility }[] = [
-          { id: 'meditation_v8', name: 'Meditation', importance: 5, sound: 'bell.wav', visibility: 1 },
-          { id: 'solar_noon_v8', name: 'Solar Noon', importance: 5, sound: 'bell.wav', visibility: 1 },
-          { id: 'dawn_v8',       name: 'Dawn',       importance: 5, sound: 'bell.wav', visibility: 1 },
-          { id: 'study_v8',      name: 'Study',      importance: 5, sound: 'bell.wav', visibility: 1 }
+          { id: 'meditation_v9', name: 'Meditation', importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1 },
+          { id: 'solar_noon_v9', name: 'Solar Noon', importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1 },
+          { id: 'dawn_v9',       name: 'Dawn',       importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1 },
+          { id: 'study_v9',      name: 'Study',      importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1 }
         ];
 
         // Create specific channels for meditation bell sound types
         const bellTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
         const meditationChannels = bellTypes.map(type => ({
-          id: `meditation_${type}_v8`,
+          id: `meditation_${type}_v9`,
           name: `Meditation (${type.charAt(0).toUpperCase() + type.slice(1)})`,
           importance: 5 as Importance,
-          sound: `bell_${type}.wav`,
+          sound: isAndroid ? `bell_${type}` : `bell_${type}.wav`,
           visibility: 1 as Visibility
         }));
 
         const silentMeditationChannel = {
-          id: 'meditation_silent_v8',
+          id: 'meditation_silent_v9',
           name: 'Meditation (Silent)',
           importance: 3 as Importance,  // DEFAULT — shows heads-up notification without sound (#6)
           visibility: 1 as Visibility
@@ -168,10 +172,10 @@ class AlarmPlugin {
 
         // Create specific channels for solar noon countdown voices
         const voiceChannels = [5, 4, 3, 2, 1, 0].map(m => ({
-          id: `solar_noon_v8_${m}`,
+          id: `solar_noon_v9_${m}`,
           name: `Solar Noon ${m}m`,
           importance: 5 as Importance,
-          sound: `noon_${m}.wav`,
+          sound: isAndroid ? `noon_${m}` : `noon_${m}.wav`,
           visibility: 1 as Visibility
         }));
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
 import { bellSoundService } from '../services/BellSoundService';
+import { Capacitor } from '@capacitor/core';
 
 /** Minimum elapsed session time (in minutes) required to save an interrupted session. */
 const MIN_SESSION_MINUTES = 5;
@@ -143,7 +144,8 @@ export function useMeditationTimer(
         alarmService.startMeditation(
           totalSessionMs, intervalMs,
           settingsRef.current.soundEnabled, settingsRef.current.bellType,
-          ctx.firstIntervalDelayMs
+          ctx.firstIntervalDelayMs,
+          delayMs
         );
       }
 
@@ -161,7 +163,9 @@ export function useMeditationTimer(
 
           if (next <= 0) {
             if (countdownInterval) clearInterval(countdownInterval);
-            bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+            if (!Capacitor.isNativePlatform()) {
+              bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+            }
             startActualTimer(totalDurationMs); // #8: Use totalDurationMs directly, not ref
           }
         }, 100);
@@ -190,7 +194,11 @@ export function useMeditationTimer(
         if (wakeLockRef.current) wakeLockRef.current.release();
       },
       intervalMs,
-      () => bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType),
+      () => {
+        if (!Capacitor.isNativePlatform()) {
+          bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+        }
+      },
       firstIntervalDelayMs
     );
   };
@@ -198,9 +206,11 @@ export function useMeditationTimer(
   const handleComplete = async () => {
     setIsRunning(false);
     setIsFinished(true);
-    // Cancel native notifications immediately to prevent double bell (#3)
-    await alarmService.cancelMeditationNotifications();
-    bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+    if (!Capacitor.isNativePlatform()) {
+      // Cancel native notifications immediately on web fallback to prevent double bell
+      await alarmService.cancelMeditationNotifications();
+      bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
+    }
     await alarmService.completeActiveMeditation(totalDurationMs);
   };
 
@@ -256,7 +266,9 @@ export function useMeditationTimer(
       if (settings.delaySeconds > 0) {
         setCountdown(settings.delaySeconds);
       } else {
-        bellSoundService.playBell(settings.soundEnabled, settings.bellType);
+        if (!Capacitor.isNativePlatform()) {
+          bellSoundService.playBell(settings.soundEnabled, settings.bellType);
+        }
       }
       startContextRef.current = { isRestore: false };
       setIsRunning(true);

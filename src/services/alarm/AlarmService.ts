@@ -17,14 +17,15 @@ export interface ActiveMeditation {
 
 function getMeditationSoundAndChannel(soundEnabled = true, bellType = 'bowl') {
   if (!soundEnabled) {
-    return { sound: '', channelId: 'meditation_silent_v8' };
+    return { sound: '', channelId: 'meditation_silent_v9' };
   }
   const type = (bellType || 'bowl').toLowerCase();
   const validTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
   const safeType = validTypes.includes(type) ? type : 'bowl';
+  const isAndroid = Capacitor.getPlatform() === 'android';
   return {
-    sound: `bell_${safeType}.wav`,
-    channelId: `meditation_${safeType}_v8`
+    sound: isAndroid ? `bell_${safeType}` : `bell_${safeType}.wav`,
+    channelId: `meditation_${safeType}_v9`
   };
 }
 
@@ -88,8 +89,9 @@ class AlarmService {
             const bellTime = subMinutes(noon, totalOffset);
             
             if (bellTime > now) {
-              const soundFile = settings.noonVoiceAlert ? `noon_${m}.wav` : 'bell.wav';
-              const channelId = settings.noonVoiceAlert ? `solar_noon_v8_${m}` : 'solar_noon_v8';
+              const isAndroid = Capacitor.getPlatform() === 'android';
+              const soundFile = settings.noonVoiceAlert ? (isAndroid ? `noon_${m}` : `noon_${m}.wav`) : (isAndroid ? 'bell' : 'bell.wav');
+              const channelId = settings.noonVoiceAlert ? `solar_noon_v9_${m}` : 'solar_noon_v9';
               const body = safeOffset > 0 
                 ? `Solar noon is in ${m} minutes (+${safeOffset}m safe).`
                 : `Solar noon is in ${m} minutes.`;
@@ -113,13 +115,14 @@ class AlarmService {
       if (settings.dawnBell) {
         const dawn = sunCalc.getDawn(date, settings);
         if (dawn && dawn > now) {
+          const isAndroid = Capacitor.getPlatform() === 'android';
           items.push({
             id: AlarmId.DAWN_START + i,
             title: "Dawn",
             body: "Dawn has arrived.",
             at: dawn,
-            sound: 'bell.wav',
-            channelId: 'dawn_v8',
+            sound: isAndroid ? 'bell' : 'bell.wav',
+            channelId: 'dawn_v9',
             allowWhileIdle: true,
             exact: true
           });
@@ -141,11 +144,12 @@ class AlarmService {
     intervalMs: number,
     soundEnabled: boolean = true,
     bellType: string = 'bowl',
-    firstIntervalDelayMs?: number
+    firstIntervalDelayMs?: number,
+    startDelayMs: number = 0
   ): Promise<void> {
     // Cancel existing
     const intervalIds = Array.from({ length: 100 }, (_, i) => AlarmId.MEDITATION_INTERVAL + i);
-    await alarmPlugin.cancel([AlarmId.MEDITATION_END, ...intervalIds]);
+    await alarmPlugin.cancel([AlarmId.MEDITATION_START, AlarmId.MEDITATION_END, ...intervalIds]);
 
     const active: ActiveMeditation = {
       startTime: Date.now(),
@@ -162,6 +166,21 @@ class AlarmService {
     const items: AlarmItem[] = [];
     const endTime = new Date(active.startTime + durationMs);
 
+    // Start Alarm (Native notification for start bell)
+    if (soundEnabled) {
+      const startAt = startDelayMs > 0 ? active.startTime + startDelayMs : active.startTime + 100;
+      items.push({
+        id: AlarmId.MEDITATION_START,
+        title: "Meditation Started",
+        body: "Your session has begun.",
+        at: new Date(startAt),
+        sound,
+        channelId,
+        allowWhileIdle: true,
+        exact: true
+      });
+    }
+
     // End Alarm
     items.push({
       id: AlarmId.MEDITATION_END,
@@ -176,7 +195,8 @@ class AlarmService {
 
     // Intervals
     if (intervalMs > 0) {
-      const firstDelay = firstIntervalDelayMs ?? intervalMs;
+      const baseDelay = firstIntervalDelayMs ?? intervalMs;
+      const firstDelay = baseDelay + startDelayMs;
       let nextInterval = active.startTime + firstDelay;
       let count = 0;
       while (nextInterval < endTime.getTime() && count < 100) {
@@ -206,7 +226,7 @@ class AlarmService {
   /** Cancel pending meditation notifications without touching localStorage (#3). */
   public async cancelMeditationNotifications(): Promise<void> {
     const intervalIds = Array.from({ length: 100 }, (_, i) => AlarmId.MEDITATION_INTERVAL + i);
-    await alarmPlugin.cancel([AlarmId.MEDITATION_END, ...intervalIds]);
+    await alarmPlugin.cancel([AlarmId.MEDITATION_START, AlarmId.MEDITATION_END, ...intervalIds]);
   }
 
   public async completeActiveMeditation(actualElapsedMs?: number): Promise<void> {
