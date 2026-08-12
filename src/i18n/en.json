@@ -212,6 +212,10 @@
     "noDelay": "No delay",
     "seconds": "seconds",
     "bellType": "Bell Type",
+    "alertMode": "Alert Options",
+    "vibrateAndSound": "Vibrate + Sound",
+    "soundOnly": "Sound Only",
+    "vibrateOnly": "Vibrate Only",
     "saveSettings": "Save Settings",
     "minutes": "minute"
   },

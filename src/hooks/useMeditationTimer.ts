@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { alarmService, ActiveMeditation } from '../services/alarm/AlarmService';
 import { bellSoundService } from '../services/BellSoundService';
+import { vibrationService } from '../services/VibrationService';
 import { Capacitor } from '@capacitor/core';
 
 /** Minimum elapsed session time (in minutes) required to save an interrupted session. */
@@ -10,6 +11,8 @@ export interface MeditationTimerSettings {
   delaySeconds: number;
   bellType: string;
   soundEnabled: boolean;
+  vibrationEnabled?: boolean;
+  alertMode?: string;
   keepScreenOn?: boolean;
 }
 
@@ -143,7 +146,9 @@ export function useMeditationTimer(
         const totalSessionMs = remainingMsRef.current + delayMs;
         alarmService.startMeditation(
           totalSessionMs, intervalMs,
-          settingsRef.current.soundEnabled, settingsRef.current.bellType,
+          settingsRef.current.soundEnabled,
+          settingsRef.current.vibrationEnabled ?? true,
+          settingsRef.current.bellType,
           ctx.firstIntervalDelayMs,
           delayMs
         );
@@ -163,6 +168,9 @@ export function useMeditationTimer(
 
           if (next <= 0) {
             if (countdownInterval) clearInterval(countdownInterval);
+            if (settingsRef.current.vibrationEnabled ?? true) {
+              vibrationService.vibrate('long');
+            }
             if (!Capacitor.isNativePlatform()) {
               bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
             }
@@ -195,6 +203,9 @@ export function useMeditationTimer(
       },
       intervalMs,
       () => {
+        if (settingsRef.current.vibrationEnabled ?? true) {
+          vibrationService.vibrate('short');
+        }
         if (!Capacitor.isNativePlatform()) {
           bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
         }
@@ -206,6 +217,9 @@ export function useMeditationTimer(
   const handleComplete = async () => {
     setIsRunning(false);
     setIsFinished(true);
+    if (settingsRef.current.vibrationEnabled ?? true) {
+      vibrationService.vibrate('long');
+    }
     if (!Capacitor.isNativePlatform()) {
       // Cancel native notifications immediately on web fallback to prevent double bell
       await alarmService.cancelMeditationNotifications();
@@ -266,6 +280,9 @@ export function useMeditationTimer(
       if (settings.delaySeconds > 0) {
         setCountdown(settings.delaySeconds);
       } else {
+        if (settings.vibrationEnabled ?? true) {
+          vibrationService.vibrate('long');
+        }
         if (!Capacitor.isNativePlatform()) {
           bellSoundService.playBell(settings.soundEnabled, settings.bellType);
         }

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon } from 'lucide-react';
+import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, SunDim, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon, Vibrate } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { meditationDbService } from '../services/MeditationDbService';
 import { bellSoundService } from '../services/BellSoundService';
+import { vibrationService } from '../services/VibrationService';
 import { useI18n } from '../hooks/useI18n';
 import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
@@ -16,6 +17,29 @@ import { MeditationSession } from '../types';
 
 /** localStorage key for persisting meditation settings. */
 const SETTINGS_KEY = 'meditation_settings';
+
+/** Sound + Vibrate icon: Exact Lucide Volume2 speaker body with non-overlapping, cleanly spaced vibration waves */
+function VolumeVibrateIcon({ size = 18, className = "" }: { size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      {/* Exact Lucide Volume2 speaker body */}
+      <path d="M11 4.702a.5.5 0 0 0-.812-.39L5.745 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.745l4.443 3.688a.5.5 0 0 0 .812-.39z" />
+      {/* Clean, non-overlapping vibration waves (3px gap between waves) */}
+      <path d="M14.5 8.5l1.5 1.75-1.5 1.75 1.5 1.75-1.5 1.75" />
+      <path d="M19 7l1.8 2.5-1.8 2.5 1.8 2.5-1.8 2.5" />
+    </svg>
+  );
+}
 
 export function MeditationScreen() {
   const { t } = useI18n();
@@ -29,14 +53,36 @@ export function MeditationScreen() {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        let alertMode = parsed.alertMode;
+        const soundEnabled = parsed.soundEnabled ?? true;
+        const vibrationEnabled = parsed.vibrationEnabled ?? true;
+        if (!alertMode) {
+          if (!soundEnabled && vibrationEnabled) {
+            alertMode = 'vibrate';
+          } else if (soundEnabled && !vibrationEnabled) {
+            alertMode = 'sound';
+          } else {
+            alertMode = 'both';
+          }
+        }
+        return {
+          ...parsed,
+          alertMode,
+          soundEnabled: alertMode !== 'vibrate',
+          vibrationEnabled: alertMode !== 'sound',
+        };
+      }
     } catch { }
     return {
       durationHours: 0,
       durationMinutes: 15,
       intervalMinutes: 0,
       intervalSeconds: 0,
+      alertMode: 'both',
       soundEnabled: true,
+      vibrationEnabled: true,
       delaySeconds: 5,
       bellType: 'bowl',
       keepScreenOn: false,
@@ -76,6 +122,26 @@ export function MeditationScreen() {
     resetTimer,
     toggleWakeLock,
   } = useMeditationTimer(totalDurationMs, intervalMs, settings);
+
+  const cycleAlertMode = () => {
+    const current = settings.alertMode || 'both';
+    let nextMode: 'both' | 'sound' | 'vibrate';
+    if (current === 'both') nextMode = 'sound';
+    else if (current === 'sound') nextMode = 'vibrate';
+    else nextMode = 'both';
+
+    const nextSound = nextMode !== 'vibrate';
+    const nextVib = nextMode !== 'sound';
+
+    setSettings(s => ({
+      ...s,
+      alertMode: nextMode,
+      soundEnabled: nextSound,
+      vibrationEnabled: nextVib
+    }));
+
+    if (nextVib) vibrationService.vibrate('short');
+  };
 
   const {
     chartData,
@@ -287,22 +353,27 @@ export function MeditationScreen() {
                       </Button>
 
                       <button
-                        onClick={() => setSettings(s => ({ ...s, soundEnabled: !s.soundEnabled }))}
-                        className={cn(
-                          "w-12 h-12 rounded-full flex items-center justify-center transition-transform active:scale-90 border relative",
-                          !settings.soundEnabled && "border-red-500/30 dark:border-red-400/20 text-red-500 dark:text-red-400"
-                        )}
+                        onClick={cycleAlertMode}
+                        title={`Alert Mode: ${
+                          settings.alertMode === 'vibrate'
+                            ? 'Vibrate Only'
+                            : settings.alertMode === 'sound'
+                              ? 'Sound Only'
+                              : 'Vibrate + Sound'
+                        }`}
+                        className="w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform active:scale-90 border relative shadow-sm cursor-pointer"
                         style={{
                           backgroundColor: 'var(--surface)',
-                          borderColor: settings.soundEnabled ? 'var(--border)' : undefined,
-                          color: settings.soundEnabled ? 'var(--text-secondary)' : undefined
+                          borderColor: 'var(--border)',
+                          color: 'var(--text-secondary)'
                         }}
                       >
-                        <Volume2 size={18} />
-                        {!settings.soundEnabled && (
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-6 h-[2px] rotate-45 bg-red-500/80 rounded-full" />
-                          </div>
+                        {settings.alertMode === 'vibrate' ? (
+                          <Vibrate size={18} className="text-amber-500 dark:text-amber-400" />
+                        ) : settings.alertMode === 'sound' ? (
+                          <Volume2 size={18} className="text-emerald-600 dark:text-emerald-400" />
+                        ) : (
+                          <VolumeVibrateIcon size={18} className="text-[var(--accent)]" />
                         )}
                       </button>
                     </>
@@ -340,41 +411,44 @@ export function MeditationScreen() {
                         setSettings(s => ({ ...s, keepScreenOn: next }));
                         toggleWakeLock(next);
                       }}
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border",
-                        (wakeLock || settings.keepScreenOn)
-                          ? "text-[var(--accent)]"
-                          : "text-[var(--text-muted)]"
-                      )}
+                      className="h-10 flex items-center justify-center gap-2 px-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border cursor-pointer shrink-0"
                       style={{
                         backgroundColor: (wakeLock || settings.keepScreenOn) ? 'var(--accent-subtle)' : 'var(--surface)',
-                        borderColor: (wakeLock || settings.keepScreenOn) ? 'var(--accent-muted)' : 'var(--border)'
+                        borderColor: (wakeLock || settings.keepScreenOn) ? 'var(--accent-muted)' : 'var(--border)',
+                        color: (wakeLock || settings.keepScreenOn) ? 'var(--accent)' : 'var(--text-muted)'
                       }}
                     >
-                      <Sun size={12} className={cn((wakeLock || settings.keepScreenOn) && "animate-pulse")} style={{ color: (wakeLock || settings.keepScreenOn) ? 'var(--accent)' : undefined }} />
-                      {(wakeLock || settings.keepScreenOn) ? 'Screen Always On' : 'Keep Screen On'}
+                      {(wakeLock || settings.keepScreenOn) ? (
+                        <Sun size={12} className="animate-pulse" style={{ color: 'var(--accent)' }} />
+                      ) : (
+                        <SunDim size={12} style={{ color: 'var(--text-muted)' }} />
+                      )}
+                      Keep Screen On
                     </button>
 
-                    {/* Mute/Sound toggle button */}
+                    {/* Icon-Only Alert Mode toggle button */}
                     <button
-                      onClick={() => setSettings(s => ({ ...s, soundEnabled: !s.soundEnabled }))}
-                      className={cn(
-                        "flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border relative",
-                        settings.soundEnabled
-                          ? "text-[var(--text-muted)] border-[var(--border)]"
-                          : "text-red-500 dark:text-red-400 border-red-500/30 dark:border-red-400/20"
-                      )}
+                      onClick={cycleAlertMode}
+                      title={`Alert Mode: ${
+                        settings.alertMode === 'vibrate'
+                          ? 'Vibrate Only'
+                          : settings.alertMode === 'sound'
+                            ? 'Sound Only'
+                            : 'Vibrate + Sound'
+                      }`}
+                      className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90 border relative shadow-sm cursor-pointer shrink-0"
                       style={{
                         backgroundColor: 'var(--surface)',
-                        borderColor: settings.soundEnabled ? 'var(--border)' : undefined
+                        borderColor: 'var(--border)',
+                        color: 'var(--text-secondary)'
                       }}
                     >
-                      <Volume2 size={12} />
-                      {settings.soundEnabled ? 'Sound On' : 'Muted'}
-                      {!settings.soundEnabled && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-5 h-[1.5px] rotate-45 bg-red-500/80 rounded-full" />
-                        </div>
+                      {settings.alertMode === 'vibrate' ? (
+                        <Vibrate size={16} className="text-amber-500 dark:text-amber-400" />
+                      ) : settings.alertMode === 'sound' ? (
+                        <Volume2 size={16} className="text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <VolumeVibrateIcon size={16} className="text-[var(--accent)]" />
                       )}
                     </button>
                   </div>
@@ -622,10 +696,55 @@ export function MeditationScreen() {
                       selectClassName="text-base font-serif px-5 py-4 text-left"
                     />
 
-                    {/* Bell Type Section */}
+                    {/* Alert Options Section */}
                     <div>
+                      <label className="block text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: 'var(--sm-text-muted)' }}>
+                        {t('meditation.alertMode') || 'Alert Options'}
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { id: 'both', label: t('meditation.vibrateAndSound') || 'Vibrate + Sound', icon: VolumeVibrateIcon },
+                          { id: 'sound', label: t('meditation.soundOnly') || 'Sound Only', icon: Volume2 },
+                          { id: 'vibrate', label: t('meditation.vibrateOnly') || 'Vibrate Only', icon: Vibrate }
+                        ].map(mode => {
+                          const isActive = (settings.alertMode || 'both') === mode.id;
+                          const Icon = mode.icon;
+                          return (
+                            <button
+                              key={`alert-mode-${mode.id}`}
+                              onClick={() => {
+                                const nextSound = mode.id !== 'vibrate';
+                                const nextVib = mode.id !== 'sound';
+                                setSettings(s => ({
+                                  ...s,
+                                  alertMode: mode.id,
+                                  soundEnabled: nextSound,
+                                  vibrationEnabled: nextVib
+                                }));
+                                if (nextVib) vibrationService.vibrate('short');
+                              }}
+                              className="py-3.5 px-2 flex flex-col items-center justify-center gap-1.5 rounded-xl border transition-all active:scale-95 cursor-pointer text-center"
+                              style={{
+                                backgroundColor: isActive ? 'var(--accent)' : 'var(--bg-card)',
+                                borderColor: isActive ? 'var(--accent)' : 'var(--border-subtle)',
+                                color: isActive ? '#ffffff' : 'var(--text-primary)',
+                                boxShadow: isActive ? '0 4px 12px var(--accent-shadow)' : 'none'
+                              }}
+                            >
+                              <Icon size={18} className={isActive ? 'text-white' : 'text-[var(--accent)]'} />
+                              <span className="text-[10px] font-black uppercase tracking-tight leading-tight">
+                                {mode.label}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Bell Type Section */}
+                    <div className={cn(settings.alertMode === 'vibrate' && "opacity-50 pointer-events-none")}>
                       <label className="block text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'var(--sm-text-muted)' }}>
-                        {t('meditation.bellType')}
+                        {t('meditation.bellType')} {settings.alertMode === 'vibrate' && '(Muted in Vibrate Only)'}
                       </label>
                       <div className="grid grid-cols-3 gap-2">
                         {['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'].map(bell => {

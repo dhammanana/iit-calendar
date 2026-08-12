@@ -11,22 +11,36 @@ export interface ActiveMeditation {
   durationMs: number;
   intervalMs: number;
   soundEnabled?: boolean;
+  vibrationEnabled?: boolean;
   bellType?: string;
   firstIntervalDelayMs?: number;
 }
 
-function getMeditationSoundAndChannel(soundEnabled = true, bellType = 'bowl') {
-  if (!soundEnabled) {
-    return { sound: '', channelId: 'meditation_silent_v9' };
+function getMeditationSoundAndChannel(soundEnabled = true, vibrationEnabled = true, bellType = 'bowl') {
+  if (!soundEnabled && !vibrationEnabled) {
+    return { sound: '', channelId: 'meditation_silent_v10' };
   }
+  if (!soundEnabled && vibrationEnabled) {
+    return { sound: '', channelId: 'meditation_vibrate_only_v10' };
+  }
+
   const type = (bellType || 'bowl').toLowerCase();
   const validTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
   const safeType = validTypes.includes(type) ? type : 'bowl';
   const isAndroid = Capacitor.getPlatform() === 'android';
-  return {
-    sound: isAndroid ? `bell_${safeType}` : `bell_${safeType}.wav`,
-    channelId: `meditation_${safeType}_v9`
-  };
+  const sound = isAndroid ? `bell_${safeType}` : `bell_${safeType}.wav`;
+
+  if (vibrationEnabled) {
+    return {
+      sound,
+      channelId: `meditation_${safeType}_v10`
+    };
+  } else {
+    return {
+      sound,
+      channelId: `meditation_${safeType}_novib_v10`
+    };
+  }
 }
 
 export interface ActiveStudy {
@@ -143,6 +157,7 @@ class AlarmService {
     durationMs: number,
     intervalMs: number,
     soundEnabled: boolean = true,
+    vibrationEnabled: boolean = true,
     bellType: string = 'bowl',
     firstIntervalDelayMs?: number,
     startDelayMs: number = 0
@@ -156,18 +171,19 @@ class AlarmService {
       durationMs,
       intervalMs,
       soundEnabled,
+      vibrationEnabled,
       bellType,
       firstIntervalDelayMs
     };
     localStorage.setItem('active_meditation', JSON.stringify(active));
 
-    const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, bellType);
+    const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, vibrationEnabled, bellType);
 
     const items: AlarmItem[] = [];
     const endTime = new Date(active.startTime + durationMs);
 
-    // Start Alarm (Native notification for start bell)
-    if (soundEnabled) {
+    // Start Alarm (Native notification for start bell/vibration)
+    if (soundEnabled || vibrationEnabled) {
       const startAt = startDelayMs > 0 ? active.startTime + startDelayMs : active.startTime + 100;
       items.push({
         id: AlarmId.MEDITATION_START,
@@ -264,8 +280,9 @@ class AlarmService {
       const endTime = new Date(now + remaining);
 
       const soundEnabled = active.soundEnabled ?? true;
+      const vibrationEnabled = active.vibrationEnabled ?? true;
       const bellType = active.bellType ?? 'bowl';
-      const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, bellType);
+      const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, vibrationEnabled, bellType);
 
       items.push({
         id: AlarmId.MEDITATION_END,
