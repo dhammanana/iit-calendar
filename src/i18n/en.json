@@ -125,11 +125,16 @@
     },
     "legal": {
       "title": "Legal & Information",
-      "button": "Privacy, EULA & Attributions",
+      "button": "About, Privacy & Terms",
       "aboutApp": "About the app",
+      "aboutTitle": "About IIT Calendar",
+      "aboutP1": "IIT Calendar has been developed as an effort to support the Dhamma community, with the kind guidance, advice, and encouragement of Ven. Werapitiye Devananda Thera.",
+      "aboutP2": "This application is dedicated to all members of the Sangha and devotees who strive to preserve, practise, and share the Dhamma.",
+      "aboutP3": "The source code and content are freely available on GitHub for anyone to use, share, and adapt for non-commercial purposes.",
       "about": "About",
+      "attributions": "Attributions",
       "privacy": "Privacy",
-      "eula": "EULA"
+      "eula": "Terms"
     }
   },
   "sun": {
