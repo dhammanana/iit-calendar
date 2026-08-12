@@ -331,13 +331,14 @@ class AlarmService {
     };
     localStorage.setItem('active_study', JSON.stringify(active));
 
+    const isAndroid = Capacitor.getPlatform() === 'android';
     await alarmPlugin.cancel([AlarmId.STUDY_END]);
     await alarmPlugin.schedule([{
       id: AlarmId.STUDY_END,
       title: "Study Timer Complete",
       body: `${label} finished.`,
       at: new Date(active.startTime + durationMs),
-      sound: 'bell.wav',
+      sound: isAndroid ? 'bell' : 'bell.wav',
       channelId: 'study_v8',
       allowWhileIdle: true,
       exact: true
@@ -366,13 +367,14 @@ class AlarmService {
       localStorage.removeItem('active_study');
     } else {
       const remaining = active.durationMs - elapsed;
+      const isAndroid = Capacitor.getPlatform() === 'android';
       await alarmPlugin.cancel([AlarmId.STUDY_END]);
       await alarmPlugin.schedule([{
         id: AlarmId.STUDY_END,
         title: "Study Timer Complete",
         body: `${active.label} finished.`,
         at: new Date(now + remaining),
-        sound: 'bell.wav',
+        sound: isAndroid ? 'bell' : 'bell.wav',
         channelId: 'study_v8',
         allowWhileIdle: true,
         exact: true

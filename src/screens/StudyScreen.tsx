@@ -11,6 +11,9 @@ import { studyDbService } from '../services/StudyDbService';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { Button } from '../components/Button';
 
+import { Capacitor } from '@capacitor/core';
+import { bellSoundService } from '../services/BellSoundService';
+
 type Mode = 'pomodoro' | 'shortBreak' | 'longBreak';
 
 interface Task {
@@ -85,43 +88,44 @@ export function StudyScreen() {
     return () => unsubscribe();
   }, []);
 
+  // Reconcile saved active study session on mount / restore
+  useEffect(() => {
+    const init = async () => {
+      await alarmService.requestPermission();
+      await alarmService.recheckStudy();
+
+      const savedActive = localStorage.getItem('active_study');
+      if (savedActive) {
+        try {
+          const active = JSON.parse(savedActive);
+          const elapsed = Date.now() - active.startTime;
+          if (elapsed < active.durationMs) {
+            const remainingSec = Math.floor((active.durationMs - elapsed) / 1000);
+            setTimeLeft(remainingSec);
+            if (active.label) {
+              setMode(active.label as Mode);
+            }
+            setIsRunning(true);
+          } else {
+            localStorage.removeItem('active_study');
+          }
+        } catch (err) {
+          console.error('Failed to parse active_study', err);
+        }
+      }
+    };
+
+    init();
+  }, []);
+
   // Form State
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskForm, setTaskForm] = useState({ name: '', est: 1 });
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
-
   useEffect(() => {
     localStorage.setItem('study_settings', JSON.stringify(settings));
   }, [settings]);
-
-  const initAudio = () => {
-    if (!audioCtxRef.current) {
-      const AudioCtx = (window.AudioContext || (window as any).webkitAudioContext);
-      if (AudioCtx) audioCtxRef.current = new AudioCtx();
-    }
-    if (audioCtxRef.current?.state === 'suspended') {
-      audioCtxRef.current.resume();
-    }
-  };
-
-  const playBell = () => {
-    initAudio();
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-
-    const now = ctx.currentTime;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.setValueAtTime(880, now);
-    gain.gain.setValueAtTime(0.5, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 1.5);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(now);
-    osc.stop(now + 2);
-  };
 
   const switchMode = (newMode: Mode) => {
     setMode(newMode);
@@ -151,7 +155,9 @@ export function StudyScreen() {
 
   const handleTimerComplete = () => {
     setIsRunning(false);
-    playBell();
+    if (!Capacitor.isNativePlatform()) {
+      bellSoundService.playBell(true, 'bell');
+    }
     alarmService.stopStudyTimer();
 
     if (mode === 'pomodoro') {
@@ -191,7 +197,7 @@ export function StudyScreen() {
 
   const toggleTimer = () => {
     if (!isRunning) {
-      initAudio(); // Initialize audio context on user gesture
+      bellSoundService.initAudio();
     }
     setIsRunning(!isRunning);
   };

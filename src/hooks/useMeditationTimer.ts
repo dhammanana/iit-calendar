@@ -168,10 +168,10 @@ export function useMeditationTimer(
 
           if (next <= 0) {
             if (countdownInterval) clearInterval(countdownInterval);
-            if (settingsRef.current.vibrationEnabled ?? true) {
-              vibrationService.vibrate('long');
-            }
             if (!Capacitor.isNativePlatform()) {
+              if (settingsRef.current.vibrationEnabled ?? true) {
+                vibrationService.vibrate('long');
+              }
               bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
             }
             startActualTimer(totalDurationMs); // #8: Use totalDurationMs directly, not ref
@@ -203,10 +203,10 @@ export function useMeditationTimer(
       },
       intervalMs,
       () => {
-        if (settingsRef.current.vibrationEnabled ?? true) {
-          vibrationService.vibrate('short');
-        }
         if (!Capacitor.isNativePlatform()) {
+          if (settingsRef.current.vibrationEnabled ?? true) {
+            vibrationService.vibrate('short');
+          }
           bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
         }
       },
@@ -217,10 +217,10 @@ export function useMeditationTimer(
   const handleComplete = async () => {
     setIsRunning(false);
     setIsFinished(true);
-    if (settingsRef.current.vibrationEnabled ?? true) {
-      vibrationService.vibrate('long');
-    }
     if (!Capacitor.isNativePlatform()) {
+      if (settingsRef.current.vibrationEnabled ?? true) {
+        vibrationService.vibrate('long');
+      }
       // Cancel native notifications immediately on web fallback to prevent double bell
       await alarmService.cancelMeditationNotifications();
       bellSoundService.playBell(settingsRef.current.soundEnabled, settingsRef.current.bellType);
@@ -280,10 +280,10 @@ export function useMeditationTimer(
       if (settings.delaySeconds > 0) {
         setCountdown(settings.delaySeconds);
       } else {
-        if (settings.vibrationEnabled ?? true) {
-          vibrationService.vibrate('long');
-        }
         if (!Capacitor.isNativePlatform()) {
+          if (settings.vibrationEnabled ?? true) {
+            vibrationService.vibrate('long');
+          }
           bellSoundService.playBell(settings.soundEnabled, settings.bellType);
         }
       }
