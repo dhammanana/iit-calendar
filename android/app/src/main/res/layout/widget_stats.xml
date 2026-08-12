@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/widget_root"
+    android:id="@android:id/background"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_bg"
+    android:clipToOutline="true"
     android:orientation="vertical"
     android:padding="6dp">
 
@@ -68,7 +69,11 @@
                 android:text="0d"
                 android:textColor="@color/widget_text_primary"
                 android:textStyle="bold"
-                android:textSize="15sp"/>
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -82,7 +87,11 @@
                 android:text="0m"
                 android:textColor="@color/widget_meditation_accent"
                 android:textStyle="bold"
-                android:textSize="14sp"/>
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -147,7 +156,11 @@
                 android:text="0d"
                 android:textColor="@color/widget_text_primary"
                 android:textStyle="bold"
-                android:textSize="15sp"/>
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -161,7 +174,11 @@
                 android:text="0s"
                 android:textColor="@color/widget_chanting_accent"
                 android:textStyle="bold"
-                android:textSize="14sp"/>
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -225,7 +242,11 @@
                 android:text="0d"
                 android:textColor="@color/widget_text_primary"
                 android:textStyle="bold"
-                android:textSize="15sp"/>
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
 
             <FrameLayout
                 android:layout_width="0dp"
@@ -239,7 +260,11 @@
                 android:text="0m"
                 android:textColor="@color/widget_study_accent"
                 android:textStyle="bold"
-                android:textSize="14sp"/>
+                android:textSize="15sp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:ellipsize="none"
+                android:includeFontPadding="false"/>
         </LinearLayout>
     </LinearLayout>
 

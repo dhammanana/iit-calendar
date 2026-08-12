@@ -5,6 +5,10 @@ import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -63,17 +67,17 @@ public class StatsWidgetProvider extends AppWidgetProvider {
                 Log.d(TAG, "Updating widget id: " + appWidgetId);
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_stats);
 
-                views.setTextViewText(R.id.tvMedStreak, medStreakVal + "d");
-                views.setTextViewText(R.id.tvMedMonth, formatDuration(medMonthMin));
+                views.setTextViewText(R.id.tvMedStreak, formatStreak(context, medStreakVal));
+                views.setTextViewText(R.id.tvMedMonth, formatDuration(context, medMonthMin));
 
-                views.setTextViewText(R.id.tvChantStreak, chantStreakVal + "d");
-                views.setTextViewText(R.id.tvChantMonth, formatSessions(chantMonthSessions));
+                views.setTextViewText(R.id.tvChantStreak, formatStreak(context, chantStreakVal));
+                views.setTextViewText(R.id.tvChantMonth, formatSessions(context, chantMonthSessions));
 
-                views.setTextViewText(R.id.tvStudyStreak, studyStreakVal + "d");
-                views.setTextViewText(R.id.tvStudyMonth, formatDuration(studyMonthMin));
+                views.setTextViewText(R.id.tvStudyStreak, formatStreak(context, studyStreakVal));
+                views.setTextViewText(R.id.tvStudyMonth, formatDuration(context, studyMonthMin));
 
                 if (pendingIntent != null) {
-                    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
+                    views.setOnClickPendingIntent(android.R.id.background, pendingIntent);
                 }
 
                 appWidgetManager.updateAppWidget(appWidgetId, views);
@@ -83,17 +87,80 @@ public class StatsWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    private static String formatDuration(int minutes) {
-        if (minutes <= 0) return "0m";
-        int h = minutes / 60;
-        int m = minutes % 60;
-        if (h > 0) {
-            return m > 0 ? h + "h " + m + "m" : h + "h";
-        }
-        return m + "m";
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, android.os.Bundle newOptions) {
+        onUpdate(context, appWidgetManager, new int[]{appWidgetId});
     }
 
-    private static String formatSessions(int count) {
-        return count + " ses";
+    private static CharSequence formatStreak(Context context, int days) {
+        String numStr = String.valueOf(days);
+        String fullText = numStr + "d";
+        SpannableString spannable = new SpannableString(fullText);
+        int numLen = numStr.length();
+        int fullLen = fullText.length();
+
+        spannable.setSpan(new RelativeSizeSpan(0.70f), numLen, fullLen, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int secondaryColor = context.getColor(R.color.widget_text_secondary);
+        spannable.setSpan(new ForegroundColorSpan(secondaryColor), numLen, fullLen, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannable;
+    }
+
+    private static CharSequence formatDuration(Context context, int minutes) {
+        int secondaryColor = context.getColor(R.color.widget_text_secondary);
+
+        if (minutes <= 0) {
+            SpannableString spannable = new SpannableString("0m");
+            spannable.setSpan(new RelativeSizeSpan(0.70f), 1, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(secondaryColor), 1, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return spannable;
+        }
+
+        int h = minutes / 60;
+        int m = minutes % 60;
+
+        if (h > 0) {
+            if (m > 0) {
+                String hStr = String.valueOf(h);
+                String mStr = String.valueOf(m);
+                String fullText = hStr + "h " + mStr + "m";
+                SpannableString spannable = new SpannableString(fullText);
+                int hUnitEnd = hStr.length() + 2;
+
+                spannable.setSpan(new RelativeSizeSpan(0.70f), hStr.length(), hUnitEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(new ForegroundColorSpan(secondaryColor), hStr.length(), hUnitEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                spannable.setSpan(new RelativeSizeSpan(0.70f), fullText.length() - 1, fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(new ForegroundColorSpan(secondaryColor), fullText.length() - 1, fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                return spannable;
+            } else {
+                String hStr = String.valueOf(h);
+                String fullText = hStr + "h";
+                SpannableString spannable = new SpannableString(fullText);
+                spannable.setSpan(new RelativeSizeSpan(0.70f), hStr.length(), fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannable.setSpan(new ForegroundColorSpan(secondaryColor), hStr.length(), fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                return spannable;
+            }
+        } else {
+            String mStr = String.valueOf(m);
+            String fullText = mStr + "m";
+            SpannableString spannable = new SpannableString(fullText);
+            spannable.setSpan(new RelativeSizeSpan(0.70f), mStr.length(), fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannable.setSpan(new ForegroundColorSpan(secondaryColor), mStr.length(), fullText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            return spannable;
+        }
+    }
+
+    private static CharSequence formatSessions(Context context, int count) {
+        String numStr = String.valueOf(count);
+        String fullText = numStr + " ses";
+        SpannableString spannable = new SpannableString(fullText);
+        int numLen = numStr.length();
+        int fullLen = fullText.length();
+
+        spannable.setSpan(new RelativeSizeSpan(0.70f), numLen, fullLen, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        int secondaryColor = context.getColor(R.color.widget_text_secondary);
+        spannable.setSpan(new ForegroundColorSpan(secondaryColor), numLen, fullLen, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannable;
     }
 }

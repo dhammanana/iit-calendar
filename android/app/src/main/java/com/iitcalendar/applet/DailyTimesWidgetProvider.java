@@ -69,18 +69,72 @@ public class DailyTimesWidgetProvider extends AppWidgetProvider {
                 );
             }
 
+            String dawnTime = dawnText;
+            String dawnAmPm = "";
+            if (dawnText != null) {
+                String upper = dawnText.toUpperCase();
+                if (upper.contains("AM")) {
+                    dawnTime = dawnText.substring(0, upper.indexOf("AM")).trim();
+                    dawnAmPm = "AM";
+                } else if (upper.contains("PM")) {
+                    dawnTime = dawnText.substring(0, upper.indexOf("PM")).trim();
+                    dawnAmPm = "PM";
+                }
+            }
+
+            String noonTime = noonText;
+            String noonAmPm = "";
+            if (noonText != null) {
+                String upper = noonText.toUpperCase();
+                if (upper.contains("AM")) {
+                    noonTime = noonText.substring(0, upper.indexOf("AM")).trim();
+                    noonAmPm = "AM";
+                } else if (upper.contains("PM")) {
+                    noonTime = noonText.substring(0, upper.indexOf("PM")).trim();
+                    noonAmPm = "PM";
+                }
+            }
+
             for (int appWidgetId : appWidgetIds) {
                 Log.d(TAG, "Updating widget id: " + appWidgetId);
-                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_daily_times);
-                views.setTextViewText(R.id.tvDawnTime, dawnText);
-                views.setTextViewText(R.id.tvNoonTime, noonText);
-                if (pendingIntent != null) {
-                    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent);
+                RemoteViews views;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                    RemoteViews views2x1 = new RemoteViews(context.getPackageName(), R.layout.widget_daily_times_2x1);
+                    setupRemoteViews(views2x1, dawnTime, dawnAmPm, noonTime, noonAmPm, pendingIntent);
+
+                    RemoteViews views2x2 = new RemoteViews(context.getPackageName(), R.layout.widget_daily_times);
+                    setupRemoteViews(views2x2, dawnTime, dawnAmPm, noonTime, noonAmPm, pendingIntent);
+
+                    java.util.Map<android.util.SizeF, RemoteViews> viewMap = new java.util.HashMap<>();
+                    viewMap.put(new android.util.SizeF(110f, 40f), views2x1);
+                    viewMap.put(new android.util.SizeF(110f, 110f), views2x2);
+                    views = new RemoteViews(viewMap);
+                } else {
+                    android.os.Bundle options = appWidgetManager.getAppWidgetOptions(appWidgetId);
+                    int minHeight = options != null ? options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110) : 110;
+                    int layoutRes = minHeight < 100 ? R.layout.widget_daily_times_2x1 : R.layout.widget_daily_times;
+                    views = new RemoteViews(context.getPackageName(), layoutRes);
+                    setupRemoteViews(views, dawnTime, dawnAmPm, noonTime, noonAmPm, pendingIntent);
                 }
                 appWidgetManager.updateAppWidget(appWidgetId, views);
             }
         } catch (Exception e) {
             Log.e(TAG, "Error in onUpdate", e);
         }
+    }
+
+    private static void setupRemoteViews(RemoteViews views, String dawnTime, String dawnAmPm, String noonTime, String noonAmPm, android.app.PendingIntent pendingIntent) {
+        views.setTextViewText(R.id.tvDawnTime, dawnTime);
+        views.setTextViewText(R.id.tvDawnAmPm, dawnAmPm);
+        views.setTextViewText(R.id.tvNoonTime, noonTime);
+        views.setTextViewText(R.id.tvNoonAmPm, noonAmPm);
+        if (pendingIntent != null) {
+            views.setOnClickPendingIntent(android.R.id.background, pendingIntent);
+        }
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, android.os.Bundle newOptions) {
+        onUpdate(context, appWidgetManager, new int[]{appWidgetId});
     }
 }
