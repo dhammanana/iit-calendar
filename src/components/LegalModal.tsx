@@ -3,16 +3,11 @@ import { ExternalLink, Shield, FileText, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useI18n } from '../hooks/useI18n';
 import { Modal } from './Modal';
+import { SegmentedControl } from './SegmentedControl';
 
 export function LegalModal({ show, onClose }: { show: boolean; onClose: () => void }) {
   const { t } = useI18n();
   const [section, setSection] = React.useState<'about' | 'privacy' | 'eula'>('about');
-
-  const sections = [
-    { id: 'about', label: t('settings.legal.about') || 'About', icon: Info },
-    { id: 'privacy', label: t('settings.legal.privacy') || 'Privacy Policy', icon: Shield },
-    { id: 'eula', label: t('settings.legal.eula') || 'Terms', icon: FileText },
-  ] as const;
 
   return (
     <Modal
@@ -20,25 +15,21 @@ export function LegalModal({ show, onClose }: { show: boolean; onClose: () => vo
       onClose={onClose}
       title={t('settings.legal.title')}
       maxWidth="xl"
+      className="h-[calc(100vh-3rem)] max-h-[calc(100vh-3rem)] sm:h-[88vh] sm:max-h-[88vh]"
     >
 
       {/* Tabs */}
-      <div className="shrink-0 flex gap-2 mb-4 bg-black/5 dark:bg-white/5 p-1 rounded-2xl">
-        {sections.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => setSection(s.id)}
-            className={cn(
-              "flex-1 py-2 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all",
-              section === s.id
-                ? "bg-white dark:bg-slate-800 shadow-sm shadow-black/10 text-[var(--accent)]"
-                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-            )}
-          >
-            <s.icon size={14} />
-            {s.label}
-          </button>
-        ))}
+      <div className="shrink-0 mb-4 flex justify-center">
+        <SegmentedControl
+          options={[
+            { id: 'about', label: t('settings.legal.about') || 'About', icon: Info },
+            { id: 'privacy', label: t('settings.legal.privacy') || 'Privacy Policy', icon: Shield },
+            { id: 'eula', label: t('settings.legal.eula') || 'Terms', icon: FileText },
+          ]}
+          value={section}
+          onChange={(val) => setSection(val as any)}
+          className="w-full"
+        />
       </div>
 
       {/* Content */}

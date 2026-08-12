@@ -401,36 +401,31 @@ export function SettingsModal({
                       <span className="text-xs font-bold" style={{ color: 'var(--text-secondary)' }}>
                         Color Theme
                       </span>
-                      <div className="flex items-center justify-between p-3 rounded-2xl border bg-[var(--bg-card)]" style={{ borderColor: 'var(--border-subtle)' }}>
-                        <div className="flex gap-2.5">
-                          {(['saffron', 'indigo', 'emerald', 'rose', 'slate'] as const).map(color => (
-                            <button
-                              key={`theme-opt-${color}`}
-                              onClick={() => onUpdate({ ...settings, themeColor: color })}
-                              style={{
-                                transform: settings.themeColor === color ? 'scale(1.15)' : 'scale(1)',
-                              }}
-                              className={cn(
-                                "w-7 h-7 rounded-full transition-all flex items-center justify-center",
-                                color === 'saffron'  && "bg-[#7f5700]",
-                                color === 'indigo'   && "bg-indigo-500",
-                                color === 'emerald'  && "bg-emerald-500",
-                                color === 'rose'     && "bg-rose-500",
-                                color === 'slate'    && "bg-slate-700",
-                                settings.themeColor === color
-                                  ? "ring-2 ring-offset-2 ring-[var(--accent)] shadow-md"
-                                  : "ring-1 ring-black/10 dark:ring-white/10 hover:scale-105"
-                              )}
-                            >
-                              {settings.themeColor === color && (
-                                <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
-                              )}
-                            </button>
-                          ))}
-                        </div>
-                        <span className="text-xs font-bold capitalize" style={{ color: 'var(--accent)' }}>
-                          {settings.themeColor}
-                        </span>
+                      <div className="flex items-center justify-around p-3 rounded-2xl border bg-[var(--bg-card)]" style={{ borderColor: 'var(--border-subtle)' }}>
+                        {(['saffron', 'indigo', 'emerald', 'rose', 'slate'] as const).map(color => (
+                          <button
+                            key={`theme-opt-${color}`}
+                            onClick={() => onUpdate({ ...settings, themeColor: color })}
+                            style={{
+                              transform: settings.themeColor === color ? 'scale(1.15)' : 'scale(1)',
+                            }}
+                            className={cn(
+                              "w-7 h-7 rounded-full transition-all flex items-center justify-center",
+                              color === 'saffron'  && "bg-[#7f5700]",
+                              color === 'indigo'   && "bg-indigo-500",
+                              color === 'emerald'  && "bg-emerald-500",
+                              color === 'rose'     && "bg-rose-500",
+                              color === 'slate'    && "bg-slate-700",
+                              settings.themeColor === color
+                                ? "ring-2 ring-offset-2 ring-[var(--accent)] shadow-md"
+                                : "ring-1 ring-black/10 dark:ring-white/10 hover:scale-105"
+                            )}
+                          >
+                            {settings.themeColor === color && (
+                              <div className="w-2 h-2 rounded-full bg-white shadow-sm" />
+                            )}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>

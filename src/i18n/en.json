@@ -222,7 +222,16 @@
     "soundOnly": "Sound Only",
     "vibrateOnly": "Vibrate Only",
     "saveSettings": "Save Settings",
-    "minutes": "minute"
+    "minutes": "minute",
+    "addMissingRecord": "Add Missing Record",
+    "addMissingRecordDesc": "Log a meditation session completed previously",
+    "pastSessionDate": "Date",
+    "pastSessionTime": "Time",
+    "duration": "Duration",
+    "addRecord": "Save Record",
+    "recentSessions": "Recent Sessions",
+    "noSessionsYet": "No meditation sessions recorded yet",
+    "deleteRecordConfirm": "Are you sure you want to delete this session?"
   },
   "chant": {
     "chantCounter": "Chant Counter",

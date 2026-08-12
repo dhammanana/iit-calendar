@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, SunDim, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon, Vibrate } from 'lucide-react';
+import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, SunDim, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon, Vibrate, Plus, Trash2, Calendar } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 import { meditationDbService } from '../services/MeditationDbService';
@@ -11,6 +11,7 @@ import { useUI } from '../UIContext';
 import { SegmentedControl } from '../components/SegmentedControl';
 import { LabeledSelect } from '../components/LabeledSelect';
 import { Button } from '../components/Button';
+import { Modal } from '../components/Modal';
 import { useMeditationTimer } from '../hooks/useMeditationTimer';
 import { useMeditationInsights } from '../hooks/useMeditationInsights';
 import { MeditationSession } from '../types';
@@ -49,6 +50,86 @@ export function MeditationScreen() {
   const [view, setView] = useState<'timer' | 'insights' | 'config'>('timer');
   const [chartView, setChartView] = useState<'day' | 'week' | 'month'>('day');
   const [chartOffset, setChartOffset] = useState(0);
+
+  // Add Missing Record modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [recordDate, setRecordDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [recordTime, setRecordTime] = useState(() => new Date().toTimeString().slice(0, 5));
+  const [recordHours, setRecordHours] = useState(0);
+  const [recordMinutes, setRecordMinutes] = useState(15);
+  const [isSavingRecord, setIsSavingRecord] = useState(false);
+
+  const handleSaveRecord = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const durationMin = recordHours * 60 + recordMinutes;
+    if (durationMin <= 0 || isSavingRecord) return;
+
+    setIsSavingRecord(true);
+    try {
+      const [year, month, day] = recordDate.split('-').map(Number);
+      const [hour, min] = recordTime.split(':').map(Number);
+      const dt = new Date(year, month - 1, day, hour, min, 0, 0);
+      await meditationDbService.addSession(durationMin, dt.toISOString());
+      const updated = await meditationDbService.getStats();
+      setStats(updated);
+      setShowAddModal(false);
+    } catch (err) {
+      console.error('Failed to add missing meditation record:', err);
+    } finally {
+      setIsSavingRecord(false);
+    }
+  };
+
+  const handleDeleteSession = async (id: string) => {
+    if (window.confirm(t('meditation.deleteRecordConfirm') || 'Are you sure you want to delete this session?')) {
+      await meditationDbService.deleteSession(id);
+      const updated = await meditationDbService.getStats();
+      setStats(updated);
+    }
+  };
+
+  const formatSessionDate = (isoStr: string) => {
+    try {
+      const d = new Date(isoStr);
+      const now = new Date();
+      const isToday = d.toDateString() === now.toDateString();
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const isYesterday = d.toDateString() === yesterday.toDateString();
+
+      if (isToday) return t('common.today') || 'Today';
+      if (isYesterday) return 'Yesterday';
+
+      const isCurrentYear = d.getFullYear() === now.getFullYear();
+      return d.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        ...(isCurrentYear ? {} : { year: 'numeric' })
+      });
+    } catch {
+      return isoStr;
+    }
+  };
+
+  const formatSessionTime = (isoStr: string) => {
+    try {
+      const d = new Date(isoStr);
+      return d.toLocaleTimeString(undefined, {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const formatDuration = (mins: number) => {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    if (h > 0) return m > 0 ? `${h}h ${m}m` : `${h}h`;
+    return `${m}m`;
+  };
 
   const [settings, setSettings] = useState(() => {
     try {
@@ -591,6 +672,93 @@ export function MeditationScreen() {
                     </span>
                   </div>
                 </div>
+
+                {/* Recent Sessions list */}
+                <div
+                  className="rounded-[1.5rem] p-5 space-y-4"
+                  style={{ backgroundColor: 'var(--bg-card, var(--bg-main))', border: '1px solid var(--border-subtle)' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock size={16} style={{ color: 'var(--accent)' }} />
+                    <span className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                      {t('meditation.recentSessions') || 'Recent Sessions'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                    {/* First Row: Add Missing Record Button */}
+                    <button
+                      onClick={() => {
+                        setRecordDate(new Date().toISOString().split('T')[0]);
+                        setRecordTime(new Date().toTimeString().slice(0, 5));
+                        setRecordHours(0);
+                        setRecordMinutes(15);
+                        setShowAddModal(true);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed text-xs font-bold transition-all active:scale-[0.99] cursor-pointer"
+                      style={{
+                        backgroundColor: 'var(--accent-subtle)',
+                        borderColor: 'var(--accent-muted)',
+                        color: 'var(--accent)'
+                      }}
+                    >
+                      <Plus size={15} />
+                      <span>{t('meditation.addMissingRecord') || 'Add Missing Record'}</span>
+                    </button>
+
+                    {stats.sessions.length === 0 ? (
+                      <div className="text-center py-4 text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
+                        {t('meditation.noSessionsYet') || 'No meditation sessions recorded yet'}
+                      </div>
+                    ) : (
+                      stats.sessions.slice(0, 10).map((session) => (
+                        <div
+                          key={session.id}
+                          className="flex items-center justify-between p-3.5 rounded-2xl border text-xs transition-all hover:border-[var(--accent-muted)] group"
+                          style={{
+                            backgroundColor: 'var(--sm-surface)',
+                            borderColor: 'var(--border-subtle)',
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--accent-subtle)', color: 'var(--accent)' }}>
+                              <Calendar size={15} />
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-semibold text-xs tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                                {formatSessionDate(session.date)}
+                              </span>
+                              <span className="text-[10px] font-medium tracking-wide" style={{ color: 'var(--text-muted)' }}>
+                                {formatSessionTime(session.date)}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <span
+                              className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border"
+                              style={{
+                                backgroundColor: 'var(--accent-subtle)',
+                                borderColor: 'var(--accent-muted)',
+                                color: 'var(--accent)',
+                              }}
+                            >
+                              {formatDuration(session.durationMin)}
+                            </span>
+
+                            <button
+                              onClick={() => handleDeleteSession(session.id)}
+                              className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer opacity-70 group-hover:opacity-100"
+                              title={t('common.delete') || 'Delete'}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </motion.div>
             )}
 
@@ -777,6 +945,102 @@ export function MeditationScreen() {
           </AnimatePresence>
         </div>
       </div>
+      {/* Modal for Adding Missing Record */}
+      <Modal
+        show={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title={t('meditation.addMissingRecord') || 'Add Missing Record'}
+        maxWidth="sm"
+      >
+        <form onSubmit={handleSaveRecord} className="space-y-5">
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>
+              {t('meditation.pastSessionDate') || 'Date'}
+            </label>
+            <input
+              type="date"
+              max={new Date().toISOString().split('T')[0]}
+              value={recordDate}
+              onChange={(e) => setRecordDate(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border outline-none font-sans text-base transition-all cursor-pointer"
+              style={{
+                backgroundColor: 'var(--bg-input, var(--sm-surface))',
+                borderColor: 'var(--border-base, var(--sm-border))',
+                color: 'var(--text-primary, var(--sm-text-primary))',
+              }}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>
+              {t('meditation.pastSessionTime') || 'Time'}
+            </label>
+            <input
+              type="time"
+              value={recordTime}
+              onChange={(e) => setRecordTime(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border outline-none font-sans text-base transition-all cursor-pointer"
+              style={{
+                backgroundColor: 'var(--bg-input, var(--sm-surface))',
+                borderColor: 'var(--border-base, var(--sm-border))',
+                color: 'var(--text-primary, var(--sm-text-primary))',
+              }}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: 'var(--text-muted)' }}>
+              {t('meditation.duration') || 'Duration'}
+            </label>
+            <div className="flex items-center gap-3">
+              <div className="flex-1">
+                <LabeledSelect
+                  value={recordHours}
+                  onChange={(val) => setRecordHours(parseInt(val))}
+                  options={Array.from({ length: 24 }).map((_, i) => ({
+                    value: i,
+                    label: i.toString().padStart(2, '0')
+                  }))}
+                  badgeLabel="Hours"
+                />
+              </div>
+              <span className="text-xl font-serif" style={{ color: 'var(--sm-border)' }}>:</span>
+              <div className="flex-1">
+                <LabeledSelect
+                  value={recordMinutes}
+                  onChange={(val) => setRecordMinutes(parseInt(val))}
+                  options={Array.from({ length: 60 }).map((_, i) => ({
+                    value: i,
+                    label: i.toString().padStart(2, '0')
+                  }))}
+                  badgeLabel="Minutes"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowAddModal(false)}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={recordHours * 60 + recordMinutes === 0 || isSavingRecord}
+              className="flex-1"
+            >
+              {t('meditation.addRecord') || 'Save Record'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }
