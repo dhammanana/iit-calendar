@@ -15,7 +15,7 @@ export function LegalModal({ show, onClose }: { show: boolean; onClose: () => vo
       onClose={onClose}
       title={t('settings.legal.title')}
       maxWidth="xl"
-      className="h-[calc(100vh-3rem)] max-h-[calc(100vh-3rem)] sm:h-[88vh] sm:max-h-[88vh]"
+      className="h-[85vh] max-h-[85vh] px-6 sm:px-8 py-6"
     >
 
       {/* Tabs */}

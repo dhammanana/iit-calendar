@@ -184,9 +184,9 @@ export function SettingsModal({
         onClose={onClose}
         title={t('common.settings')}
         maxWidth="xl"
-        className="p-4 sm:p-6"
+        className="h-[85vh] max-h-[85vh] px-6 sm:px-8 py-6"
       >
-        <div className="space-y-6 px-0">
+        <div className="flex-1 overflow-y-auto space-y-6 px-0 pr-1">
 
                 {/* Backup & Restore Section */}
                 <section className="space-y-3 p-4 rounded-3xl border bg-[var(--bg-card-alt)]" style={{ borderColor: 'var(--border-subtle)' }}>

@@ -71,7 +71,7 @@ export function Modal({
             exit={{ scale: 0.95, y: 20 }}
             transition={{ ease: [0.16, 1, 0.3, 1], duration: 0.28 }}
             className={cn(
-              "w-full rounded-[2.5rem] p-6 shadow-2xl relative border flex flex-col max-h-[90vh] will-change-transform transform-gpu",
+              "w-full rounded-[2.5rem] p-6 sm:p-8 shadow-2xl relative border flex flex-col max-h-[90vh] will-change-transform transform-gpu",
               maxWidthMap[maxWidth],
               className
             )}
