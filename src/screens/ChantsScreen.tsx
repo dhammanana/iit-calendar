@@ -281,7 +281,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
             aria-label="Settings"
             className="absolute top-0 right-2 shadow-sm"
           />
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
             {t('chant.focusMind') || 'Sacred Recitations'}
           </p>
         </div>

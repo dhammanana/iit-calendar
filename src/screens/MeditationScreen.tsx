@@ -244,7 +244,7 @@ export function MeditationScreen() {
 
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">
-          <h1 className="font-serif text-3xl font-bold leading-none mb-1.5" style={{ color: 'var(--text-primary)' }}>
+          <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
             {t('common.stillness') || 'Stillness'}
           </h1>
           {!isDistractionFree && (
@@ -256,7 +256,7 @@ export function MeditationScreen() {
               className="absolute top-0 right-2 shadow-sm"
             />
           )}
-          <p className="text-[10px] font-semibold uppercase tracking-wider leading-none" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
             Practice mindfulness
           </p>
         </div>
