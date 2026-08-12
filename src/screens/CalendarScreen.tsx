@@ -343,7 +343,7 @@ export function CalendarScreen({
             variant="outline"
             icon={SettingsIcon}
             aria-label="Settings"
-            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            className="absolute top-0 right-2 shadow-sm"
           />
           <div className="flex flex-col sm:flex-row items-center justify-center sm:gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-tight text-center">
             <span>{settings.calendarType === 'srilanka' ? t('calendar.srilanka') : settings.calendarType}</span>

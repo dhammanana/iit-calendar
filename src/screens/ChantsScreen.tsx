@@ -279,7 +279,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
             variant="outline"
             icon={SettingsIcon}
             aria-label="Settings"
-            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            className="absolute top-0 right-2 shadow-sm"
           />
           <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
             {t('chant.focusMind') || 'Sacred Recitations'}

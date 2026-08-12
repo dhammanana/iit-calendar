@@ -346,7 +346,7 @@ export function StudyScreen() {
             variant="outline"
             icon={SettingsIcon}
             aria-label="Settings"
-            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            className="absolute top-0 right-2 shadow-sm"
           />
           <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] leading-none">
             {t('study.subtitle') || 'Timed Focus & Rest'}

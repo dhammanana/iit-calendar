@@ -502,10 +502,10 @@ m6663 23 l112 -38 185 3 c102 2 279 7 393 12 194 8 212 10 260 34 28 14 53 24
             variant="outline"
             icon={SettingsIcon}
             aria-label="Settings"
-            className="absolute top-1/2 -translate-y-1/2 right-2 shadow-sm"
+            className="absolute top-0 right-2 shadow-sm"
           />
           {!selectedBook ? (
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 leading-none">
               {t('common.booksSubtitle') || 'Dhamma Books & Texts'}
             </p>
           ) : (
