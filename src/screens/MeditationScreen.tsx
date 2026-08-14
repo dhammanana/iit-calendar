@@ -685,7 +685,7 @@ export function MeditationScreen() {
                     </span>
                   </div>
 
-                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                  <div className="space-y-2">
                     {/* First Row: Add Missing Record Button */}
                     <button
                       onClick={() => {
