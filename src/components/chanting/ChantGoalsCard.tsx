@@ -270,14 +270,6 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
                 ? `${t('calendar.today') || 'Today'}, ${format(selectedStats.date, 'MMM d')}`
                 : format(selectedStats.date, 'EEEE, MMM d')}
             </span>
-            {selectedStats.isCurrentDay && (
-              <span
-                className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full"
-                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-              >
-                Active
-              </span>
-            )}
           </div>
 
           {/* Progress Counters */}
@@ -298,8 +290,8 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
       {/* Bottom Section: 7 Days of the Week Circles (Samsung Health Style) */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2 pt-1">
         {weekDayStats.map((day, idx) => {
-          const miniSize = 42;
-          const miniStroke = 4;
+          const miniSize = 34;
+          const miniStroke = 3.5;
           const miniRadius = (miniSize - miniStroke) / 2;
           const miniCircumference = 2 * Math.PI * miniRadius;
           const miniDashOffset = miniCircumference * (1 - day.progressRatio);
@@ -310,10 +302,10 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
               type="button"
               onClick={() => setSelectedDate(startOfDay(day.date))}
               className={cn(
-                "flex flex-col items-center py-2 px-1 rounded-2xl transition-all active:scale-95 group focus:outline-none",
+                "flex flex-col items-center py-2 px-0.5 sm:px-1 rounded-2xl transition-all active:scale-95 group focus:outline-none",
                 day.isSelected
-                  ? "bg-[var(--accent-subtle)] border border-[var(--accent-muted)] shadow-sm"
-                  : "hover:bg-[var(--bg-muted)]/30 border border-transparent"
+                  ? "bg-[var(--accent-subtle)] ring-1 ring-[var(--accent)]/30 shadow-xs"
+                  : "hover:bg-[var(--bg-muted)]/30"
               )}
             >
               {/* Mini Circle */}
@@ -327,7 +319,7 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
                     fill="none"
                     stroke="var(--accent-subtle)"
                     strokeWidth={miniStroke}
-                    className="opacity-40"
+                    className="opacity-50"
                   />
                   {/* Mini Progress */}
                   {day.totalCount > 0 && (
@@ -352,17 +344,17 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
                 <div className="absolute inset-0 flex items-center justify-center">
                   {day.completedGoals > 0 ? (
                     <span
-                      className="text-xs font-black"
+                      className="text-[11px] font-black leading-none"
                       style={{ color: 'var(--accent)' }}
                     >
                       {day.completedGoals}
                     </span>
                   ) : day.totalCount > 0 ? (
-                    <span className="text-[10px] font-bold text-[var(--text-muted)]">
+                    <span className="text-[9px] font-bold text-[var(--text-muted)] leading-none">
                       0
                     </span>
                   ) : (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-subtle)] opacity-60" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-subtle)] opacity-70" />
                   )}
                 </div>
               </div>
@@ -375,9 +367,9 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
               {/* Date (e.g. 16 or 16/6) */}
               <div
                 className={cn(
-                  "text-[10px] font-black px-1.5 py-0.5 rounded-full mt-1 leading-tight transition-colors",
+                  "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black mt-1 leading-none transition-colors",
                   day.isCurrentDay
-                    ? "bg-[var(--accent)] text-white font-bold"
+                    ? "bg-[var(--accent)] text-white"
                     : day.isSelected
                     ? "text-[var(--accent)]"
                     : "text-[var(--text-primary)]"
