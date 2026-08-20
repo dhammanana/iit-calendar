@@ -439,13 +439,12 @@ export function MeditationScreen() {
 
                       <button
                         onClick={cycleAlertMode}
-                        title={`Alert Mode: ${
-                          settings.alertMode === 'vibrate'
+                        title={`Alert Mode: ${settings.alertMode === 'vibrate'
                             ? 'Vibrate Only'
                             : settings.alertMode === 'sound'
                               ? 'Sound Only'
                               : 'Vibrate + Sound'
-                        }`}
+                          }`}
                         className="w-12 h-12 rounded-full flex flex-col items-center justify-center transition-transform active:scale-90 border relative shadow-sm cursor-pointer"
                         style={{
                           backgroundColor: 'var(--surface)',
@@ -514,13 +513,12 @@ export function MeditationScreen() {
                     {/* Icon-Only Alert Mode toggle button */}
                     <button
                       onClick={cycleAlertMode}
-                      title={`Alert Mode: ${
-                        settings.alertMode === 'vibrate'
+                      title={`Alert Mode: ${settings.alertMode === 'vibrate'
                           ? 'Vibrate Only'
                           : settings.alertMode === 'sound'
                             ? 'Sound Only'
                             : 'Vibrate + Sound'
-                      }`}
+                        }`}
                       className="w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90 border relative shadow-sm cursor-pointer shrink-0"
                       style={{
                         backgroundColor: 'var(--surface)',
@@ -1040,7 +1038,7 @@ export function MeditationScreen() {
               disabled={recordHours * 60 + recordMinutes === 0 || isSavingRecord}
               className="flex-1"
             >
-              {t('meditation.addRecord') || 'Save Record'}
+              {t('meditation.addRecord') || 'Save'}
             </Button>
           </div>
         </form>

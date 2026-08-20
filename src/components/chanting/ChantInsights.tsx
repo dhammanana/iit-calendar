@@ -8,6 +8,7 @@ import { format, startOfDay, subDays, isSameDay } from 'date-fns';
 import { useI18n } from '../../hooks/useI18n';
 
 import { getChantTitle } from '../../services/ChantService';
+import { ChantGoalsCard } from './ChantGoalsCard';
 
 interface ChantInsightsProps {
   chants: UserChant[];
@@ -118,6 +119,9 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
           </div>
         </div>
       </div>
+
+      {/* Goals Card (Samsung Health style visualization) */}
+      <ChantGoalsCard sessions={sessions} />
 
       {/* Consistency Grid */}
       <div
