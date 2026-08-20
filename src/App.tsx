@@ -5,11 +5,11 @@ import {
   Settings as SettingsIcon,
   Wind,
   Timer,
-  BookOpen,
   Book,
   Info,
   User as UserIcon
 } from 'lucide-react';
+import { HourglassIcon } from './components/icons/HourglassIcon';
 import { ThaiCalendar } from './lib/calendar/ThaiCalendar';
 import { MyanmarCalendar } from './lib/calendar/MyanmarCalendar';
 import { SriLankanCalendar } from './lib/calendar/SriLankanCalendar';
@@ -257,7 +257,7 @@ export default function App() {
         <NavButton active={activeTab === 'meditation'} onClick={() => handleTabClick('meditation')} icon={<Timer size={20} />} label={t('common.stillness') || 'Stillness'} />
         <NavButton active={activeTab === 'chants'} onClick={() => handleTabClick('chants')} icon={<Wind size={20} />} label={t('common.chants') || 'Chants'} />
         <NavButton active={activeTab === 'book'} onClick={() => handleTabClick('book')} icon={<Book size={20} />} label={t('common.books') || t('common.book') || 'Books'} />
-        <NavButton active={activeTab === 'study'} onClick={() => handleTabClick('study')} icon={<BookOpen size={20} />} label={t('common.study') || 'Study'} />
+        <NavButton active={activeTab === 'study'} onClick={() => handleTabClick('study')} icon={<HourglassIcon size={20} />} label={t('common.study') || 'Study'} />
       </nav>
     </div>
   );

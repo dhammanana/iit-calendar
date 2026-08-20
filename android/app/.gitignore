@@ -11,3 +11,4 @@
 !/src/main/res/raw/bell.wav
 !/src/main/res/raw/bell_*.wav
 !/src/main/res/raw/noon_*.wav
+!/src/main/res/raw/silent.wav

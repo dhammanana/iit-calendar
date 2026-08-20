@@ -147,7 +147,7 @@ class AlarmPlugin {
       try {
         const isAndroid = Capacitor.getPlatform() === 'android';
         const baseChannels: { id: string, name: string, importance: Importance, sound?: string, visibility: Visibility, vibration?: boolean }[] = [
-          { id: 'meditation_v10', name: 'Meditation', importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1, vibration: true },
+          { id: 'meditation_v11', name: 'Meditation', importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1, vibration: true },
           { id: 'solar_noon_v9', name: 'Solar Noon', importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1, vibration: true },
           { id: 'dawn_v9',       name: 'Dawn',       importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1, vibration: true },
           { id: 'study_v9',      name: 'Study',      importance: 5, sound: isAndroid ? 'bell' : 'bell.wav', visibility: 1, vibration: true }
@@ -156,7 +156,7 @@ class AlarmPlugin {
         // Create specific channels for meditation bell sound types (Sound + Vibrate)
         const bellTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
         const meditationChannels = bellTypes.map(type => ({
-          id: `meditation_${type}_v10`,
+          id: `meditation_${type}_v11`,
           name: `Meditation (${type.charAt(0).toUpperCase() + type.slice(1)})`,
           importance: 5 as Importance,
           sound: isAndroid ? `bell_${type}` : `bell_${type}.wav`,
@@ -166,7 +166,7 @@ class AlarmPlugin {
 
         // Create specific channels for sound-only meditation (no vibration)
         const meditationNoVibChannels = bellTypes.map(type => ({
-          id: `meditation_${type}_novib_v10`,
+          id: `meditation_${type}_novib_v11`,
           name: `Meditation (${type.charAt(0).toUpperCase() + type.slice(1)} - Sound Only)`,
           importance: 5 as Importance,
           sound: isAndroid ? `bell_${type}` : `bell_${type}.wav`,
@@ -175,17 +175,19 @@ class AlarmPlugin {
         }));
 
         const vibrateOnlyMeditationChannel = {
-          id: 'meditation_vibrate_only_v10',
+          id: 'meditation_vibrate_only_v11',
           name: 'Meditation (Vibrate Only)',
           importance: 4 as Importance,
+          sound: isAndroid ? 'silent' : 'silent.wav',
           vibration: true,
           visibility: 1 as Visibility
         };
 
         const silentMeditationChannel = {
-          id: 'meditation_silent_v10',
+          id: 'meditation_silent_v11',
           name: 'Meditation (Silent)',
           importance: 3 as Importance,
+          sound: isAndroid ? 'silent' : 'silent.wav',
           vibration: false,
           visibility: 1 as Visibility
         };

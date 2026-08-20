@@ -20,6 +20,7 @@
 		45FA00000200000000000001 /* bell_bowl.wav in Resources */ = {isa = PBXBuildFile; fileRef = 45FA00000200000000000002 /* bell_bowl.wav */; };
 		45FA00000100000000000001 /* bell_bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = 45FA00000100000000000002 /* bell_bell.wav */; };
 		45FA00000000000000000001 /* bell.wav in Resources */ = {isa = PBXBuildFile; fileRef = 45FA00000000000000000002 /* bell.wav */; };
+		45FA00000d00000000000001 /* silent.wav in Resources */ = {isa = PBXBuildFile; fileRef = 45FA00000d00000000000002 /* silent.wav */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		45CC49292FE13E2E00E7716A /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45CC49282FE13E2D00E7716A /* WidgetKit.framework */; };
 		45CC492B2FE13E2E00E7716A /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45CC492A2FE13E2E00E7716A /* SwiftUI.framework */; };
@@ -71,6 +72,7 @@
 		45FA00000200000000000002 /* bell_bowl.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bell_bowl.wav; sourceTree = "<group>"; };
 		45FA00000100000000000002 /* bell_bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bell_bell.wav; sourceTree = "<group>"; };
 		45FA00000000000000000002 /* bell.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bell.wav; sourceTree = "<group>"; };
+		45FA00000d00000000000002 /* silent.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = silent.wav; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		45CC49262FE13E2D00E7716A /* IITWidgetsExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = IITWidgetsExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		45CC49282FE13E2D00E7716A /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -178,6 +180,7 @@
 				45FA00000200000000000002 /* bell_bowl.wav */,
 				45FA00000100000000000002 /* bell_bell.wav */,
 				45FA00000000000000000002 /* bell.wav */,
+				45FA00000d00000000000002 /* silent.wav */,
 				45CC49422FE13EF300E7716A /* App.entitlements */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
 				504EC3071FED79650016851F /* AppDelegate.swift */,
@@ -303,6 +306,7 @@
 				45FA00000200000000000001 /* bell_bowl.wav in Resources */,
 				45FA00000100000000000001 /* bell_bell.wav in Resources */,
 				45FA00000000000000000001 /* bell.wav in Resources */,
+				45FA00000d00000000000001 /* silent.wav in Resources */,
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
 				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,

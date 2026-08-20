@@ -17,28 +17,30 @@ export interface ActiveMeditation {
 }
 
 function getMeditationSoundAndChannel(soundEnabled = true, vibrationEnabled = true, bellType = 'bowl') {
+  const isAndroid = Capacitor.getPlatform() === 'android';
+  const silentSound = isAndroid ? 'silent' : 'silent.wav';
+
   if (!soundEnabled && !vibrationEnabled) {
-    return { sound: '', channelId: 'meditation_silent_v10' };
+    return { sound: silentSound, channelId: 'meditation_silent_v11' };
   }
   if (!soundEnabled && vibrationEnabled) {
-    return { sound: '', channelId: 'meditation_vibrate_only_v10' };
+    return { sound: silentSound, channelId: 'meditation_vibrate_only_v11' };
   }
 
   const type = (bellType || 'bowl').toLowerCase();
   const validTypes = ['bowl', 'gong', 'chime', 'tibetan', 'woodblock', 'bell'];
   const safeType = validTypes.includes(type) ? type : 'bowl';
-  const isAndroid = Capacitor.getPlatform() === 'android';
   const sound = isAndroid ? `bell_${safeType}` : `bell_${safeType}.wav`;
 
   if (vibrationEnabled) {
     return {
       sound,
-      channelId: `meditation_${safeType}_v10`
+      channelId: `meditation_${safeType}_v11`
     };
   } else {
     return {
       sound,
-      channelId: `meditation_${safeType}_novib_v10`
+      channelId: `meditation_${safeType}_novib_v11`
     };
   }
 }

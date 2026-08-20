@@ -168,14 +168,15 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
 
             <div className="text-center z-10 flex flex-col items-center justify-center">
               <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                Duration
+                {t('meditation.duration') || 'Duration'}
               </span>
-              <div className="font-serif text-5xl font-medium tracking-tight text-[var(--text-primary)] leading-none mb-2.5">
+              <div className="font-serif text-5xl font-medium tracking-tight text-[var(--text-primary)] leading-none">
                 {timerSettings.hours > 0 ? `${timerSettings.hours}:${timerSettings.minutes.toString().padStart(2, '0')}:00` : `${timerSettings.minutes.toString().padStart(2, '0')}:00`}
               </div>
-              <div className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--border-subtle)]">
-                {timerSettings.hours === 0 && timerSettings.minutes === 0 ? "Stopwatch" : "Countdown"}
-              </div>
+            </div>
+
+            <div className="absolute bottom-12 z-10 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--border-subtle)]">
+              {timerSettings.hours === 0 && timerSettings.minutes === 0 ? "Stopwatch" : "Countdown"}
             </div>
           </div>
           
@@ -184,9 +185,9 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
             variant="primary"
             size="lg"
             icon={Play}
-            className="h-14 px-8"
+            className="w-[136px] h-14"
           >
-            Start Chanting
+            Start
           </Button>
           
           <div className="w-full">
