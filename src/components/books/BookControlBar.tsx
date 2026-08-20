@@ -53,7 +53,7 @@ export function BookControlBar({
     <div
       className="fixed left-0 right-0 z-40 bg-[var(--bg-main)]/95 backdrop-blur-xl border-t border-[var(--border-subtle)] px-3 sm:px-6 py-2.5 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] dark:shadow-[0_-4px_20px_rgba(0,0,0,0.25)] flex items-center justify-between gap-2 sm:gap-3"
       style={{
-        bottom: 'calc(4.75rem + env(safe-area-inset-bottom, 0px))',
+        bottom: 'calc(5.25rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
       {selectedBook && (

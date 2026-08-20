@@ -203,7 +203,7 @@ export default function App() {
         id="main-tabs"
         className="flex-1 relative overflow-hidden"
       >
-        <div id="tab-calendar" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'calendar' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-calendar" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'calendar' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <CalendarScreen
             settings={settings}
             onUpdateSettings={setSettings}
@@ -216,19 +216,19 @@ export default function App() {
           />
         </div>
 
-        <div id="tab-meditation" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'meditation' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-meditation" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'meditation' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <MeditationScreen />
         </div>
 
-        <div id="tab-chants" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'chants' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-chants" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'chants' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <ChantsScreen settings={settings} />
         </div>
 
-        <div id="tab-book" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'book' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(7.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-book" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'book' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(8.5rem + env(safe-area-inset-bottom))' }}>
           <BookScreen settings={settings} isActive={activeTab === 'book'} />
         </div>
 
-        <div id="tab-study" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'study' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(4.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-study" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'study' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))' }}>
           <StudyScreen />
         </div>
       </main>
@@ -241,40 +241,58 @@ export default function App() {
         onGetLocation={getCurrentLocation}
       />
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 glass-card flex justify-around items-center border-t border-stone-200/50 dark:border-stone-800/80 bg-white/85 dark:bg-[#181512]/90 shadow-[0_-8px_32px_rgba(0,0,0,0.04)] dark:shadow-[0_-8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md overflow-x-auto"
+      {/* Floating Bottom Nav (iOS / OneUI Style) */}
+      <div
+        className="fixed left-0 right-0 z-50 pointer-events-none flex justify-center px-3 sm:px-4"
         style={{
-          paddingTop: '0.65rem',
-          paddingBottom: 'calc(0.65rem + env(safe-area-inset-bottom))',
-          paddingLeft: '1rem',
-          paddingRight: '1rem',
+          bottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))',
         }}
       >
-        <NavButton active={activeTab === 'calendar'} onClick={() => handleTabClick('calendar')} icon={<HomeIcon size={20} />} label={t('common.home') || 'Home'} />
-        <NavButton active={activeTab === 'meditation'} onClick={() => handleTabClick('meditation')} icon={<ScreenIcon name="meditation" size={20} />} label={t('common.stillness') || 'Stillness'} />
-        <NavButton active={activeTab === 'chants'} onClick={() => handleTabClick('chants')} icon={<ScreenIcon name="chants" size={23} />} label={t('common.chants') || 'Chants'} />
-        <NavButton active={activeTab === 'book'} onClick={() => handleTabClick('book')} icon={<ScreenIcon name="books" size={20} />} label={t('common.books') || t('common.book') || 'Books'} />
-        <NavButton active={activeTab === 'study'} onClick={() => handleTabClick('study')} icon={<ScreenIcon name="study" size={20} />} label={t('common.study') || 'Study'} />
-      </nav>
+        <nav
+          className={cn(
+            "pointer-events-auto w-full max-w-md sm:max-w-lg",
+            "flex justify-around items-center",
+            "px-2 py-1.5 sm:px-3 sm:py-2",
+            "rounded-full",
+            "bg-white/80 dark:bg-[#181512]/80",
+            "backdrop-blur-2xl backdrop-saturate-150",
+            "border border-stone-200/70 dark:border-white/10",
+            "shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.8)]",
+            "dark:shadow-[0_16px_40px_-5px_rgba(0,0,0,0.6),0_4px_16px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.08)]",
+            "transition-all duration-300"
+          )}
+        >
+          <NavButton active={activeTab === 'calendar'} onClick={() => handleTabClick('calendar')} icon={<HomeIcon size={20} />} label={t('common.home') || 'Home'} />
+          <NavButton active={activeTab === 'meditation'} onClick={() => handleTabClick('meditation')} icon={<ScreenIcon name="meditation" size={20} />} label={t('common.stillness') || 'Stillness'} />
+          <NavButton active={activeTab === 'chants'} onClick={() => handleTabClick('chants')} icon={<ScreenIcon name="chants" size={22} />} label={t('common.chants') || 'Chants'} />
+          <NavButton active={activeTab === 'book'} onClick={() => handleTabClick('book')} icon={<ScreenIcon name="books" size={20} />} label={t('common.books') || t('common.book') || 'Books'} />
+          <NavButton active={activeTab === 'study'} onClick={() => handleTabClick('study')} icon={<ScreenIcon name="study" size={20} />} label={t('common.study') || 'Study'} />
+        </nav>
+      </div>
     </div>
   );
 }
 
 function NavButton({ icon, label, active, onClick }: { icon: React.ReactNode, label: string, active: boolean, onClick: () => void }) {
   return (
-    <button onClick={onClick} className="flex flex-col items-center justify-center flex-1 py-1 relative group min-w-[64px]">
-      <div className={cn(
-        "px-5 py-1 rounded-full flex items-center justify-center",
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex flex-col items-center justify-center flex-1 py-1.5 px-1 sm:px-2 rounded-full relative group select-none outline-none active:scale-95 transition-all duration-200 min-w-[56px]",
         active
-          ? "bg-[var(--accent-soft)] text-[var(--accent)]"
-          : "text-stone-400 dark:text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200"
-      )}>
+          ? "bg-[var(--accent-soft)] text-[var(--accent)] font-bold"
+          : "text-stone-400 dark:text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+      )}
+    >
+      <div className="flex items-center justify-center transition-transform duration-200">
         {icon}
       </div>
       <span className={cn(
-        "text-[9px] font-bold mt-1 tracking-wider uppercase",
+        "text-[9px] sm:text-[9.5px] font-bold mt-0.5 tracking-wider uppercase transition-colors duration-200",
         active ? "text-[var(--accent)] font-extrabold" : "text-stone-400 dark:text-stone-400"
-      )}>{label}</span>
+      )}>
+        {label}
+      </span>
     </button>
   );
 }
