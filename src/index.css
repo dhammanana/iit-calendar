@@ -152,6 +152,27 @@
   box-shadow: 0 0 15px var(--accent-ring);
 }
 
+/* ── Progressive bottom blur gradient (iOS / OneUI floating nav backdrop) ─── */
+.bottom-glass-gradient {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  pointer-events: none;
+  z-index: 45;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--bg-main) 40%, transparent) 0%,
+    color-mix(in srgb, var(--bg-main) 15%, transparent) 50%,
+    transparent 100%
+  );
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+}
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .hide-scrollbar::-webkit-scrollbar,
 .scrollbar-hide::-webkit-scrollbar {

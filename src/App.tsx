@@ -241,6 +241,9 @@ export default function App() {
         onGetLocation={getCurrentLocation}
       />
 
+      {/* Progressive Bottom Glassy Blur Gradient */}
+      <div className="bottom-glass-gradient" />
+
       {/* Floating Bottom Nav (iOS / OneUI Style) */}
       <div
         className="fixed left-0 right-0 z-50 pointer-events-none flex justify-center px-3 sm:px-4"
