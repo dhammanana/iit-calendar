@@ -53,7 +53,7 @@ export function BookControlBar({
     <div
       className="fixed left-0 right-0 z-40 pointer-events-none flex justify-center px-3 sm:px-4"
       style={{
-        bottom: 'calc(4.85rem + env(safe-area-inset-bottom, 0px))',
+        bottom: 'calc(5.75rem + env(safe-area-inset-bottom, 0px))',
       }}
     >
       <div

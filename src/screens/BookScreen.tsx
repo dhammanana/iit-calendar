@@ -320,7 +320,7 @@ export function BookScreen({ settings, isActive = true }: { settings: Settings; 
       </div>
 
       {/* Card Overlay container */}
-      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex-1 flex flex-col gap-4">
+      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-[calc(10.5rem+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex-1 flex flex-col gap-4">
 
         {/* Header & Interactive Breadcrumbs */}
         <div className="px-2 text-center relative flex flex-col items-center w-full pr-12 pl-12">

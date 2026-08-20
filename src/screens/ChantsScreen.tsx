@@ -198,7 +198,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
   if (loading) return <div className="flex items-center justify-center py-20">{t('chant.loading')}</div>;
 
   return (
-    <div className="flex flex-col relative bg-[var(--bg-main)]">
+    <div className="flex flex-col relative bg-[var(--bg-main)] min-h-full">
 
       {/* Dynamic/Notch-compatible Vector Illustration Header (Chants: ripple/lotus theme) */}
       <div
@@ -273,7 +273,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
       </div>
 
       {/* Card Overlay container (Oval at the top overlapping the header) */}
-      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex flex-col gap-6">
+      <div className="relative z-20 mt-[-2.5rem] bg-[var(--bg-main)] rounded-t-[3rem] px-4 pt-6 pb-[calc(7rem+env(safe-area-inset-bottom,0px))] shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.25)] flex flex-col gap-6 flex-1">
 
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">

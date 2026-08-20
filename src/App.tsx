@@ -203,7 +203,7 @@ export default function App() {
         id="main-tabs"
         className="flex-1 relative overflow-hidden"
       >
-        <div id="tab-calendar" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'calendar' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(7rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-calendar" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'calendar' ? 'block' : 'hidden')}>
           <CalendarScreen
             settings={settings}
             onUpdateSettings={setSettings}
@@ -216,19 +216,19 @@ export default function App() {
           />
         </div>
 
-        <div id="tab-meditation" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'meditation' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(7rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-meditation" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'meditation' ? 'block' : 'hidden')}>
           <MeditationScreen />
         </div>
 
-        <div id="tab-chants" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'chants' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(7rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-chants" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'chants' ? 'block' : 'hidden')}>
           <ChantsScreen settings={settings} />
         </div>
 
-        <div id="tab-book" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'book' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(9.5rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-book" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'book' ? 'block' : 'hidden')}>
           <BookScreen settings={settings} isActive={activeTab === 'book'} />
         </div>
 
-        <div id="tab-study" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'study' ? 'block' : 'hidden')} style={{ paddingBottom: 'calc(7rem + env(safe-area-inset-bottom))' }}>
+        <div id="tab-study" className={cn("w-full h-full overflow-y-auto hide-scrollbar", activeTab === 'study' ? 'block' : 'hidden')}>
           <StudyScreen />
         </div>
       </main>
