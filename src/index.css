@@ -158,19 +158,35 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  height: calc(6.5rem + env(safe-area-inset-bottom, 0px));
   pointer-events: none;
   z-index: 45;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--bg-main) 40%, transparent) 0%,
-    color-mix(in srgb, var(--bg-main) 15%, transparent) 50%,
+    color-mix(in srgb, var(--bg-main) 92%, transparent) 0%,
+    color-mix(in srgb, var(--bg-main) 82%, transparent) 25%,
+    color-mix(in srgb, var(--bg-main) 50%, transparent) 55%,
+    color-mix(in srgb, var(--bg-main) 18%, transparent) 80%,
     transparent 100%
   );
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
-  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 50%, transparent 100%);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  mask-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.95) 25%,
+    rgba(0, 0, 0, 0.7) 55%,
+    rgba(0, 0, 0, 0.25) 80%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.95) 25%,
+    rgba(0, 0, 0, 0.7) 55%,
+    rgba(0, 0, 0, 0.25) 80%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
