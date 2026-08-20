@@ -330,7 +330,7 @@ export function MeditationScreen() {
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
-            {t('common.stillness') || 'Stillness'}
+            {t('common.meditate') || t('common.stillness') || 'Meditate'}
           </h1>
           {!isDistractionFree && (
             <Button

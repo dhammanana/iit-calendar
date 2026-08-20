@@ -278,7 +278,7 @@ export function ChantsScreen({ settings }: { settings: Settings }) {
         {/* Title & Tagline info inside the card */}
         <div className="px-2 text-center flex flex-col items-center relative w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
-            {t('common.chants') || 'Chants'}
+            {t('common.chant') || t('common.chants') || 'Chant'}
           </h1>
           <Button
             onClick={() => setShowSettings(true)}

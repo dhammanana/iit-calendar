@@ -325,7 +325,7 @@ export function BookScreen({ settings, isActive = true }: { settings: Settings; 
         {/* Header & Interactive Breadcrumbs */}
         <div className="px-2 text-center relative flex flex-col items-center w-full pr-12 pl-12">
           <h1 className="font-serif text-3xl font-bold text-[var(--text-primary)] leading-none mb-1.5">
-            {t('common.books') || t('common.book') || 'Books'}
+            {t('common.read') || t('common.books') || t('common.book') || 'Read'}
           </h1>
           <Button
             onClick={() => setShowSettings(true)}
