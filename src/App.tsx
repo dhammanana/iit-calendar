@@ -252,7 +252,7 @@ export default function App() {
       >
         <NavButton active={activeTab === 'calendar'} onClick={() => handleTabClick('calendar')} icon={<HomeIcon size={20} />} label={t('common.home') || 'Home'} />
         <NavButton active={activeTab === 'meditation'} onClick={() => handleTabClick('meditation')} icon={<ScreenIcon name="meditation" size={20} />} label={t('common.stillness') || 'Stillness'} />
-        <NavButton active={activeTab === 'chants'} onClick={() => handleTabClick('chants')} icon={<ScreenIcon name="chants" size={20} />} label={t('common.chants') || 'Chants'} />
+        <NavButton active={activeTab === 'chants'} onClick={() => handleTabClick('chants')} icon={<ScreenIcon name="chants" size={23} />} label={t('common.chants') || 'Chants'} />
         <NavButton active={activeTab === 'book'} onClick={() => handleTabClick('book')} icon={<ScreenIcon name="books" size={20} />} label={t('common.books') || t('common.book') || 'Books'} />
         <NavButton active={activeTab === 'study'} onClick={() => handleTabClick('study')} icon={<ScreenIcon name="study" size={20} />} label={t('common.study') || 'Study'} />
       </nav>
