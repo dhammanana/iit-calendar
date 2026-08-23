@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { Award, Zap, TrendingUp, Calendar, Flame, Clock, BarChart2 } from 'lucide-react';
 import { UserChant, ChantSession, UserChantStats } from '../../types';
 import { cn } from '../../lib/utils';
@@ -85,7 +85,7 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
           </span>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-10">
-          <div className="w-48 h-48 relative">
+          <div className="w-48 h-48 relative pointer-events-none select-none">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -94,12 +94,18 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
                   outerRadius={80}
                   paddingAngle={5}
                   dataKey="value"
+                  isAnimationActive={true}
+                  tabIndex={-1}
                 >
                   {pieData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={COLORS[index % COLORS.length]} 
+                      style={{ outline: 'none' }}
+                      tabIndex={-1}
+                    />
                   ))}
                 </Pie>
-                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -137,10 +143,18 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
         
         <div className="grid grid-cols-7 gap-2">
           {gridDays.map((day, i) => {
-            const opacity = day.total === 0 ? 'bg-[var(--bg-muted)]/50' : 
+            const bgClass = day.total === 0 ? 'bg-[var(--bg-muted)]/50' : 
                             day.total < 10 ? 'bg-[var(--accent)]/20' :
                             day.total < 50 ? 'bg-[var(--accent)]/50' :
                             day.total < 100 ? 'bg-[var(--accent)]/80' : 'bg-[var(--accent)]';
+            // Use white text on darker squares for contrast, dark text on lighter ones
+            const textClass = day.total === 0
+              ? 'text-[var(--text-muted)] opacity-0'
+              : day.total < 10
+              ? 'text-[var(--text-secondary)]'
+              : day.total < 50
+              ? 'text-[var(--text-primary)]'
+              : 'text-white';
             return (
               <motion.div
                 key={i}
@@ -148,21 +162,14 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.01 }}
-                className={cn("aspect-square rounded-[0.5rem] transition-all", opacity)}
-              />
+                className={cn("aspect-square rounded-[0.5rem] transition-all flex items-center justify-center", bgClass)}
+              >
+                <span className={cn("text-[10px] font-bold leading-none select-none", textClass)}>
+                  {day.total > 0 ? day.total : ''}
+                </span>
+              </motion.div>
             );
           })}
-        </div>
-        <div className="flex justify-between mt-4 text-[0.6rem] font-black uppercase tracking-widest text-[var(--text-muted)] px-1">
-          <span>{t('chant.less')}</span>
-          <div className="flex gap-1">
-            <div className="w-2 h-2 rounded-sm bg-[var(--bg-muted)]/50" />
-            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/20" />
-            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/50" />
-            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]/80" />
-            <div className="w-2 h-2 rounded-sm bg-[var(--accent)]" />
-          </div>
-          <span>{t('chant.more')}</span>
         </div>
       </div>
 

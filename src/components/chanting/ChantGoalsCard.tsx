@@ -8,6 +8,145 @@ import { useI18n } from '../../hooks/useI18n';
 import { Modal } from '../Modal';
 import { Button } from '../Button';
 
+interface GoalRingProps {
+  size: number;
+  strokeWidth: number;
+  totalCount: number;
+  goal: number;
+  filterId: string;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+function GoalRing({
+  size,
+  strokeWidth,
+  totalCount,
+  goal,
+  filterId,
+  className,
+  children,
+}: GoalRingProps) {
+  const rMid = (size - strokeWidth) / 2;
+  const center = size / 2;
+  const circumference = 2 * Math.PI * rMid;
+
+  // Base ring calculations
+  const baseRatio = goal > 0 ? Math.min(1, totalCount / goal) : 0;
+  const baseDashOffset = circumference * (1 - baseRatio);
+
+  // Overlap ring calculations (when goal reached and extra chanting in progress)
+  const remainder = goal > 0 ? totalCount % goal : 0;
+  const hasOverlap = totalCount > goal && remainder > 0;
+  const overlapRatio = goal > 0 ? remainder / goal : 0;
+
+  // Arrowhead position & tangent direction
+  const totalAngle = overlapRatio * 2 * Math.PI;
+  const angleDeg = overlapRatio * 360;
+  const capX = center + rMid * Math.sin(totalAngle);
+  const capY = center - rMid * Math.cos(totalAngle);
+  const tanX = Math.cos(totalAngle);
+  const tanY = Math.sin(totalAngle);
+
+  // Compact, perfectly flush arrowhead dimensions that curve naturally with the track
+  const forwardLen = strokeWidth * 0.48; // ~8.6px on 18px stroke (compact pointed tip)
+  const halfW = strokeWidth / 2;          // exactly 9px (flush with outer & inner track)
+
+  // Full stroke dash offset to reach capX, capY exactly
+  const overlapDashOffset = circumference * (1 - overlapRatio);
+
+  return (
+    <div className={cn("relative flex items-center justify-center shrink-0", className)}>
+      <svg width={size} height={size} className="overflow-visible">
+        <defs>
+          {/* Refined 3D depth shadow for the unified overlapping round (arc + arrowhead) */}
+          {hasOverlap && (
+            <filter id={filterId} x="-30%" y="-30%" width="160%" height="160%">
+              <feDropShadow
+                dx="0"
+                dy="1.2"
+                stdDeviation={Math.max(1.2, strokeWidth * 0.09)}
+                floodColor="#000000"
+                floodOpacity="0.30"
+              />
+            </filter>
+          )}
+        </defs>
+
+        {/* Background Track */}
+        <circle
+          cx={center}
+          cy={center}
+          r={rMid}
+          fill="none"
+          stroke="var(--accent-subtle)"
+          strokeWidth={strokeWidth}
+          className="opacity-35"
+        />
+
+        {/* Base Progress Ring (rotated so 0° starts at top 12 o'clock) */}
+        {totalCount > 0 && (
+          <g transform={`rotate(-90 ${center} ${center})`}>
+            <circle
+              cx={center}
+              cy={center}
+              r={rMid}
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={baseDashOffset}
+              strokeLinecap="round"
+              style={{
+                transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+                opacity: hasOverlap ? 0.85 : 1,
+              }}
+            />
+          </g>
+        )}
+
+        {/* Overlapping Extra Round (Unified Arc + Matching Triangular Tip with 3D Shadow) */}
+        {hasOverlap && (
+          <g filter={`url(#${filterId})`}>
+            {/* Overlap Arc - Plain Color full to capX, capY */}
+            <g transform={`rotate(-90 ${center} ${center})`}>
+              <circle
+                cx={center}
+                cy={center}
+                r={rMid}
+                fill="none"
+                stroke="var(--color-gold, #e8ac41)"
+                strokeWidth={strokeWidth}
+                strokeDasharray={circumference}
+                strokeDashoffset={overlapDashOffset}
+                strokeLinecap="butt"
+                style={{
+                  transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+                }}
+              />
+            </g>
+
+            {/* Seamless Triangular Arrowhead Tip - Matching Plain Color with zero gap */}
+            <g transform={`translate(${capX}, ${capY}) rotate(${angleDeg})`}>
+              <path
+                d={`M -0.5 ${-halfW} L ${forwardLen} 0 L -0.5 ${halfW} Z`}
+                fill="var(--color-gold, #e8ac41)"
+              />
+            </g>
+          </g>
+        )}
+      </svg>
+
+      {/* Center Content Slot */}
+      {children && (
+        <div className="absolute inset-0 flex items-center justify-center select-none pointer-events-none">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ChantGoalsCardProps {
   sessions: ChantSession[];
 }
@@ -69,24 +208,12 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
       const totalCount = daySessions.reduce((sum, s) => sum + s.count, 0);
       const completedGoals = Math.floor(totalCount / dailyGoal);
       const remainder = totalCount % dailyGoal;
-      
-      let progressRatio = 0;
-      if (totalCount > 0) {
-        if (completedGoals > 0 && remainder === 0) {
-          progressRatio = 1.0;
-        } else if (completedGoals > 0) {
-          progressRatio = remainder / dailyGoal;
-        } else {
-          progressRatio = totalCount / dailyGoal;
-        }
-      }
 
       return {
         date,
         totalCount,
         completedGoals,
         remainder,
-        progressRatio: Math.min(progressRatio, 1),
         isCurrentDay: isToday(date),
         isFutureDay: isFuture(date) && !isToday(date),
         isSelected: isSameDay(date, selectedDate),
@@ -102,33 +229,14 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
     const completedGoals = Math.floor(totalCount / dailyGoal);
     const remainder = totalCount % dailyGoal;
 
-    let progressRatio = 0;
-    if (totalCount > 0) {
-      if (completedGoals > 0 && remainder === 0) {
-        progressRatio = 1.0;
-      } else if (completedGoals > 0) {
-        progressRatio = remainder / dailyGoal;
-      } else {
-        progressRatio = totalCount / dailyGoal;
-      }
-    }
-
     return {
       date: selectedDate,
       totalCount,
       completedGoals,
       remainder,
-      progressRatio: Math.min(progressRatio, 1),
       isCurrentDay: isToday(selectedDate),
     };
   }, [selectedDate, sessions, dailyGoal]);
-
-  // SVG parameters for Big Circle
-  const bigSize = 124;
-  const bigStroke = 10;
-  const bigRadius = (bigSize - bigStroke) / 2;
-  const bigCircumference = 2 * Math.PI * bigRadius;
-  const bigDashOffset = bigCircumference * (1 - selectedStats.progressRatio);
 
   return (
     <div
@@ -206,40 +314,18 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
         </div>
       </div>
 
-      {/* Top Section: Samsung Health style Big Circle & Selected Day Metrics */}
+      {/* Top Section: Apple Fitness / Activity Ring style Big Circle & Selected Day Metrics */}
       <div className="flex flex-col sm:flex-row items-center gap-6 py-2">
-        {/* Big Circular Ring */}
-        <div className="relative flex-shrink-0 flex items-center justify-center">
-          <svg width={bigSize} height={bigSize} className="transform -rotate-90">
-            {/* Background Track */}
-            <circle
-              cx={bigSize / 2}
-              cy={bigSize / 2}
-              r={bigRadius}
-              fill="none"
-              stroke="var(--accent-subtle)"
-              strokeWidth={bigStroke}
-              className="opacity-40"
-            />
-            {/* Progress Stroke */}
-            <circle
-              cx={bigSize / 2}
-              cy={bigSize / 2}
-              r={bigRadius}
-              fill="none"
-              stroke="var(--accent)"
-              strokeWidth={bigStroke}
-              strokeDasharray={bigCircumference}
-              strokeDashoffset={bigDashOffset}
-              strokeLinecap="round"
-              style={{
-                transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-            />
-          </svg>
-
+        {/* Big Circular Ring - Bold & Thick (144px / 18px stroke) */}
+        <GoalRing
+          size={144}
+          strokeWidth={18}
+          totalCount={selectedStats.totalCount}
+          goal={dailyGoal}
+          filterId="goal-overlap-shadow-big"
+        >
           {/* Center Info in the Big Circle */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center select-none pointer-events-none px-2">
+          <div className="text-center px-2 flex flex-col items-center justify-center">
             <motion.div
               key={`${selectedStats.completedGoals}-${selectedStats.totalCount}`}
               initial={{ scale: 0.8, opacity: 0 }}
@@ -260,7 +346,7 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
               </span>
             </motion.div>
           </div>
-        </div>
+        </GoalRing>
 
         {/* Right side: Detailed Stats for Selected Day */}
         <div className="flex-1 w-full flex flex-col justify-center space-y-2 text-center sm:text-left">
@@ -287,15 +373,9 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
       {/* Divider */}
       <div className="my-4 border-t" style={{ borderColor: 'var(--border-subtle)' }} />
 
-      {/* Bottom Section: 7 Days of the Week Circles (Samsung Health Style) */}
+      {/* Bottom Section: 7 Days of the Week Circles (Activity Ring Style) */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2 pt-1">
         {weekDayStats.map((day, idx) => {
-          const miniSize = 34;
-          const miniStroke = 3.5;
-          const miniRadius = (miniSize - miniStroke) / 2;
-          const miniCircumference = 2 * Math.PI * miniRadius;
-          const miniDashOffset = miniCircumference * (1 - day.progressRatio);
-
           return (
             <button
               key={idx}
@@ -309,55 +389,29 @@ export function ChantGoalsCard({ sessions }: ChantGoalsCardProps) {
               )}
             >
               {/* Mini Circle */}
-              <div className="relative flex items-center justify-center">
-                <svg width={miniSize} height={miniSize} className="transform -rotate-90">
-                  {/* Mini Track */}
-                  <circle
-                    cx={miniSize / 2}
-                    cy={miniSize / 2}
-                    r={miniRadius}
-                    fill="none"
-                    stroke="var(--accent-subtle)"
-                    strokeWidth={miniStroke}
-                    className="opacity-50"
-                  />
-                  {/* Mini Progress */}
-                  {day.totalCount > 0 && (
-                    <circle
-                      cx={miniSize / 2}
-                      cy={miniSize / 2}
-                      r={miniRadius}
-                      fill="none"
-                      stroke="var(--accent)"
-                      strokeWidth={miniStroke}
-                      strokeDasharray={miniCircumference}
-                      strokeDashoffset={miniDashOffset}
-                      strokeLinecap="round"
-                      style={{
-                        transition: 'stroke-dashoffset 0.5s ease-in-out',
-                      }}
-                    />
-                  )}
-                </svg>
-
+              <GoalRing
+                size={38}
+                strokeWidth={4.5}
+                totalCount={day.totalCount}
+                goal={dailyGoal}
+                filterId={`goal-overlap-shadow-mini-${idx}`}
+              >
                 {/* Center of Mini Circle: Shows number of times goal was met */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {day.completedGoals > 0 ? (
-                    <span
-                      className="text-[11px] font-black leading-none"
-                      style={{ color: 'var(--accent)' }}
-                    >
-                      {day.completedGoals}
-                    </span>
-                  ) : day.totalCount > 0 ? (
-                    <span className="text-[9px] font-bold text-[var(--text-muted)] leading-none">
-                      0
-                    </span>
-                  ) : (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-subtle)] opacity-70" />
-                  )}
-                </div>
-              </div>
+                {day.completedGoals > 0 ? (
+                  <span
+                    className="text-[11px] font-black leading-none"
+                    style={{ color: 'var(--accent)' }}
+                  >
+                    {day.completedGoals}
+                  </span>
+                ) : day.totalCount > 0 ? (
+                  <span className="text-[9px] font-bold text-[var(--text-muted)] leading-none">
+                    0
+                  </span>
+                ) : (
+                  <div className="w-1.5 h-1.5 rounded-full bg-[var(--border-subtle)] opacity-70" />
+                )}
+              </GoalRing>
 
               {/* Day Name (M, T, W... or Mon, Tue...) */}
               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-muted)] mt-1.5 leading-none">

@@ -385,4 +385,21 @@
     @apply w-5 h-5 rounded-full bg-white shadow-md border-2 cursor-pointer transition-transform duration-150 active:scale-110;
     border-color: var(--accent, #e8ac41);
   }
+
+  /* ── Recharts Focus & Tap Highlight Resets ──────────────────────────────── */
+  .recharts-wrapper,
+  .recharts-surface,
+  .recharts-pie,
+  .recharts-pie-sector,
+  .recharts-layer,
+  .recharts-sector {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+  .recharts-wrapper:focus,
+  .recharts-surface:focus,
+  .recharts-pie-sector:focus,
+  .recharts-sector:focus {
+    outline: none !important;
+  }
 }
