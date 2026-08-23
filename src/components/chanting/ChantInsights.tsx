@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Award, Zap, TrendingUp, Calendar, Flame, Clock, BarChart2 } from 'lucide-react';
+import { Award, TrendingUp, Calendar, Flame, Clock, BarChart2 } from 'lucide-react';
 import { UserChant, ChantSession, UserChantStats } from '../../types';
 import { cn } from '../../lib/utils';
 import { format, startOfDay, subDays, isSameDay } from 'date-fns';
@@ -73,6 +73,9 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
         ))}
       </div>
 
+      {/* Goals Card (Apple Fitness / Activity Ring style visualization) */}
+      <ChantGoalsCard sessions={sessions} />
+
       {/* Distribution Chart */}
       <div
         className="rounded-[1.5rem] p-5"
@@ -126,9 +129,6 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
         </div>
       </div>
 
-      {/* Goals Card (Samsung Health style visualization) */}
-      <ChantGoalsCard sessions={sessions} />
-
       {/* Consistency Grid */}
       <div
         className="rounded-[1.5rem] p-5"
@@ -172,47 +172,6 @@ export function ChantInsights({ chants, sessions, stats }: ChantInsightsProps) {
           })}
         </div>
       </div>
-
-      {/* Milestones */}
-      <div
-        className="rounded-[1.5rem] p-5"
-        style={{ backgroundColor: 'var(--bg-card, var(--bg-main))', border: '1px solid var(--border-subtle)' }}
-      >
-        <div className="flex items-center gap-2 mb-2">
-          <Award size={16} style={{ color: 'var(--accent)' }} />
-          <span className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
-            {t('chant.milestones') || 'Milestones'}
-          </span>
-        </div>
-        <p className="text-xs text-[var(--text-muted)] mb-6 italic">"Your spiritual journey is blossoming beautifully."</p>
-
-        {/* Badges/Rankings */}
-        <div className="flex justify-center gap-6">
-          <Badge type={t('chant.novice')} active={totalChants < 1000} t={t} />
-          <Badge type={t('chant.devotee')} active={totalChants >= 1000 && totalChants < 5000} t={t} />
-          <Badge type={t('chant.master')} active={totalChants >= 5000} t={t} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Badge({ type, active, t }: { type: string, active: boolean, t: any }) {
-  return (
-    <div className={cn(
-      "flex flex-col items-center gap-3 transition-opacity",
-      active ? "opacity-100" : "opacity-30"
-    )}>
-      <div className={cn(
-        "w-16 h-16 rounded-full flex items-center justify-center border-2",
-        active ? "border-[var(--accent)] bg-[var(--bg-card-alt)] shadow-lg shadow-[var(--accent)]/10" : "border-[var(--border-subtle)] bg-[var(--bg-muted)]/30"
-      )}>
-        <Award size={24} className={active ? "text-[var(--accent)]" : "text-[var(--text-faint)]"} />
-      </div>
-      <span className={cn(
-        "text-[0.65rem] font-black uppercase tracking-widest",
-        active ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
-      )}>{type}</span>
     </div>
   );
 }

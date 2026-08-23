@@ -39,35 +39,21 @@ function GoalRing({
   const remainder = goal > 0 ? totalCount % goal : 0;
   const hasOverlap = totalCount > goal && remainder > 0;
   const overlapRatio = goal > 0 ? remainder / goal : 0;
-
-  // Arrowhead position & tangent direction
-  const totalAngle = overlapRatio * 2 * Math.PI;
-  const angleDeg = overlapRatio * 360;
-  const capX = center + rMid * Math.sin(totalAngle);
-  const capY = center - rMid * Math.cos(totalAngle);
-  const tanX = Math.cos(totalAngle);
-  const tanY = Math.sin(totalAngle);
-
-  // Compact, perfectly flush arrowhead dimensions that curve naturally with the track
-  const forwardLen = strokeWidth * 0.48; // ~8.6px on 18px stroke (compact pointed tip)
-  const halfW = strokeWidth / 2;          // exactly 9px (flush with outer & inner track)
-
-  // Full stroke dash offset to reach capX, capY exactly
   const overlapDashOffset = circumference * (1 - overlapRatio);
 
   return (
     <div className={cn("relative flex items-center justify-center shrink-0", className)}>
       <svg width={size} height={size} className="overflow-visible">
         <defs>
-          {/* Refined 3D depth shadow for the unified overlapping round (arc + arrowhead) */}
+          {/* Refined 3D depth shadow for the overlapping extra round */}
           {hasOverlap && (
             <filter id={filterId} x="-30%" y="-30%" width="160%" height="160%">
               <feDropShadow
                 dx="0"
-                dy="1.2"
-                stdDeviation={Math.max(1.2, strokeWidth * 0.09)}
+                dy="1.5"
+                stdDeviation={Math.max(1.2, strokeWidth * 0.1)}
                 floodColor="#000000"
-                floodOpacity="0.30"
+                floodOpacity="0.32"
               />
             </filter>
           )}
@@ -105,34 +91,23 @@ function GoalRing({
           </g>
         )}
 
-        {/* Overlapping Extra Round (Unified Arc + Matching Triangular Tip with 3D Shadow) */}
+        {/* Overlapping Extra Round Arc with Rounded Cap & 3D Shadow */}
         {hasOverlap && (
-          <g filter={`url(#${filterId})`}>
-            {/* Overlap Arc - Plain Color full to capX, capY */}
-            <g transform={`rotate(-90 ${center} ${center})`}>
-              <circle
-                cx={center}
-                cy={center}
-                r={rMid}
-                fill="none"
-                stroke="var(--color-gold, #e8ac41)"
-                strokeWidth={strokeWidth}
-                strokeDasharray={circumference}
-                strokeDashoffset={overlapDashOffset}
-                strokeLinecap="butt"
-                style={{
-                  transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
-                }}
-              />
-            </g>
-
-            {/* Seamless Triangular Arrowhead Tip - Matching Plain Color with zero gap */}
-            <g transform={`translate(${capX}, ${capY}) rotate(${angleDeg})`}>
-              <path
-                d={`M -0.5 ${-halfW} L ${forwardLen} 0 L -0.5 ${halfW} Z`}
-                fill="var(--color-gold, #e8ac41)"
-              />
-            </g>
+          <g transform={`rotate(-90 ${center} ${center})`} filter={`url(#${filterId})`}>
+            <circle
+              cx={center}
+              cy={center}
+              r={rMid}
+              fill="none"
+              stroke="var(--color-gold, #e8ac41)"
+              strokeWidth={strokeWidth}
+              strokeDasharray={circumference}
+              strokeDashoffset={overlapDashOffset}
+              strokeLinecap="round"
+              style={{
+                transition: 'stroke-dashoffset 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            />
           </g>
         )}
       </svg>
