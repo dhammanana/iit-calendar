@@ -4,6 +4,7 @@ import { Minus, Plus, Hand, Play, Pause, RotateCcw, Clock, Settings2, X } from '
 import { cn } from '../../lib/utils';
 import { useI18n } from '../../hooks/useI18n';
 import { Button } from '../Button';
+import { TimerDial } from '../common/TimerDial';
 
 interface ChantCounterProps {
   currentCount: number;
@@ -149,36 +150,16 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
       {!isStarted ? (
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-          className="flex flex-col items-center w-full pb-4 gap-8"
+          className="flex flex-col items-center w-full pb-4 relative"
         >
-          <div className="relative w-64 h-64 flex items-center justify-center">
-            <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 256 256">
-              <circle cx="128" cy="128" r="120" stroke="var(--sm-surface)" strokeWidth="4" fill="none" className="opacity-40" />
-              <circle
-                cx="128" cy="128" r="120"
-                stroke="var(--accent)"
-                strokeWidth="6"
-                fill="none"
-                strokeDasharray={circumference}
-                strokeDashoffset={0}
-                strokeLinecap="round"
-                className="transition-all duration-300 ease-linear"
-              />
-            </svg>
-
-            <div className="text-center z-10 flex flex-col items-center justify-center">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                {t('meditation.duration') || 'Duration'}
-              </span>
-              <div className="font-serif text-5xl font-medium tracking-tight text-[var(--text-primary)] leading-none">
-                {timerSettings.hours > 0 ? `${timerSettings.hours}:${timerSettings.minutes.toString().padStart(2, '0')}:00` : `${timerSettings.minutes.toString().padStart(2, '0')}:00`}
-              </div>
-            </div>
-
-            <div className="absolute bottom-12 z-10 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-secondary)] bg-[var(--surface)] px-3 py-1 rounded-full border border-[var(--border-subtle)]">
-              {timerSettings.hours === 0 && timerSettings.minutes === 0 ? "Stopwatch" : "Countdown"}
-            </div>
-          </div>
+          <TimerDial
+            size={264}
+            remainingMs={totalDurationMs}
+            totalDurationMs={totalDurationMs}
+            timeString={timerSettings.hours > 0 ? `${timerSettings.hours}:${timerSettings.minutes.toString().padStart(2, '0')}:00` : `${timerSettings.minutes.toString().padStart(2, '0')}:00`}
+            label={timerSettings.hours === 0 && timerSettings.minutes === 0 ? 'STOPWATCH' : 'COUNTDOWN'}
+            className="mb-8"
+          />
           
           <Button
             onClick={toggleTimer}
@@ -190,7 +171,7 @@ export function ChantCounter({ currentCount, onCountChange, onCommit, targetCoun
             Start
           </Button>
           
-          <div className="w-full">
+          <div className="w-full mt-8">
             {children}
           </div>
         </motion.div>

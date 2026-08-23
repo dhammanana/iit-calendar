@@ -16,6 +16,7 @@ import { useMeditationTimer } from '../hooks/useMeditationTimer';
 import { useMeditationInsights } from '../hooks/useMeditationInsights';
 import { MeditationSession } from '../types';
 import { ScreenIconInner } from '../components/common/ScreenIcon';
+import { TimerDial } from '../components/common/TimerDial';
 
 /** localStorage key for persisting meditation settings. */
 const SETTINGS_KEY = 'meditation_settings';
@@ -244,9 +245,6 @@ export function MeditationScreen() {
     ? `${hours}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
     : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 
-  const circumference = 2 * Math.PI * 120;
-  const strokeDashoffset = isFinished ? 0 : totalDurationMs === 0 ? 0 : circumference - ((remainingMs / totalDurationMs) * circumference);
-
   const isDistractionFree = isRunning || countdown > 0 || isPaused;
 
   return (
@@ -373,43 +371,19 @@ export function MeditationScreen() {
                 exit={{ opacity: 0, y: -10 }}
                 className="flex flex-col items-center pb-4 relative"
               >
-                <div className="relative w-64 h-64 flex items-center justify-center mb-8">
-                  <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 256 256">
-                    <circle cx="128" cy="128" r="120" stroke="var(--sm-surface)" strokeWidth="4" fill="none" className="opacity-40" />
-                    <circle
-                      cx="128" cy="128" r="120"
-                      stroke="var(--accent)"
-                      strokeWidth="6"
-                      fill="none"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={strokeDashoffset}
-                      strokeLinecap="round"
-                      className="transition-all duration-300 ease-linear"
-                    />
-                  </svg>
-
-                  <div className="text-center z-10 flex flex-col items-center justify-center">
-                    {countdown > 0 ? (
-                      <>
-                        <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                          {t('meditation.startingIn')}
-                        </span>
-                        <div className="font-serif text-5xl font-medium tracking-tight leading-none" style={{ color: 'var(--accent)' }}>
-                          {Math.ceil(countdown)}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-xs font-bold uppercase tracking-[0.3em] mb-1.5" style={{ color: 'var(--text-muted)' }}>
-                          {isFinished ? t('meditation.complete') : (isPaused ? 'Paused' : t('meditation.remaining'))}
-                        </span>
-                        <div className="font-serif text-5xl font-medium tracking-tight leading-none" style={{ color: 'var(--text-primary)' }}>
-                          {timeString}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
+                <TimerDial
+                  size={264}
+                  remainingMs={remainingMs}
+                  totalDurationMs={totalDurationMs}
+                  timeString={timeString}
+                  label={t('meditation.remaining') || 'REMAINING'}
+                  isRunning={isRunning}
+                  isPaused={isPaused}
+                  isFinished={isFinished}
+                  countdown={countdown}
+                  countdownLabel={t('meditation.startingIn') || 'STARTING IN'}
+                  className="mb-8"
+                />
 
                 {/* Controls */}
                 <div className="flex items-center gap-6 w-full max-w-[280px] justify-between">
