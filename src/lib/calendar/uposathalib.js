@@ -215,12 +215,26 @@ export function getVassaDates(ce) {
   const pubbaVassaEntry    = asalhaFull    ? addDays(asalhaFull.date, 1)    : null;
   const pubbaVassaPavarana = pavaranaFull  ? pavaranaFull.date               : null;
 
-  // Pacchima entry: day after the new moon that immediately follows the Āsāḷha full moon
+  // Pacchima entry: day after the full moon that follows the first new moon
+  // after the Āsāḷha full moon (i.e. one uposatha step later than before —
+  // adds exactly one more fortnight)
   let pacchimaVassaEntry = null;
   if (asalhaFull) {
     const asalhaTime = asalhaFull.date.getTime();
     const nextNew = uposathas.find(u => u.phase === "new" && u.date.getTime() > asalhaTime);
-    if (nextNew) pacchimaVassaEntry = addDays(nextNew.date, 1);
+
+    if (nextNew) {
+      const nextNewTime = nextNew.date.getTime();
+      let nextFull = uposathas.find(u => u.phase === "full" && u.date.getTime() > nextNewTime);
+
+      // may spill into next CE year
+      if (!nextFull) {
+        const nextYearUposathas = getUposathasForYear(ce + 1);
+        nextFull = nextYearUposathas.find(u => u.phase === "full" && u.date.getTime() > nextNewTime);
+      }
+
+      if (nextFull) pacchimaVassaEntry = addDays(nextFull.date, 1);
+    }
   }
 
   // Pacchima pavāraṇā: full moon one month after Kattika full moon
