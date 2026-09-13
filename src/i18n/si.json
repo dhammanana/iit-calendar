@@ -192,7 +192,9 @@
     "seconds": "තත්පර",
     "bellType": "සීනු වර්ගය",
     "saveSettings": "සැකසුම් සුරකින්න",
-    "minutes": "මිනිත්තුව"
+    "minutes": "මිනිත්තුව",
+    "testAlert": "අනතුරු ඇඟවීම පරීක්ෂා කරන්න",
+    "testingAlert": "පරීක්ෂා කරමින්..."
   },
   "chant": {
     "chantCounter": "සජ්ඣායනා ගණකය",

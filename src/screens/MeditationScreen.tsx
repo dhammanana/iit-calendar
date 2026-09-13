@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, SunDim, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon, Vibrate, Plus, Trash2, Calendar } from 'lucide-react';
+import { Play, Square, RotateCcw, Volume2, Activity, Award, Clock, Settings2, Pause, Sun, SunDim, ChevronLeft, ChevronRight, BarChart2, Settings as SettingsIcon, Vibrate, Plus, Trash2, Calendar, Bell, BellRing } from 'lucide-react';
 import { cn } from '../lib/utils';
+
+import { alarmService } from '../services/alarm/AlarmService';
 
 import { meditationDbService } from '../services/MeditationDbService';
 import { bellSoundService } from '../services/BellSoundService';
@@ -60,6 +62,27 @@ export function MeditationScreen() {
   const [recordHours, setRecordHours] = useState(0);
   const [recordMinutes, setRecordMinutes] = useState(15);
   const [isSavingRecord, setIsSavingRecord] = useState(false);
+  const [isTestingAlert, setIsTestingAlert] = useState(false);
+
+  const handleTestAlert = async () => {
+    if (isTestingAlert) return;
+    setIsTestingAlert(true);
+    try {
+      const soundEnabled = settings.alertMode !== 'vibrate';
+      const vibrationEnabled = settings.alertMode !== 'sound';
+      await alarmService.testMeditationAlert(
+        soundEnabled,
+        vibrationEnabled,
+        settings.bellType || 'bowl'
+      );
+    } catch (err) {
+      console.error('Failed to trigger test alert:', err);
+    } finally {
+      setTimeout(() => {
+        setIsTestingAlert(false);
+      }, 2000);
+    }
+  };
 
   const handleSaveRecord = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -913,6 +936,36 @@ export function MeditationScreen() {
                           );
                         })}
                       </div>
+                    </div>
+
+                    {/* Test Alert Action */}
+                    <div className="flex justify-center pt-2">
+                      <button
+                        type="button"
+                        onClick={handleTestAlert}
+                        disabled={isTestingAlert}
+                        className={cn(
+                          "px-6 py-2.5 rounded-full border transition-all active:scale-95 cursor-pointer flex items-center gap-2 text-[11px] font-black uppercase tracking-widest",
+                          isTestingAlert && "opacity-90"
+                        )}
+                        style={{
+                          backgroundColor: isTestingAlert ? 'var(--accent)' : 'var(--accent-soft)',
+                          borderColor: isTestingAlert ? 'var(--accent)' : 'var(--accent-ring)',
+                          color: isTestingAlert ? '#ffffff' : 'var(--accent)',
+                          boxShadow: isTestingAlert ? '0 4px 12px var(--accent-shadow)' : 'none'
+                        }}
+                      >
+                        {isTestingAlert ? (
+                          <BellRing size={15} className="animate-bounce text-white" />
+                        ) : (
+                          <Bell size={15} />
+                        )}
+                        <span>
+                          {isTestingAlert
+                            ? (t('meditation.testingAlert') || 'Testing Alert...')
+                            : (t('meditation.testAlert') || 'Test Alert')}
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </div>

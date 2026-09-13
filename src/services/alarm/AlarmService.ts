@@ -5,6 +5,8 @@ import { SunTimesCalculator } from '../../lib/calendar/SunTimesCalculator';
 import { subMinutes } from 'date-fns';
 import { Capacitor } from '@capacitor/core';
 import { meditationDbService } from '../MeditationDbService';
+import { bellSoundService } from '../BellSoundService';
+import { vibrationService } from '../VibrationService';
 
 export interface ActiveMeditation {
   startTime: number;
@@ -153,6 +155,66 @@ class AlarmService {
 
   public async scheduleTest(items: AlarmItem[]): Promise<void> {
     await alarmPlugin.schedule(items);
+  }
+
+  public async testMeditationAlert(
+    soundEnabled: boolean = true,
+    vibrationEnabled: boolean = true,
+    bellType: string = 'bowl'
+  ): Promise<void> {
+    const { sound, channelId } = getMeditationSoundAndChannel(soundEnabled, vibrationEnabled, bellType);
+
+    if (vibrationEnabled) {
+      await vibrationService.vibrate('long');
+    }
+
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await this.requestPermission();
+        await alarmPlugin.cancel([AlarmId.MEDITATION_TEST]);
+        await alarmPlugin.schedule([{
+          id: AlarmId.MEDITATION_TEST,
+          title: "Meditation Test Alert",
+          body: soundEnabled
+            ? `Testing ${bellType.charAt(0).toUpperCase() + bellType.slice(1)} bell alert`
+            : "Testing silent vibration alert",
+          at: new Date(Date.now() + 500),
+          sound,
+          channelId,
+          allowWhileIdle: true,
+          exact: true
+        }]);
+        if (Capacitor.getPlatform() === 'ios' && soundEnabled) {
+          await bellSoundService.playBell(true, bellType);
+        }
+      } catch (err) {
+        console.warn('Native test notification schedule failed, falling back to Web Audio:', err);
+        if (soundEnabled) {
+          await bellSoundService.playBell(true, bellType);
+        }
+      }
+    } else {
+      if (soundEnabled) {
+        await bellSoundService.playBell(true, bellType);
+      }
+      try {
+        await alarmPlugin.cancel([AlarmId.MEDITATION_TEST]);
+        await alarmPlugin.schedule([{
+          id: AlarmId.MEDITATION_TEST,
+          title: "Meditation Test Alert",
+          body: soundEnabled
+            ? `Testing ${bellType.charAt(0).toUpperCase() + bellType.slice(1)} bell alert`
+            : "Testing silent vibration alert",
+          at: new Date(Date.now() + 200),
+          sound,
+          channelId,
+          allowWhileIdle: true,
+          exact: true
+        }]);
+      } catch (err) {
+        console.warn('Web notification test failed:', err);
+      }
+    }
   }
 
   public async startMeditation(

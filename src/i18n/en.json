@@ -235,7 +235,9 @@
     "addRecord": "Save",
     "recentSessions": "Recent Sessions",
     "noSessionsYet": "No meditation sessions recorded yet",
-    "deleteRecordConfirm": "Are you sure you want to delete this session?"
+    "deleteRecordConfirm": "Are you sure you want to delete this session?",
+    "testAlert": "Test Alert",
+    "testingAlert": "Testing Alert..."
   },
   "chant": {
     "chantCounter": "Chant Counter",

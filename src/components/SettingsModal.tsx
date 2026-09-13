@@ -19,6 +19,37 @@ import { chantService } from '../services/ChantService';
 import { studyDbService } from '../services/StudyDbService';
 import packageJson from '../../package.json';
 
+const UI_LANGUAGES = [
+  { value: 'en', label: 'English', lang: 'en', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
+  { value: 'vi', label: 'Tiếng Việt', lang: 'vi', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
+  { value: 'th', label: 'ไทย', lang: 'th', fontFamily: "'Noto Sans Thai', 'thai', sans-serif" },
+  { value: 'si', label: 'සිංහල', lang: 'si', fontFamily: "'sinhala-sans', 'Noto Sans Sinhala', sans-serif" },
+  { value: 'my', label: 'မြန်မာ', lang: 'my', fontFamily: "'Noto Sans Myanmar', 'myanmar', 'Pyidaungsu', sans-serif" },
+  { value: 'km', label: 'ខ្មែរ', lang: 'km', fontFamily: "'Noto Sans Khmer', 'khmer', sans-serif" },
+  { value: 'lo', label: 'ລາວ', lang: 'lo', fontFamily: "'lao-ui', 'lao', sans-serif" },
+] as const;
+
+const PALI_SCRIPTS = [
+  { value: 'roman', label: 'Roman', lang: 'en', fontFamily: "'roman', 'Noto Serif', serif" },
+  { value: 'sinhala', label: 'සිංහල', lang: 'si', fontFamily: "'sinhala', 'Noto Serif Sinhala', serif" },
+  { value: 'burmese', label: 'မြန်မာ', lang: 'my', fontFamily: "'myanmar', 'Pyidaungsu', serif" },
+  { value: 'thai', label: 'ไทย', lang: 'th', fontFamily: "'thai', 'THSarabunNew', serif" },
+  { value: 'devanagari', label: 'देवनागरी', lang: 'hi', fontFamily: "'devanagari', 'Noto Serif Devanagari', serif" },
+  { value: 'lao', label: 'ລາວ', lang: 'lo', fontFamily: "'lao', 'LaoPaliAlpha', serif" },
+  { value: 'khmer', label: 'ខ្មែរ', lang: 'km', fontFamily: "'khmer', 'Noto Serif Khmer', serif" },
+  { value: 'bengali', label: 'বাংলা', lang: 'bn', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
+  { value: 'gurmukhi', label: 'ਗੁਰਮੁਖੀ', lang: 'pa', fontFamily: "'gurmukhi', 'Noto Sans Gurmukhi', sans-serif" },
+  { value: 'gujarati', label: 'ગુજરાતી', lang: 'gu', fontFamily: "'gujarati', 'Noto Serif Gujarati', serif" },
+  { value: 'telugu', label: 'తెలుగు', lang: 'te', fontFamily: "'telugu', 'Noto Serif Telugu', serif" },
+  { value: 'kannada', label: 'ಕನ್ನಡ', lang: 'kn', fontFamily: "'kannada', 'Noto Serif Kannada', serif" },
+  { value: 'malayalam', label: 'മലയാളം', lang: 'ml', fontFamily: "'malayalam', 'Noto Serif Malayalam', serif" },
+  { value: 'taitham', label: 'ᨲ᩠ᩅᩫᨾᩮᩥ᩠ᨦ (Tai Tham)', lang: 'nod', fontFamily: "'tai tham', 'Hariphunchai', serif" },
+  { value: 'brahmi', label: '𑀩𑁆𑀭𑀸𑀳𑁆𑀫𑀻 (Brāhmī)', lang: 'pra', fontFamily: "'brahmi', 'Noto Sans Brahmi', sans-serif" },
+  { value: 'tibetan', label: 'བོད་ཡིག', lang: 'bo', fontFamily: "'tibetan', 'Noto Sans Tibetan', sans-serif" },
+  { value: 'cyrillic', label: 'Кириллица', lang: 'ru', fontFamily: "'cyrillic', 'Noto Serif', serif" },
+  { value: 'assamese', label: 'অসমীয়া', lang: 'as', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
+] as const;
+
 export function SettingsModal({ 
   show, 
   onClose, 
@@ -236,21 +267,25 @@ export function SettingsModal({
                       label={t('settings.language')}
                       value={settings.language}
                       onChange={(val) => onUpdate({ ...settings, language: val })}
-                      options={(['en', 'vi', 'th', 'si', 'my', 'km', 'lo'] as const).map(lang => ({
-                        value: lang,
-                        label: t(`settings.languages.${lang}`)
+                      options={UI_LANGUAGES.map(lang => ({
+                        value: lang.value,
+                        label: lang.label,
+                        lang: lang.lang,
+                        fontFamily: lang.fontFamily,
                       }))}
-                      selectClassName="text-sm px-4 py-3 font-sans"
+                      selectClassName="text-sm px-4 py-3"
                     />
                     <LabeledSelect
                       label={t('settings.paliScript')}
                       value={settings.paliScript}
                       onChange={(val) => onUpdate({ ...settings, paliScript: val as any })}
-                      options={(['roman', 'sinhala', 'burmese', 'thai', 'devanagari', 'lao', 'khmer', 'bengali', 'gurmukhi', 'gujarati', 'telugu', 'kannada', 'malayalam', 'taitham', 'brahmi', 'tibetan', 'cyrillic', 'assamese'] as const).map(s => ({
-                        value: s,
-                        label: t(`settings.scripts.${s}`)
+                      options={PALI_SCRIPTS.map(s => ({
+                        value: s.value,
+                        label: s.label,
+                        lang: s.lang,
+                        fontFamily: s.fontFamily,
                       }))}
-                      selectClassName="text-sm px-4 py-3 font-sans"
+                      selectClassName="text-sm px-4 py-3"
                     />
                   </div>
                 </section>

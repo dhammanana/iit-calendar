@@ -4,6 +4,10 @@ import { cn } from '../lib/utils';
 export interface SelectOption {
   value: string | number;
   label: string | number;
+  lang?: string;
+  fontFamily?: string;
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export interface LabeledSelectProps {
@@ -25,6 +29,8 @@ export function LabeledSelect({
   className,
   selectClassName,
 }: LabeledSelectProps) {
+  const selectedOption = options.find((opt) => String(opt.value) === String(value));
+
   return (
     <div className={cn("w-full", className)}>
       {label && (
@@ -39,23 +45,30 @@ export function LabeledSelect({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          lang={selectedOption?.lang}
           className={cn(
             "w-full px-4 py-4 rounded-2xl border outline-none transition-all appearance-none cursor-pointer focus:ring-2",
-            selectClassName || "font-serif text-2xl text-center"
+            selectClassName || "font-serif text-2xl text-center",
+            selectedOption?.lang && `lang-font-${selectedOption.lang}`
           )}
           style={{
             backgroundColor: 'var(--bg-input, var(--sm-surface))',
             borderColor: 'var(--border-base, var(--sm-border))',
             color: 'var(--accent, var(--sm-accent))',
+            ...(selectedOption?.fontFamily ? { fontFamily: selectedOption.fontFamily } : {}),
           }}
         >
           {options.map((opt) => (
             <option
               key={String(opt.value)}
               value={opt.value}
+              lang={opt.lang}
+              className={cn(opt.className, opt.lang && `lang-font-${opt.lang}`)}
               style={{
                 backgroundColor: 'var(--bg-card, var(--sm-card-bg))',
                 color: 'var(--text-primary, var(--sm-text-primary))',
+                ...(opt.fontFamily ? { fontFamily: opt.fontFamily } : {}),
+                ...opt.style,
               }}
             >
               {opt.label}

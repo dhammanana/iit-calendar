@@ -114,11 +114,17 @@ const CSS_VARS = `
   }
 
   /* Pali Font Definitions */
+  /* Sinhala: Serif for scripture, Sans for UI */
   @font-face { src: url('/fonts/sinhala/NotoSerifSinhala-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'sinhala'; }
   @font-face { src: url('/fonts/sinhala/NotoSerifSinhala-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'sinhala'; }
+  @font-face { src: url('/fonts/sinhala/NotoSansSinhala-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'sinhala-sans'; }
+  @font-face { src: url('/fonts/sinhala/NotoSansSinhala-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'sinhala-sans'; }
 
+  /* Devanagari: Serif for scripture, Sans for UI */
   @font-face { src: url('/fonts/devanagari/NotoSerifDevanagari-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'devanagari'; }
   @font-face { src: url('/fonts/devanagari/NotoSerifDevanagari-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'devanagari'; }
+  @font-face { src: url('/fonts/devanagari/NotoSansDevanagari-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'devanagari-sans'; }
+  @font-face { src: url('/fonts/devanagari/NotoSansDevanagari-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'devanagari-sans'; }
 
   @font-face { src: url('/fonts/roman/NotoSerif-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'roman'; }
   @font-face { src: url('/fonts/roman/NotoSerif-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'roman'; }
@@ -130,8 +136,8 @@ const CSS_VARS = `
   @font-face { src: url('/fonts/lao/LaoPaliAlpha-Regular.woff') format('woff'); font-weight: normal; font-family: 'lao'; }
   @font-face { src: url('/fonts/lao/Lanexang Mon2.woff') format('woff'); font-weight: normal; font-family: 'lao-ui'; }
 
-  @font-face { src: url('/fonts/myanmar/mm3-multi-os(16-08-2011).ttf') format('truetype'); font-weight: normal; font-family: 'myanmar'; }
-  @font-face { src: url('/fonts/myanmar/mm3-multi-os(16-08-2011).ttf') format('truetype'); font-weight: bold; font-family: 'myanmar'; }
+  @font-face { src: url('/fonts/myanmar/Pyidaungsu-2.4-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'myanmar'; }
+  @font-face { src: url('/fonts/myanmar/Pyidaungsu-2.4-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'myanmar'; }
 
   @font-face { src: url('/fonts/khmer/NotoSerifKhmer-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'khmer'; }
   @font-face { src: url('/fonts/khmer/NotoSerifKhmer-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'khmer'; }
@@ -165,38 +171,103 @@ const CSS_VARS = `
   @font-face { src: url('/fonts/roman/NotoSerif-Regular.ttf') format('truetype'); font-weight: normal; font-family: 'cyrillic'; }
   @font-face { src: url('/fonts/roman/NotoSerif-Bold.ttf') format('truetype'); font-weight: bold; font-family: 'cyrillic'; }
 
-  .UT[lang=en] { font-family: 'roman'; }
-  .UT[lang=si] { font-family: 'sinhala'; line-height: 1.5rem; }
-  .UT[lang=km] { font-family: 'khmer'; }
-  .UT[lang=vi] { font-family: 'roman'; }
-  .UT[lang=ch] { font-family: 'roman';}
-  .UT[lang=hi] { font-family: 'devanagari';}
-  .UT[lang=th] { font-family: 'thai'; font-size: 1.5rem; line-height: 1.7rem; }
-  .UT[lang=lo] { font-family: 'lao-ui', 'lao'; font-size: 1.2rem; line-height: 1.5rem; }
-  .UT[lang=my] { font-family: 'myanmar';}
-  .UT[lang=in],.UT[lang=es],.UT[lang=pt] { font-family: 'roman';}
+  /* ── UI Text (.UT) — Sans-Serif for maximum interface clarity ── */
+  .UT[lang=en] { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; }
+  .UT[lang=si], .UT[lang=si] * { font-family: 'sinhala-sans', 'Noto Sans Sinhala', sans-serif; line-height: 1.5rem; }
+  .UT[lang=km], .UT[lang=km] * { font-family: 'Noto Sans Khmer', 'khmer', sans-serif; }
+  .UT[lang=vi], .UT[lang=ch], .UT[lang=in], .UT[lang=es], .UT[lang=pt] { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif; }
+  .UT[lang=hi], .UT[lang=hi] * { font-family: 'devanagari-sans', 'Noto Sans Devanagari', sans-serif; }
+  .UT[lang=th], .UT[lang=th] * { font-family: 'Noto Sans Thai', 'thai', sans-serif; }
+  .UT[lang=lo], .UT[lang=lo] * { font-family: 'lao-ui', 'lao', sans-serif; font-size: 1.15rem; line-height: 1.5rem; }
+  .UT[lang=my], .UT[lang=my] * { font-family: 'Noto Sans Myanmar', 'myanmar', 'Pyidaungsu', sans-serif; }
 
-  .PT[script=si],.tab-content[script=si],.book-container[script=si] { font-family: 'sinhala'; line-height: 1.5rem; }
-  .PT[script=hi],.tab-content[script=hi],.book-container[script=hi] { font-family: 'devanagari'; }
-  .PT[script=ro],.tab-content[script=ro],.book-container[script=ro] { font-family: 'roman'; }
-  .PT[script=th],.tab-content[script=th],.book-container[script=th] { font-family: 'thai'; font-size: 1.5rem; line-height: 1.7rem; }
-  .PT[script=lo],.tab-content[script=lo],.book-container[script=lo] { font-family: 'lao'; line-height: 170%; }
-  .PT[script=my],.tab-content[script=my],.book-container[script=my] { font-family: 'myanmar'; }
-  .PT[script=km],.tab-content[script=km],.book-container[script=km] { font-family: 'khmer'; }
-  .PT[script=be],.tab-content[script=be],.book-container[script=be] { font-family: 'bengali'; }
-  .PT[script=as],.tab-content[script=as],.book-container[script=as] { font-family: 'bengali'; }
-  .PT[script=gm],.tab-content[script=gm],.book-container[script=gm] { font-family: 'gurmukhi'; }
-  .PT[script=tt],.tab-content[script=tt],.book-container[script=tt] { font-family: 'tai tham'; font-size: 1.5rem; }
-  .PT[script=gj],.tab-content[script=gj],.book-container[script=gj] { font-family: 'gujarati'; }
-  .PT[script=te],.tab-content[script=te],.book-container[script=te] { font-family: 'telugu'; }
-  .PT[script=ka],.tab-content[script=ka],.book-container[script=ka] { font-family: 'kannada'; }
-  .PT[script=mm],.tab-content[script=mm],.book-container[script=mm] { font-family: 'malayalam'; }
-  .PT[script=br],.tab-content[script=br],.book-container[script=br] { font-family: 'brahmi'; }
-  .PT[script=tb],.tab-content[script=tb],.book-container[script=tb] { font-family: 'tibetan'; }
-  .PT[script=cy],.tab-content[script=cy],.book-container[script=cy] { font-family: 'cyrillic'; }
+  /* ── Language font overrides for selects, options, and language labels ── */
+  option[lang="en"], select[lang="en"], .lang-font-en { font-family: 'Manrope', 'roman', 'Noto Serif', sans-serif !important; }
+  option[lang="vi"], select[lang="vi"], .lang-font-vi { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif !important; }
+  option[lang="si"], select[lang="si"], .lang-font-si { font-family: 'sinhala', 'Noto Serif Sinhala', 'sinhala-sans', serif !important; }
+  option[lang="th"], select[lang="th"], .lang-font-th { font-family: 'thai', 'THSarabunNew', 'Noto Sans Thai', serif !important; }
+  option[lang="my"], select[lang="my"], .lang-font-my { font-family: 'myanmar', 'Pyidaungsu', 'Noto Sans Myanmar', serif !important; }
+  option[lang="km"], select[lang="km"], .lang-font-km { font-family: 'khmer', 'Noto Serif Khmer', 'Noto Sans Khmer', serif !important; }
+  option[lang="lo"], select[lang="lo"], .lang-font-lo { font-family: 'lao', 'LaoPaliAlpha', 'lao-ui', serif !important; }
+  option[lang="hi"], select[lang="hi"], .lang-font-hi { font-family: 'devanagari', 'Noto Serif Devanagari', 'devanagari-sans', serif !important; }
+  option[lang="bn"], select[lang="bn"], .lang-font-bn { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
+  option[lang="pa"], select[lang="pa"], .lang-font-pa { font-family: 'gurmukhi', 'Noto Sans Gurmukhi', sans-serif !important; }
+  option[lang="gu"], select[lang="gu"], .lang-font-gu { font-family: 'gujarati', 'Noto Serif Gujarati', serif !important; }
+  option[lang="te"], select[lang="te"], .lang-font-te { font-family: 'telugu', 'Noto Serif Telugu', serif !important; }
+  option[lang="kn"], select[lang="kn"], .lang-font-kn { font-family: 'kannada', 'Noto Serif Kannada', serif !important; }
+  option[lang="ml"], select[lang="ml"], .lang-font-ml { font-family: 'malayalam', 'Noto Serif Malayalam', serif !important; }
+  option[lang="nod"], select[lang="nod"], .lang-font-nod { font-family: 'tai tham', 'Hariphunchai', serif !important; }
+  option[lang="pra"], select[lang="pra"], .lang-font-pra { font-family: 'brahmi', 'Noto Sans Brahmi', sans-serif !important; }
+  option[lang="bo"], select[lang="bo"], .lang-font-bo { font-family: 'tibetan', 'Noto Sans Tibetan', sans-serif !important; }
+  option[lang="ru"], select[lang="ru"], .lang-font-ru { font-family: 'cyrillic', 'Noto Serif', serif !important; }
+  option[lang="as"], select[lang="as"], .lang-font-as { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
+
+  /* ── Pali Scripture & Literature (.PT) — Serif / Canonical Book Face ── */
+  .PT[script=si],.tab-content[script=si],.book-container[script=si],
+  .PT[script=si] *, .tab-content[script=si] *, .book-container[script=si] * { font-family: 'sinhala', 'Noto Serif Sinhala', serif; line-height: 1.5rem; }
+  .PT[script=hi],.tab-content[script=hi],.book-container[script=hi],
+  .PT[script=hi] *, .tab-content[script=hi] *, .book-container[script=hi] * { font-family: 'devanagari', 'Noto Serif Devanagari', serif; }
+  .PT[script=ro],.tab-content[script=ro],.book-container[script=ro],
+  .PT[script=ro] *, .tab-content[script=ro] *, .book-container[script=ro] * { font-family: 'roman', 'Noto Serif', serif; }
+  .PT[script=th],.tab-content[script=th],.book-container[script=th],
+  .PT[script=th] *, .tab-content[script=th] *, .book-container[script=th] * { font-family: 'thai', 'THSarabunNew', serif; font-size: 1.5rem; line-height: 1.7rem; }
+  .PT[script=lo],.tab-content[script=lo],.book-container[script=lo],
+  .PT[script=lo] *, .tab-content[script=lo] *, .book-container[script=lo] * { font-family: 'lao', 'LaoPaliAlpha', serif; line-height: 170%; }
+  .PT[script=my],.tab-content[script=my],.book-container[script=my],
+  .PT[script=my] *, .tab-content[script=my] *, .book-container[script=my] * { font-family: 'myanmar', 'Pyidaungsu', serif; }
+  .PT[script=km],.tab-content[script=km],.book-container[script=km],
+  .PT[script=km] *, .tab-content[script=km] *, .book-container[script=km] * { font-family: 'khmer', 'Noto Serif Khmer', serif; }
+  .PT[script=be],.tab-content[script=be],.book-container[script=be],
+  .PT[script=be] *, .tab-content[script=be] *, .book-container[script=be] * { font-family: 'bengali', 'Noto Serif Bengali', serif; }
+  .PT[script=as],.tab-content[script=as],.book-container[script=as],
+  .PT[script=as] *, .tab-content[script=as] *, .book-container[script=as] * { font-family: 'bengali', 'Noto Serif Bengali', serif; }
+  .PT[script=gm],.tab-content[script=gm],.book-container[script=gm],
+  .PT[script=gm] *, .tab-content[script=gm] *, .book-container[script=gm] * { font-family: 'gurmukhi', 'Noto Sans Gurmukhi', sans-serif; }
+  .PT[script=tt],.tab-content[script=tt],.book-container[script=tt],
+  .PT[script=tt] *, .tab-content[script=tt] *, .book-container[script=tt] * { font-family: 'tai tham', 'Hariphunchai', serif; font-size: 1.5rem; }
+  .PT[script=gj],.tab-content[script=gj],.book-container[script=gj],
+  .PT[script=gj] *, .tab-content[script=gj] *, .book-container[script=gj] * { font-family: 'gujarati', 'Noto Serif Gujarati', serif; }
+  .PT[script=te],.tab-content[script=te],.book-container[script=te],
+  .PT[script=te] *, .tab-content[script=te] *, .book-container[script=te] * { font-family: 'telugu', 'Noto Serif Telugu', serif; }
+  .PT[script=ka],.tab-content[script=ka],.book-container[script=ka],
+  .PT[script=ka] *, .tab-content[script=ka] *, .book-container[script=ka] * { font-family: 'kannada', 'Noto Serif Kannada', serif; }
+  .PT[script=mm],.tab-content[script=mm],.book-container[script=mm],
+  .PT[script=mm] *, .tab-content[script=mm] *, .book-container[script=mm] * { font-family: 'malayalam', 'Noto Serif Malayalam', serif; }
+  .PT[script=br],.tab-content[script=br],.book-container[script=br],
+  .PT[script=br] *, .tab-content[script=br] *, .book-container[script=br] * { font-family: 'brahmi', 'Noto Sans Brahmi', sans-serif; }
+  .PT[script=tb],.tab-content[script=tb],.book-container[script=tb],
+  .PT[script=tb] *, .tab-content[script=tb] *, .book-container[script=tb] * { font-family: 'tibetan', 'Noto Sans Tibetan', sans-serif; }
+  .PT[script=cy],.tab-content[script=cy],.book-container[script=cy],
+  .PT[script=cy] *, .tab-content[script=cy] *, .book-container[script=cy] * { font-family: 'cyrillic', 'Noto Serif', serif; }
 
   .PT .english { font-style: italic; }
   .PT .pali { font-style: normal; }
+
+  /* Disable letter-spacing and uppercase text-transform for complex scripts where tracking breaks OpenType shaping */
+  :lang(my), [lang="my"], [lang="my"] *, .lang-font-my,
+  :lang(km), [lang="km"], [lang="km"] *, .lang-font-km,
+  :lang(th), [lang="th"], [lang="th"] *, .lang-font-th,
+  :lang(lo), [lang="lo"], [lang="lo"] *, .lang-font-lo,
+  :lang(si), [lang="si"], [lang="si"] *, .lang-font-si,
+  :lang(hi), [lang="hi"], [lang="hi"] *, .lang-font-hi,
+  :lang(bn), [lang="bn"], [lang="bn"] *, .lang-font-bn,
+  :lang(pa), [lang="pa"], [lang="pa"] *, .lang-font-pa,
+  :lang(gu), [lang="gu"], [lang="gu"] *, .lang-font-gu,
+  :lang(te), [lang="te"], [lang="te"] *, .lang-font-te,
+  :lang(kn), [lang="kn"], [lang="kn"] *, .lang-font-kn,
+  :lang(ml), [lang="ml"], [lang="ml"] *, .lang-font-ml,
+  :lang(nod), [lang="nod"], [lang="nod"] *, .lang-font-nod,
+  :lang(pra), [lang="pra"], [lang="pra"] *, .lang-font-pra,
+  :lang(bo), [lang="bo"], [lang="bo"] *, .lang-font-bo,
+  :lang(as), [lang="as"], [lang="as"] *, .lang-font-as,
+  .PT[script="my"], .PT[script="my"] *,
+  .PT[script="km"], .PT[script="km"] *,
+  .PT[script="th"], .PT[script="th"] *,
+  .PT[script="lo"], .PT[script="lo"] *,
+  .PT[script="si"], .PT[script="si"] * {
+    letter-spacing: normal !important;
+    text-transform: none !important;
+  }
 `;
 
 export {COLOR_TOKENS, CSS_VARS}
