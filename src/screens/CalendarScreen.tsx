@@ -511,10 +511,10 @@ export function CalendarScreen({
                           color: isSelected
                             ? '#ffffff'
                             : !isCurrentMonth
-                            ? 'var(--text-disabled)'
-                            : isTodayDate
-                            ? 'var(--accent)'
-                            : 'var(--text-primary)'
+                              ? 'var(--text-disabled)'
+                              : isTodayDate
+                                ? 'var(--accent)'
+                                : 'var(--text-primary)'
                         }}
                       >
                         {format(date, 'd')}
@@ -665,201 +665,201 @@ export function CalendarScreen({
                       activeDawn={activeDawn}
                     />
                   );
-                  case 'pali_vassa':
-                    return (
-                      <section
-                        key="card-pali-vassa"
-                        className="card overflow-hidden !p-0 shadow-sm"
-                        style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+                case 'pali_vassa':
+                  return (
+                    <section
+                      key="card-pali-vassa"
+                      className="card overflow-hidden !p-0 shadow-sm"
+                      style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+                    >
+                      {/* Clickable header — toggles Vassa & Pavāraṇā details */}
+                      <button
+                        onClick={() => setIsVassaExpanded(!isVassaExpanded)}
+                        className="w-full flex items-center justify-between card-header"
                       >
-                        {/* Clickable header — toggles Vassa & Pavāraṇā details */}
-                        <button
-                          onClick={() => setIsVassaExpanded(!isVassaExpanded)}
-                          className="w-full flex items-center justify-between card-header"
-                        >
-                          <div className="flex items-center gap-2">
-                            <CalendarIcon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
-                            <span className="label-eyebrow">
-                              {t('calendar.buddhistCalendar') || 'Buddhist Calendar'}
-                            </span>
-                          </div>
-                          <div
-                            className={cn("p-1.5 rounded-full transition-transform duration-300", isVassaExpanded && "rotate-180")}
-                            style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
-                          >
-                            <ChevronDown size={14} />
-                          </div>
-                        </button>
-
-                        {/* Always-visible concise summary */}
-                        <div
-                          className="px-5 pb-4 pt-1 grid grid-cols-2 gap-y-4 gap-x-6"
-                          style={{ background: 'var(--surface)' }}
-                        >
-                          <DetailRow label={t('calendar.month')} value={dateDetails.mName} script={settings.paliScript} />
-                          <DetailRow label={t('calendar.year')} value={dateDetails.animal} script={settings.paliScript} />
-                          <DetailRow label={t('calendar.season')} value={dateDetails.season} script={settings.paliScript} />
-                          <DetailRow label={t('calendar.weekDay')} value={dateDetails.weekDay} script={settings.paliScript} />
+                        <div className="flex items-center gap-2">
+                          <CalendarIcon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
+                          <span className="label-eyebrow">
+                            {t('calendar.buddhistCalendar') || 'Buddhist Calendar'}
+                          </span>
                         </div>
+                        <div
+                          className={cn("p-1.5 rounded-full transition-transform duration-300", isVassaExpanded && "rotate-180")}
+                          style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
+                        >
+                          <ChevronDown size={14} />
+                        </div>
+                      </button>
 
-                        {/* Expanded Vassa & Pavāraṇā details */}
-                        <AnimatePresence>
-                          {isVassaExpanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden"
-                              style={{ borderTop: '1px solid var(--border)' }}
-                            >
-                              <div className="p-5">
-                                <h4 className="label-eyebrow mb-4 text-center">
-                                  {t('calendar.vassaAndPavarana')}
-                                </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                                  <VassaItem
-                                    label={t('calendar.pubbaVassa')}
-                                    entry={vassaDates.pubbaVassaEntry}
-                                    pavarana={vassaDates.pubbaVassaPavarana}
-                                    t={t}
-                                  />
-                                  <VassaItem
-                                    label={t('calendar.pacchimaVassa')}
-                                    entry={vassaDates.pacchimaVassaEntry}
-                                    pavarana={vassaDates.pacchimaVassaPavarana}
-                                    t={t}
-                                  />
-                                </div>
+                      {/* Always-visible concise summary */}
+                      <div
+                        className="px-5 pb-4 pt-4 grid grid-cols-2 gap-y-4 gap-x-6"
+                        style={{ background: 'var(--surface)' }}
+                      >
+                        <DetailRow label={t('calendar.month')} value={dateDetails.mName} script={settings.paliScript} />
+                        <DetailRow label={t('calendar.year')} value={dateDetails.animal} script={settings.paliScript} />
+                        <DetailRow label={t('calendar.season')} value={dateDetails.season} script={settings.paliScript} />
+                        <DetailRow label={t('calendar.weekDay')} value={dateDetails.weekDay} script={settings.paliScript} />
+                      </div>
+
+                      {/* Expanded Vassa & Pavāraṇā details */}
+                      <AnimatePresence>
+                        {isVassaExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                            style={{ borderTop: '1px solid var(--border)' }}
+                          >
+                            <div className="p-5">
+                              <h4 className="label-eyebrow mb-4 text-center">
+                                {t('calendar.vassaAndPavarana')}
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <VassaItem
+                                  label={t('calendar.pubbaVassa')}
+                                  entry={vassaDates.pubbaVassaEntry}
+                                  pavarana={vassaDates.pubbaVassaPavarana}
+                                  t={t}
+                                />
+                                <VassaItem
+                                  label={t('calendar.pacchimaVassa')}
+                                  entry={vassaDates.pacchimaVassaEntry}
+                                  pavarana={vassaDates.pacchimaVassaPavarana}
+                                  t={t}
+                                />
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </section>
-                    );
-                  case 'atikkanta':
-                    return (
-                      <section
-                        key="card-atikkanta"
-                        className="card overflow-hidden !p-0 shadow-sm"
-                        style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </section>
+                  );
+                case 'atikkanta':
+                  return (
+                    <section
+                      key="card-atikkanta"
+                      className="card overflow-hidden !p-0 shadow-sm"
+                      style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}
+                    >
+                      {/* Clickable header — toggles expanded breakdown */}
+                      <button
+                        onClick={() => setIsEraExpanded(!isEraExpanded)}
+                        className="w-full flex items-center justify-between card-header"
                       >
-                        {/* Clickable header — toggles expanded breakdown */}
-                        <button
-                          onClick={() => setIsEraExpanded(!isEraExpanded)}
-                          className="w-full flex items-center justify-between card-header"
-                        >
-                          <div className="flex items-center gap-2">
-                            <Moon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
-                            <span className="label-eyebrow">
-                              {t('calendar.buddhistEraProgress')}
-                            </span>
-                          </div>
-                          <div
-                            className={cn("p-1.5 rounded-full transition-transform duration-300", isEraExpanded && "rotate-180")}
-                            style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
-                          >
-                            <ChevronDown size={14} />
-                          </div>
-                        </button>
-
-                        {/* Always-visible concise summary */}
-                        <div
-                          className="px-5 pb-4 pt-1 flex flex-col gap-1.5"
-                          style={{ background: 'var(--surface)' }}
-                        >
-                          <div className="flex justify-center items-baseline gap-4">
-                            <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
-                              {elapsed.bYear.toLocaleString()}
-                              <span className="text-[10px] font-bold ml-1 opacity-70">Years</span>
-                            </span>
-                            <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
-                              {elapsed.bM}
-                              <span className="text-[10px] font-bold ml-1 opacity-70">Months</span>
-                            </span>
-                            <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
-                              {elapsed.tithi}
-                              <span className="text-[10px] font-bold ml-1 opacity-70">Days</span>
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="label-eyebrow text-[9px]">BE 1</span>
-                            <span className="text-[9px] font-black" style={{ color: 'var(--accent)' }}>
-                              {(elapsed.bYear / 5000 * 100).toFixed(3)}%
-                            </span>
-                            <span className="label-eyebrow text-[9px]">BE 5000</span>
-                          </div>
-                          <div
-                            className="w-full h-2 rounded-full overflow-hidden"
-                            style={{ background: 'var(--accent-subtle)' }}
-                          >
-                            <motion.div
-                              className="h-full rounded-full"
-                              style={{ background: 'var(--accent)' }}
-                              initial={{ width: 0 }}
-                              animate={{ width: `${elapsed.bYear / 5000 * 100}%` }}
-                              transition={{ duration: 1.2, ease: 'easeOut' }}
-                            />
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Moon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
+                          <span className="label-eyebrow">
+                            {t('calendar.buddhistEraProgress')}
+                          </span>
                         </div>
+                        <div
+                          className={cn("p-1.5 rounded-full transition-transform duration-300", isEraExpanded && "rotate-180")}
+                          style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}
+                        >
+                          <ChevronDown size={14} />
+                        </div>
+                      </button>
 
-                        {/* Expanded breakdown */}
-                        <AnimatePresence>
-                          {isEraExpanded && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              className="overflow-hidden"
-                              style={{ borderTop: '1px solid var(--border)' }}
+                      {/* Always-visible concise summary */}
+                      <div
+                        className="px-5 pb-4 pt-4 flex flex-col gap-1.5"
+                        style={{ background: 'var(--surface)' }}
+                      >
+                        <div className="flex justify-center items-baseline gap-4">
+                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                            {elapsed.bYear.toLocaleString()}
+                            <span className="text-[10px] font-bold ml-1 opacity-70">Years</span>
+                          </span>
+                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                            {elapsed.bM}
+                            <span className="text-[10px] font-bold ml-1 opacity-70">Months</span>
+                          </span>
+                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                            {elapsed.tithi}
+                            <span className="text-[10px] font-bold ml-1 opacity-70">Days</span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="label-eyebrow text-[9px]">BE 1</span>
+                          <span className="text-[9px] font-black" style={{ color: 'var(--accent)' }}>
+                            {(elapsed.bYear / 5000 * 100).toFixed(3)}%
+                          </span>
+                          <span className="label-eyebrow text-[9px]">BE 5000</span>
+                        </div>
+                        <div
+                          className="w-full h-2 rounded-full overflow-hidden"
+                          style={{ background: 'var(--accent-subtle)' }}
+                        >
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ background: 'var(--accent)' }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${elapsed.bYear / 5000 * 100}%` }}
+                            transition={{ duration: 1.2, ease: 'easeOut' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Expanded breakdown */}
+                      <AnimatePresence>
+                        {isEraExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="overflow-hidden"
+                            style={{ borderTop: '1px solid var(--border)' }}
+                          >
+                            <div
+                              className="grid grid-cols-3 divide-x"
+                              style={{ divideColor: 'var(--border)' } as React.CSSProperties}
                             >
+                              {/* ── Atikkanta (Elapsed) ── */}
                               <div
-                                className="grid grid-cols-3 divide-x"
-                                style={{ divideColor: 'var(--border)' } as React.CSSProperties}
+                                className="flex flex-col items-center gap-3 p-4"
+                                style={{ background: 'var(--accent-subtle)' }}
                               >
-                                {/* ── Atikkanta (Elapsed) ── */}
-                                <div
-                                  className="flex flex-col items-center gap-3 p-4"
-                                  style={{ background: 'var(--accent-subtle)' }}
-                                >
-                                  <span className="label-eyebrow text-[9px] text-center leading-tight">
-                                    {t('calendar.atikkanta')}{'\n'}({t('calendar.elapsed')})
-                                  </span>
-                                  <EraCounter value={elapsed.atikkantaY} unit="Y" dimmed />
-                                  <EraCounter value={elapsed.atikkantaM} unit="M" dimmed />
-                                  <EraCounter value={elapsed.atikkantaD} unit="D" dimmed />
-                                </div>
-
-                                {/* ── Current BE values (centre column) ── */}
-                                <div
-                                  className="flex flex-col items-center gap-3 p-4"
-                                  style={{ background: 'var(--surface)' }}
-                                >
-                                  <span className="label-eyebrow-accent text-[9px] text-center leading-tight">
-                                    {t('calendar.buddhistEra')}
-                                  </span>
-                                  <EraCounter value={elapsed.bYear} unit="Y" accent />
-                                  <EraCounter value={elapsed.bM} unit="M" accent />
-                                  <EraCounter value={elapsed.tithi} unit="D" accent />
-                                </div>
-
-                                {/* ── Avasiṭṭha (Remaining) ── */}
-                                <div
-                                  className="flex flex-col items-center gap-3 p-4"
-                                  style={{ background: 'var(--accent-subtle)' }}
-                                >
-                                  <span className="label-eyebrow text-[9px] text-center leading-tight">
-                                    {t('calendar.avasittha')}{'\n'}({t('calendar.remaining')})
-                                  </span>
-                                  <EraCounter value={elapsed.avasitthaY} unit="Y" />
-                                  <EraCounter value={elapsed.avasitthaM} unit="M" />
-                                  <EraCounter value={elapsed.avasitthaD} unit="D" />
-                                </div>
+                                <span className="label-eyebrow text-[9px] text-center leading-tight">
+                                  {t('calendar.atikkanta')}{'\n'}({t('calendar.elapsed')})
+                                </span>
+                                <EraCounter value={elapsed.atikkantaY} unit="Y" dimmed />
+                                <EraCounter value={elapsed.atikkantaM} unit="M" dimmed />
+                                <EraCounter value={elapsed.atikkantaD} unit="D" dimmed />
                               </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </section>
-                    );
+
+                              {/* ── Current BE values (centre column) ── */}
+                              <div
+                                className="flex flex-col items-center gap-3 p-4"
+                                style={{ background: 'var(--surface)' }}
+                              >
+                                <span className="label-eyebrow-accent text-[9px] text-center leading-tight">
+                                  {t('calendar.buddhistEra')}
+                                </span>
+                                <EraCounter value={elapsed.bYear} unit="Y" accent />
+                                <EraCounter value={elapsed.bM} unit="M" accent />
+                                <EraCounter value={elapsed.tithi} unit="D" accent />
+                              </div>
+
+                              {/* ── Avasiṭṭha (Remaining) ── */}
+                              <div
+                                className="flex flex-col items-center gap-3 p-4"
+                                style={{ background: 'var(--accent-subtle)' }}
+                              >
+                                <span className="label-eyebrow text-[9px] text-center leading-tight">
+                                  {t('calendar.avasittha')}{'\n'}({t('calendar.remaining')})
+                                </span>
+                                <EraCounter value={elapsed.avasitthaY} unit="Y" />
+                                <EraCounter value={elapsed.avasitthaM} unit="M" />
+                                <EraCounter value={elapsed.avasitthaD} unit="D" />
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </section>
+                  );
                 case 'recitation':
                   return (
                     <div
