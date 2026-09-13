@@ -860,7 +860,7 @@ export function MeditationScreen() {
                         { value: 30, label: `30 ${t('meditation.seconds')}` },
                         { value: 60, label: `1 ${t('meditation.minutes')}` },
                       ]}
-                      selectClassName="text-base font-serif px-5 py-4 text-left"
+                      selectClassName="text-base font-sans px-5 py-4 text-left"
                     />
 
                     {/* Alert Options Section */}

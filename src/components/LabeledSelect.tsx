@@ -6,6 +6,7 @@ export interface SelectOption {
   label: string | number;
   lang?: string;
   fontFamily?: string;
+  fontClass?: string;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -30,6 +31,7 @@ export function LabeledSelect({
   selectClassName,
 }: LabeledSelectProps) {
   const selectedOption = options.find((opt) => String(opt.value) === String(value));
+  const selectedFontClass = selectedOption?.fontClass || (selectedOption?.lang ? `lang-font-${selectedOption.lang}` : undefined);
 
   return (
     <div className={cn("w-full", className)}>
@@ -49,7 +51,7 @@ export function LabeledSelect({
           className={cn(
             "w-full px-4 py-4 rounded-2xl border outline-none transition-all appearance-none cursor-pointer focus:ring-2",
             selectClassName || "font-serif text-2xl text-center",
-            selectedOption?.lang && `lang-font-${selectedOption.lang}`
+            selectedFontClass
           )}
           style={{
             backgroundColor: 'var(--bg-input, var(--sm-surface))',
@@ -58,22 +60,25 @@ export function LabeledSelect({
             ...(selectedOption?.fontFamily ? { fontFamily: selectedOption.fontFamily } : {}),
           }}
         >
-          {options.map((opt) => (
-            <option
-              key={String(opt.value)}
-              value={opt.value}
-              lang={opt.lang}
-              className={cn(opt.className, opt.lang && `lang-font-${opt.lang}`)}
-              style={{
-                backgroundColor: 'var(--bg-card, var(--sm-card-bg))',
-                color: 'var(--text-primary, var(--sm-text-primary))',
-                ...(opt.fontFamily ? { fontFamily: opt.fontFamily } : {}),
-                ...opt.style,
-              }}
-            >
-              {opt.label}
-            </option>
-          ))}
+          {options.map((opt) => {
+            const optFontClass = opt.fontClass || (opt.lang ? `lang-font-${opt.lang}` : undefined);
+            return (
+              <option
+                key={String(opt.value)}
+                value={opt.value}
+                lang={opt.lang}
+                className={cn(opt.className, optFontClass)}
+                style={{
+                  backgroundColor: 'var(--bg-card, var(--sm-card-bg))',
+                  color: 'var(--text-primary, var(--sm-text-primary))',
+                  ...(opt.fontFamily ? { fontFamily: opt.fontFamily } : {}),
+                  ...opt.style,
+                }}
+              >
+                {opt.label}
+              </option>
+            );
+          })}
         </select>
         {badgeLabel && (
           <span

@@ -369,7 +369,7 @@ export function CalendarScreen({
           <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 px-1 relative z-10">
             <div className="flex items-baseline gap-2.5">
               <h2
-                className="font-serif text-3xl sm:text-4xl font-bold leading-none flex items-baseline gap-2.5"
+                className="font-sans text-3xl sm:text-4xl font-bold leading-none flex items-baseline gap-2.5"
                 style={{ color: 'var(--accent)' }}
               >
                 <span>{format(currentDate, 'MMMM')}</span>
@@ -675,7 +675,7 @@ export function CalendarScreen({
                       {/* Clickable header — toggles Vassa & Pavāraṇā details */}
                       <button
                         onClick={() => setIsVassaExpanded(!isVassaExpanded)}
-                        className="w-full flex items-center justify-between card-header"
+                        className="w-full flex items-center justify-between card-header cursor-pointer transition-colors hover:bg-[var(--surface-hover)]"
                       >
                         <div className="flex items-center gap-2">
                           <CalendarIcon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
@@ -693,8 +693,7 @@ export function CalendarScreen({
 
                       {/* Always-visible concise summary */}
                       <div
-                        className="px-5 pb-4 pt-4 grid grid-cols-2 gap-y-4 gap-x-6"
-                        style={{ background: 'var(--surface)' }}
+                        className="px-4 py-4 grid grid-cols-2 gap-y-4 gap-x-6"
                       >
                         <DetailRow label={t('calendar.month')} value={dateDetails.mName} script={settings.paliScript} />
                         <DetailRow label={t('calendar.year')} value={dateDetails.animal} script={settings.paliScript} />
@@ -712,8 +711,8 @@ export function CalendarScreen({
                             className="overflow-hidden"
                             style={{ borderTop: '1px solid var(--border)' }}
                           >
-                            <div className="p-5">
-                              <h4 className="label-eyebrow mb-4 text-center">
+                            <div className="p-4 space-y-4">
+                              <h4 className="label-eyebrow text-center">
                                 {t('calendar.vassaAndPavarana')}
                               </h4>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -746,7 +745,7 @@ export function CalendarScreen({
                       {/* Clickable header — toggles expanded breakdown */}
                       <button
                         onClick={() => setIsEraExpanded(!isEraExpanded)}
-                        className="w-full flex items-center justify-between card-header"
+                        className="w-full flex items-center justify-between card-header cursor-pointer transition-colors hover:bg-[var(--surface-hover)]"
                       >
                         <div className="flex items-center gap-2">
                           <Moon size={13} style={{ color: 'var(--accent)', opacity: 0.7 }} />
@@ -764,21 +763,26 @@ export function CalendarScreen({
 
                       {/* Always-visible concise summary */}
                       <div
-                        className="px-5 pb-4 pt-4 flex flex-col gap-1.5"
-                        style={{ background: 'var(--surface)' }}
+                        className="px-4 py-4 flex flex-col gap-2.5"
                       >
-                        <div className="flex justify-center items-baseline gap-4">
-                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                        <div className="flex justify-center items-baseline gap-3 sm:gap-6 flex-wrap">
+                          <span className="text-xl sm:text-2xl font-black" style={{ color: 'var(--accent)' }}>
                             {elapsed.bYear.toLocaleString()}
-                            <span className="text-[10px] font-bold ml-1 opacity-70">Years</span>
+                            <span className="text-[10px] font-bold ml-1 opacity-70">
+                              {t('calendar.eraYears') || 'Years'}
+                            </span>
                           </span>
-                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                          <span className="text-xl sm:text-2xl font-black" style={{ color: 'var(--accent)' }}>
                             {elapsed.bM}
-                            <span className="text-[10px] font-bold ml-1 opacity-70">Months</span>
+                            <span className="text-[10px] font-bold ml-1 opacity-70">
+                              {t('calendar.eraMonths') || 'Months'}
+                            </span>
                           </span>
-                          <span className="text-2xl font-black" style={{ color: 'var(--accent)' }}>
+                          <span className="text-xl sm:text-2xl font-black" style={{ color: 'var(--accent)' }}>
                             {elapsed.tithi}
-                            <span className="text-[10px] font-bold ml-1 opacity-70">Days</span>
+                            <span className="text-[10px] font-bold ml-1 opacity-70">
+                              {t('calendar.eraDays') || 'Days'}
+                            </span>
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
@@ -821,12 +825,14 @@ export function CalendarScreen({
                                 className="flex flex-col items-center gap-3 p-4"
                                 style={{ background: 'var(--accent-subtle)' }}
                               >
-                                <span className="label-eyebrow text-[9px] text-center leading-tight">
-                                  {t('calendar.atikkanta')}{'\n'}({t('calendar.elapsed')})
-                                </span>
-                                <EraCounter value={elapsed.atikkantaY} unit="Y" dimmed />
-                                <EraCounter value={elapsed.atikkantaM} unit="M" dimmed />
-                                <EraCounter value={elapsed.atikkantaD} unit="D" dimmed />
+                                <div className="min-h-[2.25rem] flex items-center justify-center">
+                                  <span className="label-eyebrow text-[9px] text-center leading-tight whitespace-pre-line">
+                                    {t('calendar.atikkanta')}{'\n'}({t('calendar.elapsed')})
+                                  </span>
+                                </div>
+                                <EraCounter value={elapsed.atikkantaY} unit="Y" dimmed t={t} />
+                                <EraCounter value={elapsed.atikkantaM} unit="M" dimmed t={t} />
+                                <EraCounter value={elapsed.atikkantaD} unit="D" dimmed t={t} />
                               </div>
 
                               {/* ── Current BE values (centre column) ── */}
@@ -834,12 +840,14 @@ export function CalendarScreen({
                                 className="flex flex-col items-center gap-3 p-4"
                                 style={{ background: 'var(--surface)' }}
                               >
-                                <span className="label-eyebrow-accent text-[9px] text-center leading-tight">
-                                  {t('calendar.buddhistEra')}
-                                </span>
-                                <EraCounter value={elapsed.bYear} unit="Y" accent />
-                                <EraCounter value={elapsed.bM} unit="M" accent />
-                                <EraCounter value={elapsed.tithi} unit="D" accent />
+                                <div className="min-h-[2.25rem] flex items-center justify-center">
+                                  <span className="label-eyebrow-accent text-[9px] text-center leading-tight">
+                                    {t('calendar.buddhistEra')}
+                                  </span>
+                                </div>
+                                <EraCounter value={elapsed.bYear} unit="Y" accent t={t} />
+                                <EraCounter value={elapsed.bM} unit="M" accent t={t} />
+                                <EraCounter value={elapsed.tithi} unit="D" accent t={t} />
                               </div>
 
                               {/* ── Avasiṭṭha (Remaining) ── */}
@@ -847,12 +855,14 @@ export function CalendarScreen({
                                 className="flex flex-col items-center gap-3 p-4"
                                 style={{ background: 'var(--accent-subtle)' }}
                               >
-                                <span className="label-eyebrow text-[9px] text-center leading-tight">
-                                  {t('calendar.avasittha')}{'\n'}({t('calendar.remaining')})
-                                </span>
-                                <EraCounter value={elapsed.avasitthaY} unit="Y" />
-                                <EraCounter value={elapsed.avasitthaM} unit="M" />
-                                <EraCounter value={elapsed.avasitthaD} unit="D" />
+                                <div className="min-h-[2.25rem] flex items-center justify-center">
+                                  <span className="label-eyebrow text-[9px] text-center leading-tight whitespace-pre-line">
+                                    {t('calendar.avasittha')}{'\n'}({t('calendar.remaining')})
+                                  </span>
+                                </div>
+                                <EraCounter value={elapsed.avasitthaY} unit="Y" t={t} />
+                                <EraCounter value={elapsed.avasitthaM} unit="M" t={t} />
+                                <EraCounter value={elapsed.avasitthaD} unit="D" t={t} />
                               </div>
                             </div>
                           </motion.div>
@@ -1225,14 +1235,19 @@ function VassaItem({ label, entry, pavarana, t }: { label: string; entry: Date |
  * default — uses --accent with reduced opacity (remaining / avasiṭṭha column)
  */
 function EraCounter({
-  value, unit, accent, dimmed
+  value, unit, accent, dimmed, t
 }: {
   value: number;
   unit: 'Y' | 'M' | 'D';
   accent?: boolean;
   dimmed?: boolean;
+  t?: any;
 }) {
-  const unitLabels: Record<string, string> = { Y: 'yrs', M: 'mo', D: 'days' };
+  const unitLabels: Record<string, string> = {
+    Y: t ? (t('calendar.eraYears') || 'yrs') : 'yrs',
+    M: t ? (t('calendar.eraMonths') || 'mo') : 'mo',
+    D: t ? (t('calendar.eraDays') || 'days') : 'days'
+  };
   return (
     <div className="flex flex-col items-center gap-0.5 w-full">
       <span

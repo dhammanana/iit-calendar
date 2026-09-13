@@ -20,34 +20,34 @@ import { studyDbService } from '../services/StudyDbService';
 import packageJson from '../../package.json';
 
 const UI_LANGUAGES = [
-  { value: 'en', label: 'English', lang: 'en', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
-  { value: 'vi', label: 'Tiếng Việt', lang: 'vi', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
-  { value: 'th', label: 'ไทย', lang: 'th', fontFamily: "'Noto Sans Thai', 'thai', sans-serif" },
-  { value: 'si', label: 'සිංහල', lang: 'si', fontFamily: "'sinhala-sans', 'Noto Sans Sinhala', sans-serif" },
-  { value: 'my', label: 'မြန်မာ', lang: 'my', fontFamily: "'Noto Sans Myanmar', 'myanmar', 'Pyidaungsu', sans-serif" },
-  { value: 'km', label: 'ខ្មែរ', lang: 'km', fontFamily: "'Noto Sans Khmer', 'khmer', sans-serif" },
-  { value: 'lo', label: 'ລາວ', lang: 'lo', fontFamily: "'lao-ui', 'lao', sans-serif" },
+  { value: 'en', label: 'English', lang: 'en', fontClass: 'lang-ui-en', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
+  { value: 'vi', label: 'Tiếng Việt', lang: 'vi', fontClass: 'lang-ui-vi', fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" },
+  { value: 'th', label: 'ไทย', lang: 'th', fontClass: 'lang-ui-th', fontFamily: "'Noto Sans Thai', 'thai', sans-serif" },
+  { value: 'si', label: 'සිංහල', lang: 'si', fontClass: 'lang-ui-si', fontFamily: "'sinhala-sans', 'Noto Sans Sinhala', sans-serif" },
+  { value: 'my', label: 'မြန်မာ', lang: 'my', fontClass: 'lang-ui-my', fontFamily: "'Noto Sans Myanmar', 'myanmar', 'Pyidaungsu', sans-serif" },
+  { value: 'km', label: 'ខ្មែរ', lang: 'km', fontClass: 'lang-ui-km', fontFamily: "'Noto Sans Khmer', 'khmer', sans-serif" },
+  { value: 'lo', label: 'ລາວ', lang: 'lo', fontClass: 'lang-ui-lo', fontFamily: "'lao-ui', 'lao', sans-serif" },
 ] as const;
 
 const PALI_SCRIPTS = [
-  { value: 'roman', label: 'Roman', lang: 'en', fontFamily: "'roman', 'Noto Serif', serif" },
-  { value: 'sinhala', label: 'සිංහල', lang: 'si', fontFamily: "'sinhala', 'Noto Serif Sinhala', serif" },
-  { value: 'burmese', label: 'မြန်မာ', lang: 'my', fontFamily: "'myanmar', 'Pyidaungsu', serif" },
-  { value: 'thai', label: 'ไทย', lang: 'th', fontFamily: "'thai', 'THSarabunNew', serif" },
-  { value: 'devanagari', label: 'देवनागरी', lang: 'hi', fontFamily: "'devanagari', 'Noto Serif Devanagari', serif" },
-  { value: 'lao', label: 'ລາວ', lang: 'lo', fontFamily: "'lao', 'LaoPaliAlpha', serif" },
-  { value: 'khmer', label: 'ខ្មែរ', lang: 'km', fontFamily: "'khmer', 'Noto Serif Khmer', serif" },
-  { value: 'bengali', label: 'বাংলা', lang: 'bn', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
-  { value: 'gurmukhi', label: 'ਗੁਰਮੁਖੀ', lang: 'pa', fontFamily: "'gurmukhi', 'Noto Sans Gurmukhi', sans-serif" },
-  { value: 'gujarati', label: 'ગુજરાતી', lang: 'gu', fontFamily: "'gujarati', 'Noto Serif Gujarati', serif" },
-  { value: 'telugu', label: 'తెలుగు', lang: 'te', fontFamily: "'telugu', 'Noto Serif Telugu', serif" },
-  { value: 'kannada', label: 'ಕನ್ನಡ', lang: 'kn', fontFamily: "'kannada', 'Noto Serif Kannada', serif" },
-  { value: 'malayalam', label: 'മലയാളം', lang: 'ml', fontFamily: "'malayalam', 'Noto Serif Malayalam', serif" },
-  { value: 'taitham', label: 'ᨲ᩠ᩅᩫᨾᩮᩥ᩠ᨦ (Tai Tham)', lang: 'nod', fontFamily: "'tai tham', 'Hariphunchai', serif" },
-  { value: 'brahmi', label: '𑀩𑁆𑀭𑀸𑀳𑁆𑀫𑀻 (Brāhmī)', lang: 'pra', fontFamily: "'brahmi', 'Noto Sans Brahmi', sans-serif" },
-  { value: 'tibetan', label: 'བོད་ཡིག', lang: 'bo', fontFamily: "'tibetan', 'Noto Sans Tibetan', sans-serif" },
-  { value: 'cyrillic', label: 'Кириллица', lang: 'ru', fontFamily: "'cyrillic', 'Noto Serif', serif" },
-  { value: 'assamese', label: 'অসমীয়া', lang: 'as', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
+  { value: 'roman', label: 'Roman', lang: 'en', fontClass: 'script-font-roman', fontFamily: "'roman', 'Noto Serif', serif" },
+  { value: 'sinhala', label: 'සිංහල', lang: 'si', fontClass: 'script-font-sinhala', fontFamily: "'sinhala', 'Noto Serif Sinhala', serif" },
+  { value: 'burmese', label: 'မြန်မာ', lang: 'my', fontClass: 'script-font-burmese', fontFamily: "'myanmar', 'Pyidaungsu', serif" },
+  { value: 'thai', label: 'ไทย', lang: 'th', fontClass: 'script-font-thai', fontFamily: "'thai', 'THSarabunNew', serif" },
+  { value: 'devanagari', label: 'देवनागरी', lang: 'hi', fontClass: 'script-font-devanagari', fontFamily: "'devanagari', 'Noto Serif Devanagari', serif" },
+  { value: 'lao', label: 'ລາວ', lang: 'lo', fontClass: 'script-font-lao', fontFamily: "'lao', 'LaoPaliAlpha', serif" },
+  { value: 'khmer', label: 'ខ្មែរ', lang: 'km', fontClass: 'script-font-khmer', fontFamily: "'khmer', 'Noto Serif Khmer', serif" },
+  { value: 'bengali', label: 'বাংলা', lang: 'bn', fontClass: 'script-font-bengali', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
+  { value: 'gurmukhi', label: 'ਗੁਰਮੁਖੀ', lang: 'pa', fontClass: 'script-font-gurmukhi', fontFamily: "'gurmukhi', 'Noto Sans Gurmukhi', sans-serif" },
+  { value: 'gujarati', label: 'ગુજરાતી', lang: 'gu', fontClass: 'script-font-gujarati', fontFamily: "'gujarati', 'Noto Serif Gujarati', serif" },
+  { value: 'telugu', label: 'తెలుగు', lang: 'te', fontClass: 'script-font-telugu', fontFamily: "'telugu', 'Noto Serif Telugu', serif" },
+  { value: 'kannada', label: 'ಕನ್ನಡ', lang: 'kn', fontClass: 'script-font-kannada', fontFamily: "'kannada', 'Noto Serif Kannada', serif" },
+  { value: 'malayalam', label: 'മലയാളം', lang: 'ml', fontClass: 'script-font-malayalam', fontFamily: "'malayalam', 'Noto Serif Malayalam', serif" },
+  { value: 'taitham', label: 'ᨲ᩠ᩅᩫᨾᩮᩥ᩠ᨦ (Tai Tham)', lang: 'nod', fontClass: 'script-font-taitham', fontFamily: "'tai tham', 'Hariphunchai', serif" },
+  { value: 'brahmi', label: '𑀩𑁆𑀭𑀸𑀳𑁆𑀫𑀻 (Brāhmī)', lang: 'pra', fontClass: 'script-font-brahmi', fontFamily: "'brahmi', 'Noto Sans Brahmi', sans-serif" },
+  { value: 'tibetan', label: 'བོད་ཡིག', lang: 'bo', fontClass: 'script-font-tibetan', fontFamily: "'tibetan', 'Noto Sans Tibetan', sans-serif" },
+  { value: 'cyrillic', label: 'Кириллица', lang: 'ru', fontClass: 'script-font-cyrillic', fontFamily: "'cyrillic', 'Noto Serif', serif" },
+  { value: 'assamese', label: 'অসমীয়া', lang: 'as', fontClass: 'script-font-assamese', fontFamily: "'bengali', 'Noto Serif Bengali', serif" },
 ] as const;
 
 export function SettingsModal({ 
@@ -271,6 +271,7 @@ export function SettingsModal({
                         value: lang.value,
                         label: lang.label,
                         lang: lang.lang,
+                        fontClass: lang.fontClass,
                         fontFamily: lang.fontFamily,
                       }))}
                       selectClassName="text-sm px-4 py-3"
@@ -283,6 +284,7 @@ export function SettingsModal({
                         value: s.value,
                         label: s.label,
                         lang: s.lang,
+                        fontClass: s.fontClass,
                         fontFamily: s.fontFamily,
                       }))}
                       selectClassName="text-sm px-4 py-3"

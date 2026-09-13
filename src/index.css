@@ -141,22 +141,22 @@
   }
 
   /* Disable letter-spacing and uppercase text-transform for complex scripts where tracking breaks OpenType shaping */
-  :lang(my), [lang="my"], [lang="my"] *, .lang-font-my,
-  :lang(km), [lang="km"], [lang="km"] *, .lang-font-km,
-  :lang(th), [lang="th"], [lang="th"] *, .lang-font-th,
-  :lang(lo), [lang="lo"], [lang="lo"] *, .lang-font-lo,
-  :lang(si), [lang="si"], [lang="si"] *, .lang-font-si,
-  :lang(hi), [lang="hi"], [lang="hi"] *, .lang-font-hi,
-  :lang(bn), [lang="bn"], [lang="bn"] *, .lang-font-bn,
-  :lang(pa), [lang="pa"], [lang="pa"] *, .lang-font-pa,
-  :lang(gu), [lang="gu"], [lang="gu"] *, .lang-font-gu,
-  :lang(te), [lang="te"], [lang="te"] *, .lang-font-te,
-  :lang(kn), [lang="kn"], [lang="kn"] *, .lang-font-kn,
-  :lang(ml), [lang="ml"], [lang="ml"] *, .lang-font-ml,
-  :lang(nod), [lang="nod"], [lang="nod"] *, .lang-font-nod,
-  :lang(pra), [lang="pra"], [lang="pra"] *, .lang-font-pra,
-  :lang(bo), [lang="bo"], [lang="bo"] *, .lang-font-bo,
-  :lang(as), [lang="as"], [lang="as"] *, .lang-font-as,
+  :lang(my), [lang="my"], [lang="my"] *, .lang-font-my, .lang-ui-my, .script-font-my, .script-font-burmese,
+  :lang(km), [lang="km"], [lang="km"] *, .lang-font-km, .lang-ui-km, .script-font-km, .script-font-khmer,
+  :lang(th), [lang="th"], [lang="th"] *, .lang-font-th, .lang-ui-th, .script-font-th, .script-font-thai,
+  :lang(lo), [lang="lo"], [lang="lo"] *, .lang-font-lo, .lang-ui-lo, .script-font-lo, .script-font-lao,
+  :lang(si), [lang="si"], [lang="si"] *, .lang-font-si, .lang-ui-si, .script-font-si, .script-font-sinhala,
+  :lang(hi), [lang="hi"], [lang="hi"] *, .lang-font-hi, .lang-ui-hi, .script-font-hi, .script-font-devanagari,
+  :lang(bn), [lang="bn"], [lang="bn"] *, .lang-font-bn, .script-font-bn, .script-font-bengali,
+  :lang(pa), [lang="pa"], [lang="pa"] *, .lang-font-pa, .script-font-pa, .script-font-gurmukhi,
+  :lang(gu), [lang="gu"], [lang="gu"] *, .lang-font-gu, .script-font-gu, .script-font-gujarati,
+  :lang(te), [lang="te"], [lang="te"] *, .lang-font-te, .script-font-te, .script-font-telugu,
+  :lang(kn), [lang="kn"], [lang="kn"] *, .lang-font-kn, .script-font-kn, .script-font-kannada,
+  :lang(ml), [lang="ml"], [lang="ml"] *, .lang-font-ml, .script-font-ml, .script-font-malayalam,
+  :lang(nod), [lang="nod"], [lang="nod"] *, .lang-font-nod, .script-font-nod, .script-font-taitham,
+  :lang(pra), [lang="pra"], [lang="pra"] *, .lang-font-pra, .script-font-pra, .script-font-brahmi,
+  :lang(bo), [lang="bo"], [lang="bo"] *, .lang-font-bo, .script-font-bo, .script-font-tibetan,
+  :lang(as), [lang="as"], [lang="as"] *, .lang-font-as, .script-font-as, .script-font-assamese,
   .PT[script="my"], .PT[script="my"] *,
   .PT[script="km"], .PT[script="km"] *,
   .PT[script="th"], .PT[script="th"] *,
@@ -174,26 +174,35 @@
   [lang="th"], [lang="th"] * { font-family: 'Noto Sans Thai', 'thai', sans-serif; }
   [lang="lo"], [lang="lo"] * { font-family: 'lao-ui', 'lao', sans-serif; }
 
-  /* ── Language font overrides for selects, options, and language labels ── */
-  option[lang="en"], select[lang="en"], .lang-font-en { font-family: 'Manrope', 'roman', 'Noto Serif', sans-serif !important; }
-  option[lang="vi"], select[lang="vi"], .lang-font-vi { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif !important; }
-  option[lang="si"], select[lang="si"], .lang-font-si { font-family: 'sinhala', 'Noto Serif Sinhala', 'sinhala-sans', serif !important; }
-  option[lang="th"], select[lang="th"], .lang-font-th { font-family: 'thai', 'THSarabunNew', 'Noto Sans Thai', serif !important; }
-  option[lang="my"], select[lang="my"], .lang-font-my { font-family: 'myanmar', 'Pyidaungsu', 'Noto Sans Myanmar', serif !important; }
-  option[lang="km"], select[lang="km"], .lang-font-km { font-family: 'khmer', 'Noto Serif Khmer', 'Noto Sans Khmer', serif !important; }
-  option[lang="lo"], select[lang="lo"], .lang-font-lo { font-family: 'lao', 'LaoPaliAlpha', 'lao-ui', serif !important; }
-  option[lang="hi"], select[lang="hi"], .lang-font-hi { font-family: 'devanagari', 'Noto Serif Devanagari', 'devanagari-sans', serif !important; }
-  option[lang="bn"], select[lang="bn"], .lang-font-bn { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
-  option[lang="pa"], select[lang="pa"], .lang-font-pa { font-family: 'gurmukhi', 'Noto Sans Gurmukhi', sans-serif !important; }
-  option[lang="gu"], select[lang="gu"], .lang-font-gu { font-family: 'gujarati', 'Noto Serif Gujarati', serif !important; }
-  option[lang="te"], select[lang="te"], .lang-font-te { font-family: 'telugu', 'Noto Serif Telugu', serif !important; }
-  option[lang="kn"], select[lang="kn"], .lang-font-kn { font-family: 'kannada', 'Noto Serif Kannada', serif !important; }
-  option[lang="ml"], select[lang="ml"], .lang-font-ml { font-family: 'malayalam', 'Noto Serif Malayalam', serif !important; }
-  option[lang="nod"], select[lang="nod"], .lang-font-nod { font-family: 'tai tham', 'Hariphunchai', serif !important; }
-  option[lang="pra"], select[lang="pra"], .lang-font-pra { font-family: 'brahmi', 'Noto Sans Brahmi', sans-serif !important; }
-  option[lang="bo"], select[lang="bo"], .lang-font-bo { font-family: 'tibetan', 'Noto Sans Tibetan', sans-serif !important; }
-  option[lang="ru"], select[lang="ru"], .lang-font-ru { font-family: 'cyrillic', 'Noto Serif', serif !important; }
-  option[lang="as"], select[lang="as"], .lang-font-as { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
+  /* ── UI Language font classes (Sans-Serif for interface language selection) ── */
+  .lang-ui-en { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif !important; }
+  .lang-ui-vi { font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif !important; }
+  .lang-ui-th { font-family: 'Noto Sans Thai', 'thai', sans-serif !important; }
+  .lang-ui-si { font-family: 'sinhala-sans', 'Noto Sans Sinhala', sans-serif !important; }
+  .lang-ui-my { font-family: 'Noto Sans Myanmar', 'myanmar', 'Pyidaungsu', sans-serif !important; }
+  .lang-ui-km { font-family: 'Noto Sans Khmer', 'khmer', sans-serif !important; }
+  .lang-ui-lo { font-family: 'lao-ui', 'lao', sans-serif !important; }
+  .lang-ui-hi { font-family: 'devanagari-sans', 'Noto Sans Devanagari', sans-serif !important; }
+
+  /* ── Pali Script font classes (Serif / Canonical book face for script selection) ── */
+  .script-font-roman, .script-font-en, .lang-font-en { font-family: 'roman', 'Noto Serif', serif !important; }
+  .script-font-sinhala, .script-font-si, .lang-font-si { font-family: 'sinhala', 'Noto Serif Sinhala', serif !important; }
+  .script-font-burmese, .script-font-my, .lang-font-my { font-family: 'myanmar', 'Pyidaungsu', serif !important; }
+  .script-font-thai, .script-font-th, .lang-font-th { font-family: 'thai', 'THSarabunNew', serif !important; }
+  .script-font-devanagari, .script-font-hi, .lang-font-hi { font-family: 'devanagari', 'Noto Serif Devanagari', serif !important; }
+  .script-font-lao, .script-font-lo, .lang-font-lo { font-family: 'lao', 'LaoPaliAlpha', serif !important; }
+  .script-font-khmer, .script-font-km, .lang-font-km { font-family: 'khmer', 'Noto Serif Khmer', serif !important; }
+  .script-font-bengali, .script-font-bn, .lang-font-bn { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
+  .script-font-gurmukhi, .script-font-pa, .lang-font-pa { font-family: 'gurmukhi', 'Noto Sans Gurmukhi', sans-serif !important; }
+  .script-font-gujarati, .script-font-gu, .lang-font-gu { font-family: 'gujarati', 'Noto Serif Gujarati', serif !important; }
+  .script-font-telugu, .script-font-te, .lang-font-te { font-family: 'telugu', 'Noto Serif Telugu', serif !important; }
+  .script-font-kannada, .script-font-kn, .lang-font-kn { font-family: 'kannada', 'Noto Serif Kannada', serif !important; }
+  .script-font-malayalam, .script-font-ml, .lang-font-ml { font-family: 'malayalam', 'Noto Serif Malayalam', serif !important; }
+  .script-font-taitham, .script-font-nod, .lang-font-nod { font-family: 'tai tham', 'Hariphunchai', serif !important; }
+  .script-font-brahmi, .script-font-pra, .lang-font-pra { font-family: 'brahmi', 'Noto Sans Brahmi', sans-serif !important; }
+  .script-font-tibetan, .script-font-bo, .lang-font-bo { font-family: 'tibetan', 'Noto Sans Tibetan', sans-serif !important; }
+  .script-font-cyrillic, .script-font-ru, .lang-font-ru { font-family: 'cyrillic', 'Noto Serif', serif !important; }
+  .script-font-assamese, .script-font-as, .lang-font-as { font-family: 'bengali', 'Noto Serif Bengali', serif !important; }
 }
 
 /* ── Glass card — uses tokens so it flips with the theme ─── */
