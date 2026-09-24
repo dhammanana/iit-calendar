@@ -22,5 +22,17 @@
     "coverImage": "/covers/memorization.png",
     "coverColor": "linear-gradient(135deg, #1e3a8a 0%, #172554 55%, #090d16 100%)",
     "accentColor": "#60a5fa"
+  },
+  {
+    "id": "patimokkha",
+    "file": "patimokkha.html",
+    "title": "Bhikkhupātimokkha Pāḷi",
+    "titleKey": "common.patimokkha",
+    "subtitle": "Pubbakaraṇādī vidhi & Pātimokkha",
+    "subtitleKey": "common.patimokkhaSubtitle",
+    "author": "IIT",
+    "coverImage": "/covers/patimokkha.png",
+    "coverColor": "linear-gradient(135deg, #881337 0%, #4c0519 55%, #1c0209 100%)",
+    "accentColor": "#f59e0b"
   }
 ]
